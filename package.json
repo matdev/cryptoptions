@@ -2,7 +2,7 @@
   "name": "CryptOptions",
   "version": "0.2.0",
   "private": false,
-  "homepage": "https://matdev@github.io/matdev/Cryptoptions.git",
+  "homepage": "https://matdev@github.io/matdev/Cryptoptions",
   "dependencies": {
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
