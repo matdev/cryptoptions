@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/matdev/Cryptoptions.git/static/css/main.5daeec34.css",
-    "main.js": "/matdev/Cryptoptions.git/static/js/main.45ff732d.js",
-    "index.html": "/matdev/Cryptoptions.git/index.html",
-    "main.5daeec34.css.map": "/matdev/Cryptoptions.git/static/css/main.5daeec34.css.map",
-    "main.45ff732d.js.map": "/matdev/Cryptoptions.git/static/js/main.45ff732d.js.map"
+    "main.css": "/matdev/Cryptoptions/static/css/main.5daeec34.css",
+    "main.js": "/matdev/Cryptoptions/static/js/main.45ff732d.js",
+    "index.html": "/matdev/Cryptoptions/index.html",
+    "main.5daeec34.css.map": "/matdev/Cryptoptions/static/css/main.5daeec34.css.map",
+    "main.45ff732d.js.map": "/matdev/Cryptoptions/static/js/main.45ff732d.js.map"
   },
   "entrypoints": [
     "static/css/main.5daeec34.css",
