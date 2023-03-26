@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/matdev/Cryptoptions.git/static/css/main.5daeec34.css",
+    "main.js": "/matdev/Cryptoptions.git/static/js/main.3280ab8e.js",
+    "index.html": "/matdev/Cryptoptions.git/index.html",
+    "main.5daeec34.css.map": "/matdev/Cryptoptions.git/static/css/main.5daeec34.css.map",
+    "main.3280ab8e.js.map": "/matdev/Cryptoptions.git/static/js/main.3280ab8e.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.5daeec34.css",
+    "static/js/main.3280ab8e.js"
+  ]
+}
