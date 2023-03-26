@@ -23,7 +23,7 @@ const CoinItem = (props) => {
             <p className='hide-mobile'>{props.coins.total_volume.toLocaleString()} €</p>
             <p className='hide-mobile'>{props.coins.market_cap.toLocaleString()} €</p>
             <Link to={`/option-prices/${props.coins.id}`} state={{spotValue: spotValue}} element={<CoinOptionsTable/>}
-                  key={props.coins.id}>
+                  key={`${props.coins.id}-options`}>
                 <p>
                     <button className={"button_view_options"}>Option Prices</button>
                 </p>
