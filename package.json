@@ -2,6 +2,7 @@
   "name": "CryptOptions",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://matdev@github.io/matdev/Cryptoptions.git",
   "dependencies": {
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
@@ -21,6 +22,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "predeploy" : "npm run build",
+    "deploy" : "gh-pages -d build",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -42,5 +45,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "gh-pages": "^5.0.0"
   }
 }
