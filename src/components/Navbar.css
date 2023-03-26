@@ -1,0 +1,18 @@
+:root {
+    --main-color: #FB9B9C;
+}
+
+.navbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.icon {
+    font-size: 2rem;
+    color: var(--main-color);
+}
+
+.purple {
+    color: var(--main-color);
+}
