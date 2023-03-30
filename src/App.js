@@ -30,7 +30,7 @@ function App() {
         <>
             <Navbar/>
             <Routes>
-                <Route path='/matdev/cryptoptions' element={<CoinsTable coins={coins}/>}/>
+                <Route path='/' element={<CoinsTable coins={coins}/>}/>
                 <Route path='/coin' element={<CoinDetails/>}>
                     <Route path=':coinId' element={<CoinDetails/>}/>
                 </Route>
