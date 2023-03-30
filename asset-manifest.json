@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/matdev/cryptoptions/static/css/main.5daeec34.css",
-    "main.js": "/matdev/cryptoptions/static/js/main.9dd413d2.js",
+    "main.js": "/matdev/cryptoptions/static/js/main.1c83d910.js",
     "index.html": "/matdev/cryptoptions/index.html",
     "main.5daeec34.css.map": "/matdev/cryptoptions/static/css/main.5daeec34.css.map",
-    "main.9dd413d2.js.map": "/matdev/cryptoptions/static/js/main.9dd413d2.js.map"
+    "main.1c83d910.js.map": "/matdev/cryptoptions/static/js/main.1c83d910.js.map"
   },
   "entrypoints": [
     "static/css/main.5daeec34.css",
-    "static/js/main.9dd413d2.js"
+    "static/js/main.1c83d910.js"
   ]
 }
