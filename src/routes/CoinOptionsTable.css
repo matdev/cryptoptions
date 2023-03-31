@@ -107,6 +107,10 @@ th {
     padding-inline-start: 8px;
 }
 
+.underlined {
+    text-decoration: underline;
+}
+
 @media screen and (max-width: 700px) {
     .coin-container .content {
         max-width: 100%;

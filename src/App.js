@@ -6,11 +6,14 @@ import CoinDetails from './routes/CoinDetails'
 import Navbar from './components/Navbar'
 import CoinOptionsTable from "./routes/CoinOptionsTable";
 import * as PricingUtils from './util/PricingUtils';
+import * as DateUtils from './util/DateUtils';
 
 function App() {
 
     /******** TEST CASES ********/
-    PricingUtils.TEST_cumulativeDistributionNormal();
+    // DateUtils.TEST_getLastBusinessDay();
+    // PricingUtils.TEST_cumulativeDistributionNormal();
+    // PricingUtils.TEST_priceCall();
     /******** END OF TEST CASES ********/
 
     const [coins, setCoins] = useState([])

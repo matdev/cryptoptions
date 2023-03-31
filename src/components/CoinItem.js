@@ -14,14 +14,19 @@ const CoinItem = (props) => {
             <p>{props.coins.market_cap_rank}</p>
             <Link to={`/coin/${props.coins.id}`} element={<CoinDetails/>} key={props.coins.id}>
                 <div className='img-symbol'>
-                    <img src={props.coins.image} alt=''/>
+                    <img src={props.coins.image} alt='' width={50} height={50}/>
                     <p className={'coin-name'}>{props.coins.symbol.toUpperCase()}</p>
                 </div>
             </Link>
-            <p>{props.coins.current_price.toLocaleString()} €</p>
-            <p>{props.coins.price_change_percentage_24h.toFixed(2)} %</p>
-            <p className='hide-mobile'>{props.coins.total_volume.toLocaleString()} €</p>
-            <p className='hide-mobile'>{props.coins.market_cap.toLocaleString()} €</p>
+            <Link to={`/coin/${props.coins.id}`} element={<CoinDetails/>} key={props.coins.id}>
+                <p className={'coin-cell'}>{props.coins.current_price.toFixed(2).padStart(7, '\xa0')} €</p>
+            </Link>
+            <Link to={`/coin/${props.coins.id}`} element={<CoinDetails/>} key={props.coins.id}>
+                <p className={'coin-cell'}>{props.coins.price_change_percentage_24h.toFixed(2).padStart(8, '\xa0')} %</p>
+            </Link>
+            <Link to={`/coin/${props.coins.id}`} element={<CoinDetails/>} key={props.coins.id}>
+                <p className='hide-mobile'>{props.coins.total_volume.toLocaleString().padStart(20, '\xa0')} €</p>
+            </Link>
             <Link to={`/option-prices/${props.coins.id}`} state={{spotValue: spotValue}} element={<CoinOptionsTable/>}
                   key={`${props.coins.id}-options`}>
                 <p>

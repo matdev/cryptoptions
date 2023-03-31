@@ -1,9 +1,43 @@
+import * as DateUtils from './DateUtils';
+import {exp} from "mathjs";
+
 const mathjs = require('mathjs')
 
 export function cumulativeDistributionNormal(x, mean, standardDeviation) {
     return (1 - mathjs.erf((mean - x) / (Math.sqrt(2) * standardDeviation))) / 2
 }
 
+//TODO: Include delta in a result array
+export function priceCall(spotDate, expiryDate, strike, S_0, r, vol) {
+
+    console.log("priceCall() as of " + spotDate.toLocaleDateString() + " expiry : " + expiryDate.toLocaleDateString()
+        + " strike : " + strike + " S_0 : " + S_0 + " r=" + r + " vol=" + vol);
+
+    let T = DateUtils.getNumberOfDays(spotDate, expiryDate) / 365;
+
+    let d1 = (mathjs.log(S_0 / strike) + (r + vol * vol / 2) * T) / (vol * mathjs.sqrt(T));
+
+    let d2 = d1 - vol * mathjs.sqrt(T);
+
+    let result = S_0 * cumulativeDistributionNormal(d1, 0, 1) - strike * mathjs.exp(-1 * r * T) * cumulativeDistributionNormal(d2, 0, 1);
+
+    return result;
+}
+
+export function TEST_priceCall() {
+
+    let S_0 = 25754;
+
+    let strike = 25000;
+    let expiryDate = new Date(2023, 4, 28);
+    let spotDate = new Date(2023, 3, 30);
+    let vol = 0.62;
+    let r = 0.01;
+
+    let result = priceCall(spotDate, expiryDate, strike, S_0, r, vol);
+
+    console.log("TEST_priceCall : result = " + result);
+}
 
 export function TEST_cumulativeDistributionNormal() {
 
