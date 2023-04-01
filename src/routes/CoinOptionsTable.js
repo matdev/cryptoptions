@@ -10,17 +10,38 @@ import * as MathsUtils from '../util/MathsUtils';
 import * as PricingUtils from '../util/PricingUtils';
 import './CoinOptionsTable.css'
 import TextField from '@mui/material/TextField';
+import CoinItem from "../components/CoinItem";
+import OptionsGrid from "../components/OptionsGrid";
+import {adjustToPreviousBusinessDay} from "../util/DateUtils";
+import {OptionType} from "../util/PricingUtils";
 
 const CoinOptionsTable = () => {
 
+    const [trigger, setTrigger] = useState(false);
+
     const defaultVol = 64; // %
+    const [inputVol, setInputVol] = useState(defaultVol);
+
     const defaultRiskFreeRate = 1; // %
-    const currentDate = new Date();
     let spotValue = 28000;
 
-    let oneMonthExpiry = DateUtils.getLastBusinessDay(currentDate.getFullYear(), currentDate.getMonth() + 1);
-    let twoWeeksExpiry = DateUtils.addDays(oneMonthExpiry, -14);
-    let twoMonthsExpiry = DateUtils.addMonths(oneMonthExpiry, 1);
+    //TEST
+    //const currentDate = new Date(2023, 2, 28);
+    const currentDate = new Date();
+
+    let oneMonthExpiry;
+    let twoWeeksFromNow;
+    let twoMonthsExpiry;
+
+    if (currentDate.getDate() < 15) {
+        oneMonthExpiry = DateUtils.getLastBusinessDay(currentDate.getFullYear(), currentDate.getMonth());
+        twoMonthsExpiry = DateUtils.getLastBusinessDay(oneMonthExpiry.getFullYear(), oneMonthExpiry.getMonth() + 1);
+        twoWeeksFromNow = DateUtils.adjustToPreviousBusinessDay(new Date(currentDate.getFullYear(), currentDate.getMonth(), 15));
+    } else {
+        oneMonthExpiry = DateUtils.getLastBusinessDay(currentDate.getFullYear(), currentDate.getMonth() + 1);
+        twoWeeksFromNow = DateUtils.adjustToPreviousBusinessDay(new Date(oneMonthExpiry.getFullYear(), oneMonthExpiry.getMonth(), 15));
+        twoMonthsExpiry = DateUtils.getLastBusinessDay(oneMonthExpiry.getFullYear(), oneMonthExpiry.getMonth() + 1);
+    }
 
     const inputVolRef = useRef();
 
@@ -76,60 +97,45 @@ const CoinOptionsTable = () => {
     ];
 
     const initial2WeeksOptions = [
-        {id: 0, strike: strike_3_DOWN, vol: defaultVol, theo_price: '0.58'},
-        {id: 1, strike: strike_2_DOWN, vol: defaultVol, theo_price: '0.58'},
-        {id: 2, strike: strike_1_DOWN, vol: defaultVol, theo_price: '0.58'},
-        {id: 3, strike: strike_1_UP, vol: defaultVol, theo_price: '0.68'},
-        {id: 4, strike: strike_2_UP, vol: defaultVol, theo_price: '0.78'},
-        {id: 5, strike: strike_3_UP, vol: defaultVol, theo_price: '0.78'}
+        {id: 0, strike: strike_3_DOWN, vol: inputVol, theo_price: ''},
+        {id: 1, strike: strike_2_DOWN, vol: inputVol, theo_price: ''},
+        {id: 2, strike: strike_1_DOWN, vol: inputVol, theo_price: ''},
+        {id: 3, strike: strike_1_UP, vol: inputVol, theo_price: ''},
+        {id: 4, strike: strike_2_UP, vol: inputVol, theo_price: ''},
+        {id: 5, strike: strike_3_UP, vol: inputVol, theo_price: ''}
     ];
 
     const initial1MonthOptions = [
-        {id: 0, strike: strike_3_DOWN, vol: defaultVol, theo_price: '0.68'},
-        {id: 1, strike: strike_2_DOWN, vol: defaultVol, theo_price: '0.78'},
-        {id: 2, strike: strike_1_DOWN, vol: defaultVol, theo_price: '0.78'},
-        {id: 3, strike: strike_1_UP, vol: defaultVol, theo_price: '0.78'},
-        {id: 4, strike: strike_2_UP, vol: defaultVol, theo_price: '0.78'},
-        {id: 5, strike: strike_3_UP, vol: defaultVol, theo_price: '0.78'}
+        {id: 0, strike: strike_3_DOWN, vol: inputVol, theo_price: '0.68'},
+        {id: 1, strike: strike_2_DOWN, vol: inputVol, theo_price: '0.78'},
+        {id: 2, strike: strike_1_DOWN, vol: inputVol, theo_price: '0.78'},
+        {id: 3, strike: strike_1_UP, vol: inputVol, theo_price: '0.78'},
+        {id: 4, strike: strike_2_UP, vol: inputVol, theo_price: '0.78'},
+        {id: 5, strike: strike_3_UP, vol: inputVol, theo_price: '0.78'}
     ];
 
     const initial2MonthsOptions = [
-        {id: 0, strike: strike_3_DOWN, vol: defaultVol, theo_price: '0.88'},
-        {id: 1, strike: strike_2_DOWN, vol: defaultVol, theo_price: '0.88'},
-        {id: 2, strike: strike_1_DOWN, vol: defaultVol, theo_price: '0.88'},
-        {id: 3, strike: strike_1_UP, vol: defaultVol, theo_price: '0.88'},
-        {id: 4, strike: strike_2_UP, vol: defaultVol, theo_price: '0.88'},
-        {id: 5, strike: strike_3_UP, vol: defaultVol, theo_price: '0.88'}
+        {id: 0, strike: strike_3_DOWN, vol: inputVol, theo_price: '0.88'},
+        {id: 1, strike: strike_2_DOWN, vol: inputVol, theo_price: '0.88'},
+        {id: 2, strike: strike_1_DOWN, vol: inputVol, theo_price: '0.88'},
+        {id: 3, strike: strike_1_UP, vol: inputVol, theo_price: '0.88'},
+        {id: 4, strike: strike_2_UP, vol: inputVol, theo_price: '0.88'},
+        {id: 5, strike: strike_3_UP, vol: inputVol, theo_price: '0.88'}
     ];
-
-    const [rows2WeeksCalls, setRows2WeeksCalls] = useState(initial2WeeksOptions);
-
-    const [rows1MonthCalls, setRows1MonthCalls] = useState(initial1MonthOptions);
-
-    const [rows2MonthsCalls, setRows2MonthsCalls] = useState(initial2MonthsOptions);
 
     const [isInputVolValid, setIsInputVolValid] = useState(true);
 
-    function getOptionGrid(rowsParam, columnsParam, setRowsParam) {
-        // const [rows2WeeksCalls, setRows] = useState(rows2WeeksCalls);
-        //
-        // return <DataGrid columns={columns} rows2WeeksCalls={rows2WeeksCalls} onRowsChange={setRows} />;
-        return <DataGrid
-            columns={columnsParam}
-            rows={rowsParam}
-            onRowsChange={setRowsParam}
-        />;
-    }
-
     function priceAllOptions() {
 
-        let inputVol = inputVolRef.current.value.replace('%', '');
+        setInputVol(inputVolRef.current.value.replace('%', ''));
+
+        console.log("priceAllOptions() inputVolRef.current.value = " + inputVolRef.current.value);
 
         // Input vol check
         if (isNaN(inputVol) || (!inputVol)) {
             console.error("Hey ! Input vol is invalid : " + inputVol)
             setIsInputVolValid(false);
-            inputVol = NaN;
+            setInputVol(NaN);
         } else if (!MathsUtils.isNumberBetweenMinMax(inputVol)) {
             console.error("Hey ! Input vol is out of range : " + inputVol)
             setIsInputVolValid(false);
@@ -138,39 +144,21 @@ const CoinOptionsTable = () => {
         //DO PRICING !
         console.log("Hey check OK :) => DO PRICING input vol: " + inputVolRef.current.value)
 
-
-        // Pricing CALLS
-
-        // 2 weeks expiry
-        for (var i = 0; i < rows2WeeksCalls.length; i++) {
-
-            rows2WeeksCalls[i].vol = inputVol;
-            let theoPrice = PricingUtils.priceCall(currentDate, oneMonthExpiry, rows2WeeksCalls[i].strike, spotValue, defaultRiskFreeRate / 100, rows2WeeksCalls[i].vol / 100);
-
-            //TODO: Display delta + hide ID column
-            rows2WeeksCalls[i].theo_price = theoPrice.toFixed(2);
-        }
-
-        // 1 months expiry
-        for (var i = 0; i < rows1MonthCalls.length; i++) {
-
-            rows1MonthCalls[i].vol = inputVol;
-            let theoPrice = PricingUtils.priceCall(currentDate, oneMonthExpiry, rows1MonthCalls[i].strike, spotValue, defaultRiskFreeRate / 100, rows1MonthCalls[i].vol / 100);
-            rows1MonthCalls[i].theo_price = theoPrice.toFixed(2);
-        }
-
-        // 2 months expiry
-        for (var i = 0; i < rows2MonthsCalls.length; i++) {
-
-            rows2MonthsCalls[i].vol = inputVol;
-            let theoPrice = PricingUtils.priceCall(currentDate, oneMonthExpiry, rows2MonthsCalls[i].strike, spotValue, defaultRiskFreeRate / 100, rows2MonthsCalls[i].vol / 100);
-            rows2MonthsCalls[i].theo_price = theoPrice.toFixed(2);
-        }
+        setTrigger(trigger => !trigger);
 
         setIndex(index + 1);
         //rows2WeeksCalls[2].theo_price = index;
     }
 
+
+    function getCurrentInputVol() {
+
+        if (!inputVolRef.current) {
+            return defaultVol;
+        } else {
+            return inputVolRef.current.value;
+        }
+    }
 
     return (
         <div>
@@ -211,22 +199,30 @@ const CoinOptionsTable = () => {
                 <div className='content'>
                     <h2><span className='rank-btn'>CALLS</span></h2>
                     <br/>
-                    <h3>Expiry: {twoWeeksExpiry.toLocaleDateString()} (in 2 weeks)</h3>
+                    <OptionsGrid key={OptionType.Call + twoWeeksFromNow} trigger={trigger} optionType={OptionType.Call} spotValue={spotValue}
+                                 currentDate={currentDate} inputVol={getCurrentInputVol()}
+                                 expiry={twoWeeksFromNow} riskFreeRate={defaultRiskFreeRate}
+                                 optionStrikes={initial2WeeksOptions}/>
                     <br/>
-                    {getOptionGrid(rows2WeeksCalls, columns, setRows2WeeksCalls)}
                     <br/><br/>
-                    <h3>Expiry: {oneMonthExpiry.toLocaleDateString()} (in 1 month)</h3>
-                    <br/>
-                    {getOptionGrid(rows1MonthCalls, columns, setRows1MonthCalls)}
+                    <OptionsGrid key={OptionType.Call + oneMonthExpiry} trigger={trigger} optionType={OptionType.Call} spotValue={spotValue}
+                                 currentDate={currentDate} inputVol={getCurrentInputVol()}
+                                 expiry={oneMonthExpiry} riskFreeRate={defaultRiskFreeRate}
+                                 optionStrikes={initial1MonthOptions}/>
                     <br/><br/>
-                    <h3>Expiry: {twoMonthsExpiry.toLocaleDateString()} (in 2 months)</h3>
-                    <br/>
-                    {getOptionGrid(rows2MonthsCalls, columns, setRows2MonthsCalls)}
+                    <OptionsGrid key={OptionType.Call + twoMonthsExpiry} trigger={trigger} optionType={OptionType.Call} spotValue={spotValue}
+                                 currentDate={currentDate} inputVol={getCurrentInputVol()}
+                                 expiry={twoMonthsExpiry} riskFreeRate={defaultRiskFreeRate}
+                                 optionStrikes={initial2MonthsOptions}/>
                 </div>
                 <div className='content'>
                     <h2><span className='rank-btn'>PUTS</span></h2>
-                    <br/>
-                    <h3>TODO</h3>
+                    <br/><br/>
+                    <OptionsGrid key={OptionType.Put + twoWeeksFromNow} trigger={trigger} optionType={OptionType.Put} spotValue={spotValue}
+                                 currentDate={currentDate} inputVol={getCurrentInputVol()}
+                                 expiry={twoWeeksFromNow} riskFreeRate={defaultRiskFreeRate}
+                                 optionStrikes={initial2WeeksOptions}/>
+                    <br/><br/>
                 </div>
             </div>
         </div>

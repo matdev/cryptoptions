@@ -13,7 +13,7 @@ export function addMonths(date, months) {
 export function getLastBusinessDay(year, month) {
 
     //get end of month, basically next month with day 0
-    const dt = new Date(year,month + 1,0);
+    const dt = new Date(year, month + 1, 0);
     const day = dt.getDay();
     //subtract 1 if Saturday(6), subtract 2 if sunday(0).
     dt.setDate(dt.getDate() -
@@ -21,6 +21,14 @@ export function getLastBusinessDay(year, month) {
     );
     return dt;
 };
+
+export function adjustToPreviousBusinessDay(date) {
+    let result = new Date(date);
+    const day = result.getDay();
+    result.setDate(result.getDate() - (day === 6 ? 1 : day === 0 ? 2 : 0));
+
+    return result;
+}
 
 export function getNumberOfDays(start, end) {
 
@@ -39,7 +47,8 @@ export function getNumberOfDays(start, end) {
 
     return diffInDays;
 }
-export function TEST_getLastBusinessDay(){
+
+export function TEST_getLastBusinessDay() {
 
     let d = new Date();
 

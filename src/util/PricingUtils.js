@@ -3,6 +3,11 @@ import {exp} from "mathjs";
 
 const mathjs = require('mathjs')
 
+export const OptionType = {
+    Call: 1,
+    Put : 2
+};
+
 export function cumulativeDistributionNormal(x, mean, standardDeviation) {
     return (1 - mathjs.erf((mean - x) / (Math.sqrt(2) * standardDeviation))) / 2
 }
@@ -10,8 +15,8 @@ export function cumulativeDistributionNormal(x, mean, standardDeviation) {
 //TODO: Include delta in a result array
 export function priceCall(spotDate, expiryDate, strike, S_0, r, vol) {
 
-    console.log("priceCall() as of " + spotDate.toLocaleDateString() + " expiry : " + expiryDate.toLocaleDateString()
-        + " strike : " + strike + " S_0 : " + S_0 + " r=" + r + " vol=" + vol);
+    // console.log("priceCall() as of " + spotDate.toLocaleDateString() + " expiry : " + expiryDate.toLocaleDateString()
+    //     + " strike : " + strike + " S_0 : " + S_0 + " r=" + r + " vol=" + vol);
 
     let T = DateUtils.getNumberOfDays(spotDate, expiryDate) / 365;
 
@@ -21,6 +26,16 @@ export function priceCall(spotDate, expiryDate, strike, S_0, r, vol) {
 
     let result = S_0 * cumulativeDistributionNormal(d1, 0, 1) - strike * mathjs.exp(-1 * r * T) * cumulativeDistributionNormal(d2, 0, 1);
 
+    return result;
+}
+
+export function pricePut(spotDate, expiryDate, strike, S_0, r, vol) {
+
+    // console.log("TODO: pricePut() as of " + spotDate.toLocaleDateString() + " expiry : " + expiryDate.toLocaleDateString()
+    //     + " strike : " + strike + " S_0 : " + S_0 + " r=" + r + " vol=" + vol);
+
+    //TODO
+    let result = 199.99;
     return result;
 }
 
