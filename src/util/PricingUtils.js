@@ -8,11 +8,20 @@ export const OptionType = {
     Put : 2
 };
 
-export function cumulativeDistributionNormal(x, mean, standardDeviation) {
-    return (1 - mathjs.erf((mean - x) / (Math.sqrt(2) * standardDeviation))) / 2
+export function PricingResult(theoPrice, delta) {
+    this.theoPrice = theoPrice;
+    this.delta = delta;
 }
 
-//TODO: Include delta in a result array
+export function cumulativeDistributionNormal(x, mean, standardDeviation) {
+    return (1 - mathjs.erf((mean - x) / (Math.sqrt(2) * standardDeviation))) / 2;
+}
+
+/* Returns the cumulative probability  distribution function for a standardized normal distribution */
+export function N(x) {
+    return cumulativeDistributionNormal(x, 0, 1);
+}
+
 export function priceCall(spotDate, expiryDate, strike, S_0, r, vol) {
 
     // console.log("priceCall() as of " + spotDate.toLocaleDateString() + " expiry : " + expiryDate.toLocaleDateString()
@@ -24,18 +33,32 @@ export function priceCall(spotDate, expiryDate, strike, S_0, r, vol) {
 
     let d2 = d1 - vol * mathjs.sqrt(T);
 
-    let result = S_0 * cumulativeDistributionNormal(d1, 0, 1) - strike * mathjs.exp(-1 * r * T) * cumulativeDistributionNormal(d2, 0, 1);
+    let N_d1 = N(d1);
+
+    let theoPrice = S_0 * N_d1 - strike * mathjs.exp(-1 * r * T) * N(d2);
+    let delta = N_d1;
+
+    const result = new PricingResult(theoPrice, delta);
 
     return result;
 }
 
 export function pricePut(spotDate, expiryDate, strike, S_0, r, vol) {
 
-    // console.log("TODO: pricePut() as of " + spotDate.toLocaleDateString() + " expiry : " + expiryDate.toLocaleDateString()
-    //     + " strike : " + strike + " S_0 : " + S_0 + " r=" + r + " vol=" + vol);
+    console.log("pricePut() as of " + spotDate.toLocaleDateString() + " expiry : " + expiryDate.toLocaleDateString()
+        + " strike : " + strike + " S_0 : " + S_0 + " r=" + r + " vol=" + vol);
 
-    //TODO
-    let result = 199.99;
+    let T = DateUtils.getNumberOfDays(spotDate, expiryDate) / 365;
+
+    let d1 = (mathjs.log(S_0 / strike) + (r + vol * vol / 2) * T) / (vol * mathjs.sqrt(T));
+
+    let d2 = d1 - vol * mathjs.sqrt(T);
+
+    let theoPrice = strike * mathjs.exp(-1 * r * T) * N(-d2) - S_0 * N(-d1);
+    let delta = N(d1) - 1;
+
+    const result = new PricingResult(theoPrice, delta);
+
     return result;
 }
 

@@ -14,14 +14,41 @@ const OptionsGrid = (props) => {
         priceOptions();
     }, [props.trigger]);
 
-    const [rowsParam, setRowsParam] = useState(props.optionStrikes);
-
     const columns = [
         {key: 'strike', name: 'Strike'},
         {key: 'vol', name: 'Vol Input (%)'},
         {key: 'theo_price', name: 'Theo Price'},
+        {key: 'delta', name: 'Delta'},
         {key: 'id', name: 'ID'}
     ];
+
+    // Strikes UP
+    let strike_1_UP = (MathsUtils.roundToNextStepUp(props.spotValue, props.strikeStep, props.strikeStep));
+    let strike_2_UP = strike_1_UP + props.strikeStep;
+    let strike_3_UP = strike_2_UP + props.strikeStep;
+    let strike_4_UP = strike_3_UP + props.strikeStep;
+
+    // Strikes DOWN
+    let strike_1_DOWN = strike_1_UP - props.strikeStep;
+    let strike_2_DOWN = strike_1_DOWN - props.strikeStep;
+    let strike_3_DOWN = strike_2_DOWN - props.strikeStep;
+    let strike_4_DOWN = strike_3_DOWN - props.strikeStep;
+
+    // console.log("spotValue = " + props.spotValue + " => strike_1_UP = " + strike_1_UP);
+    // console.log(" strike_1_DOWN = " + strike_1_DOWN);
+
+    const initialRows = [
+        {id: 0, strike: strike_4_DOWN, vol: props.inputVol, theo_price: '', delta: ''},
+        {id: 1, strike: strike_3_DOWN, vol: props.inputVol, theo_price: '', delta: ''},
+        {id: 2, strike: strike_2_DOWN, vol: props.inputVol, theo_price: '', delta: ''},
+        {id: 3, strike: strike_1_DOWN, vol: props.inputVol, theo_price: '', delta: ''},
+        {id: 4, strike: strike_1_UP, vol: props.inputVol, theo_price: '', delta: ''},
+        {id: 5, strike: strike_2_UP, vol: props.inputVol, theo_price: '', delta: ''},
+        {id: 6, strike: strike_3_UP, vol: props.inputVol, theo_price: '', delta: ''},
+        {id: 7, strike: strike_4_UP, vol: props.inputVol, theo_price: '', delta: ''}
+    ];
+
+    const [rowsParam, setRowsParam] = useState(initialRows);
 
     function priceOptions() {
 
@@ -39,16 +66,16 @@ const OptionsGrid = (props) => {
         for (var i = 0; i < rowsParam.length; i++) {
 
             rowsParam[i].vol = inputVol;
-            let theoPrice;
+            let priceResult;
 
             if (props.optionType == OptionType.Put){
-                theoPrice = PricingUtils.pricePut(props.currentDate, props.expiry, rowsParam[i].strike, props.spotValue, props.riskFreeRate / 100, inputVol / 100);
+                priceResult = PricingUtils.pricePut(props.currentDate, props.expiry, rowsParam[i].strike, props.spotValue, props.riskFreeRate / 100, inputVol / 100);
             } else {
-                theoPrice = PricingUtils.priceCall(props.currentDate, props.expiry, rowsParam[i].strike, props.spotValue, props.riskFreeRate / 100, inputVol / 100);
+                priceResult = PricingUtils.priceCall(props.currentDate, props.expiry, rowsParam[i].strike, props.spotValue, props.riskFreeRate / 100, inputVol / 100);
             }
 
-            //TODO: Display delta + hide ID column
-            rowsParam[i].theo_price = theoPrice.toFixed(2);
+            rowsParam[i].theo_price = priceResult.theoPrice.toFixed(2);
+            rowsParam[i].delta = priceResult.delta.toFixed(2);
         }
 
         setIndex(index + 1);

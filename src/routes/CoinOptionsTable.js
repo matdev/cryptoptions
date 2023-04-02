@@ -4,15 +4,11 @@ import React, {useState, useEffect, useRef} from 'react'
 import CoinDetails from '../routes/CoinDetails'
 import {Link} from 'react-router-dom'
 import 'react-data-grid/lib/styles.css';
-import DataGrid from 'react-data-grid';
 import * as DateUtils from '../util/DateUtils';
 import * as MathsUtils from '../util/MathsUtils';
-import * as PricingUtils from '../util/PricingUtils';
 import './CoinOptionsTable.css'
 import TextField from '@mui/material/TextField';
-import CoinItem from "../components/CoinItem";
 import OptionsGrid from "../components/OptionsGrid";
-import {adjustToPreviousBusinessDay} from "../util/DateUtils";
 import {OptionType} from "../util/PricingUtils";
 
 const CoinOptionsTable = () => {
@@ -22,8 +18,10 @@ const CoinOptionsTable = () => {
     const defaultVol = 64; // %
     const [inputVol, setInputVol] = useState(defaultVol);
 
+    const defaultSpot = 28000;
+    //const [spotValue, setSpotValue] = useState(defaultSpot);
+
     const defaultRiskFreeRate = 1; // %
-    let spotValue = 28000;
 
     //TEST
     //const currentDate = new Date(2023, 2, 28);
@@ -68,60 +66,16 @@ const CoinOptionsTable = () => {
     if (params.coinId == 'bitcoin') {
         strikeStep = 500;
 
-        if (location.state == null) {
-            console.warn(params.coinId + " location.state is null => use default");
-            spotValue = 28000;
-        } else {
-            spotValue = location.state.spotValue;
-        }
+        // if (location.state == null) {
+        //     console.warn(params.coinId + " location.state is null => use default");
+        //     //setSpotValue(28000);
+        // } else {
+        //     //setSpotValue(location.state.spotValue);
+        // }
     }
-
-    // Strikes UP
-    let strike_1_UP = (MathsUtils.roundToNextStepUp(spotValue, strikeStep, strikeStep));
-    let strike_2_UP = strike_1_UP + strikeStep;
-    let strike_3_UP = strike_2_UP + strikeStep;
-
-    // Strikes DOWN
-    let strike_1_DOWN = strike_1_UP - strikeStep;
-    let strike_2_DOWN = strike_1_DOWN - strikeStep;
-    let strike_3_DOWN = strike_2_DOWN - strikeStep;
-
-    console.log("spotValue = " + spotValue + " => strike_1_UP = " + strike_1_UP);
-    console.log(" strike_1_DOWN = " + strike_1_DOWN);
-
-    const columns = [
-        {key: 'strike', name: 'Strike'},
-        {key: 'vol', name: 'Vol Input (%)'},
-        {key: 'theo_price', name: 'Theo Price'},
-        {key: 'id', name: 'ID'}
-    ];
-
-    const initial2WeeksOptions = [
-        {id: 0, strike: strike_3_DOWN, vol: inputVol, theo_price: ''},
-        {id: 1, strike: strike_2_DOWN, vol: inputVol, theo_price: ''},
-        {id: 2, strike: strike_1_DOWN, vol: inputVol, theo_price: ''},
-        {id: 3, strike: strike_1_UP, vol: inputVol, theo_price: ''},
-        {id: 4, strike: strike_2_UP, vol: inputVol, theo_price: ''},
-        {id: 5, strike: strike_3_UP, vol: inputVol, theo_price: ''}
-    ];
-
-    const initial1MonthOptions = [
-        {id: 0, strike: strike_3_DOWN, vol: inputVol, theo_price: '0.68'},
-        {id: 1, strike: strike_2_DOWN, vol: inputVol, theo_price: '0.78'},
-        {id: 2, strike: strike_1_DOWN, vol: inputVol, theo_price: '0.78'},
-        {id: 3, strike: strike_1_UP, vol: inputVol, theo_price: '0.78'},
-        {id: 4, strike: strike_2_UP, vol: inputVol, theo_price: '0.78'},
-        {id: 5, strike: strike_3_UP, vol: inputVol, theo_price: '0.78'}
-    ];
-
-    const initial2MonthsOptions = [
-        {id: 0, strike: strike_3_DOWN, vol: inputVol, theo_price: '0.88'},
-        {id: 1, strike: strike_2_DOWN, vol: inputVol, theo_price: '0.88'},
-        {id: 2, strike: strike_1_DOWN, vol: inputVol, theo_price: '0.88'},
-        {id: 3, strike: strike_1_UP, vol: inputVol, theo_price: '0.88'},
-        {id: 4, strike: strike_2_UP, vol: inputVol, theo_price: '0.88'},
-        {id: 5, strike: strike_3_UP, vol: inputVol, theo_price: '0.88'}
-    ];
+    // else {
+    //     //setSpotValue(location.state.spotValue);
+    // }
 
     const [isInputVolValid, setIsInputVolValid] = useState(true);
 
@@ -160,6 +114,23 @@ const CoinOptionsTable = () => {
         }
     }
 
+    function getCurrentSpotValue() {
+
+        if (!location.state) {
+            return defaultVol;
+        } else {
+            return location.state.spotValue;
+        }
+    }
+
+    function handleKeyPress(event) {
+
+        if (event.key === "Enter") {
+            //alert("Enter !");
+            priceAllOptions()
+        }
+    }
+
     return (
         <div>
             <div className='coin-container'>
@@ -186,8 +157,8 @@ const CoinOptionsTable = () => {
                     <div>
                         <TextField className='pricing-input-field' id="input-vol" label="Volatility input (%)"
                                    variant="filled" defaultValue={defaultVol} onBlur={priceAllOptions}
-                                   error={!isInputVolValid}
-                                   inputRef={inputVolRef}   //connecting inputRef property of TextField to the inputVolRef
+                                   error={!isInputVolValid} inputRef={inputVolRef}
+                                   onKeyDown={handleKeyPress}   //connecting inputRef property of TextField to the inputVolRef
                         />
                         <TextField className='pricing-input-field' id="input-rate" label="Risk-free rate (%)"
                                    variant="filled" defaultValue={defaultRiskFreeRate} disabled={true}/>
@@ -199,30 +170,42 @@ const CoinOptionsTable = () => {
                 <div className='content'>
                     <h2><span className='rank-btn'>CALLS</span></h2>
                     <br/>
-                    <OptionsGrid key={OptionType.Call + twoWeeksFromNow} trigger={trigger} optionType={OptionType.Call} spotValue={spotValue}
+                    <OptionsGrid key={OptionType.Call + twoWeeksFromNow} trigger={trigger} optionType={OptionType.Call}
+                                 spotValue={getCurrentSpotValue()}
                                  currentDate={currentDate} inputVol={getCurrentInputVol()}
-                                 expiry={twoWeeksFromNow} riskFreeRate={defaultRiskFreeRate}
-                                 optionStrikes={initial2WeeksOptions}/>
+                                 expiry={twoWeeksFromNow} riskFreeRate={defaultRiskFreeRate} strikeStep={strikeStep}/>
                     <br/>
                     <br/><br/>
-                    <OptionsGrid key={OptionType.Call + oneMonthExpiry} trigger={trigger} optionType={OptionType.Call} spotValue={spotValue}
+                    <OptionsGrid key={OptionType.Call + oneMonthExpiry} trigger={trigger} optionType={OptionType.Call}
+                                 spotValue={getCurrentSpotValue()}
                                  currentDate={currentDate} inputVol={getCurrentInputVol()}
-                                 expiry={oneMonthExpiry} riskFreeRate={defaultRiskFreeRate}
-                                 optionStrikes={initial1MonthOptions}/>
+                                 expiry={oneMonthExpiry} riskFreeRate={defaultRiskFreeRate} strikeStep={strikeStep}/>
                     <br/><br/>
-                    <OptionsGrid key={OptionType.Call + twoMonthsExpiry} trigger={trigger} optionType={OptionType.Call} spotValue={spotValue}
+                    <OptionsGrid key={OptionType.Call + twoMonthsExpiry} trigger={trigger} optionType={OptionType.Call}
+                                 spotValue={getCurrentSpotValue()}
                                  currentDate={currentDate} inputVol={getCurrentInputVol()}
-                                 expiry={twoMonthsExpiry} riskFreeRate={defaultRiskFreeRate}
-                                 optionStrikes={initial2MonthsOptions}/>
+                                 expiry={twoMonthsExpiry} riskFreeRate={defaultRiskFreeRate} strikeStep={strikeStep}/>
                 </div>
                 <div className='content'>
                     <h2><span className='rank-btn'>PUTS</span></h2>
                     <br/><br/>
-                    <OptionsGrid key={OptionType.Put + twoWeeksFromNow} trigger={trigger} optionType={OptionType.Put} spotValue={spotValue}
+                    <OptionsGrid key={OptionType.Put + twoWeeksFromNow} trigger={trigger} optionType={OptionType.Put}
+                                 spotValue={getCurrentSpotValue()}
                                  currentDate={currentDate} inputVol={getCurrentInputVol()}
                                  expiry={twoWeeksFromNow} riskFreeRate={defaultRiskFreeRate}
-                                 optionStrikes={initial2WeeksOptions}/>
+                                 strikeStep={strikeStep}/>
                     <br/><br/>
+                    <OptionsGrid key={OptionType.Put + oneMonthExpiry} trigger={trigger} optionType={OptionType.Put}
+                                 spotValue={getCurrentSpotValue()}
+                                 currentDate={currentDate} inputVol={getCurrentInputVol()}
+                                 expiry={oneMonthExpiry} riskFreeRate={defaultRiskFreeRate}
+                                 strikeStep={strikeStep}/>
+                    <br/><br/>
+                    <OptionsGrid key={OptionType.Put + twoMonthsExpiry} trigger={trigger} optionType={OptionType.Put}
+                                 spotValue={getCurrentSpotValue()}
+                                 currentDate={currentDate} inputVol={getCurrentInputVol()}
+                                 expiry={twoMonthsExpiry} riskFreeRate={defaultRiskFreeRate}
+                                 strikeStep={strikeStep}/>
                 </div>
             </div>
         </div>
