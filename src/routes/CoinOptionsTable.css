@@ -1,6 +1,7 @@
 :root {
     --main-color: #FB9B9C;
     --rdg-border-color: #000;
+    --logo_blue: #61dcfe;
 }
 
 .coin-container .content {
@@ -84,11 +85,16 @@ th {
     text-decoration: underline;
 }
 
-.pricing-input-field input {
+.vol-input-field input {
     background: wheat;
     border-radius: 5px;
-    margin-right: 20px;
     width: 100px;
+}
+
+.risk-free-rate-field input {
+    background: wheat;
+    border-radius: 5px;
+    width: 80px;
 }
 
 .MuiFormHelperText-root {
@@ -109,6 +115,44 @@ th {
 
 .underlined {
     text-decoration: underline;
+}
+
+.calls_puts_label {
+    border: 1px solid #6900ff;
+    background-color: #6900ff;
+    border-radius: 8px;
+    padding: .2rem;
+}
+
+.spot_label {
+    border: 1px solid var(--main-color);;
+    background-color: var(--main-color);;
+    border-radius: 8px;
+    padding: .2rem;
+    color: black;
+}
+
+.spot_value {
+    white-space: nowrap;
+}
+
+.coin-symbol {
+    text-align: center;
+}
+
+.button_price {
+    background-color: var(--bitcoin-color);
+    margin-bottom: 4px;
+    margin-left: 16px;
+    margin-right: 16px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    border-radius: 5px;
+    color: black;
+    font-size: 1em;
+    font-weight: bold;
 }
 
 @media screen and (max-width: 700px) {

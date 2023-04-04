@@ -1,6 +1,6 @@
 :root {
     --main-color: #FB9B9C;
-    --bitcoin-color: #F0B90B;
+    --bitcoin-color:  #F68B1F;
 }
 
 .container {
@@ -25,8 +25,8 @@
 }
 
 .coin-cell {
-    padding: .7rem 1rem;
-    min-width: 100px;
+    padding: .5rem 0.5rem;
+    white-space: nowrap;
 }
 
 .coin-row {
@@ -56,6 +56,7 @@ img {
     display: flex;
     align-items: center;
     width: 75px;
+    padding-right: 0.5rem;
 }
 
 .button_view_options {
@@ -64,8 +65,8 @@ img {
     padding: 8px;
     border-radius: 5px;
     color: black;
+    font-size: 1em;
     font-weight: bold;
-    text-decoration: underline;
 }
 
 .placeholder {

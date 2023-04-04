@@ -65,17 +65,7 @@ const CoinOptionsTable = () => {
 
     if (params.coinId == 'bitcoin') {
         strikeStep = 500;
-
-        // if (location.state == null) {
-        //     console.warn(params.coinId + " location.state is null => use default");
-        //     //setSpotValue(28000);
-        // } else {
-        //     //setSpotValue(location.state.spotValue);
-        // }
     }
-    // else {
-    //     //setSpotValue(location.state.spotValue);
-    // }
 
     const [isInputVolValid, setIsInputVolValid] = useState(true);
 
@@ -101,7 +91,6 @@ const CoinOptionsTable = () => {
         setTrigger(trigger => !trigger);
 
         setIndex(index + 1);
-        //rows2WeeksCalls[2].theo_price = index;
     }
 
 
@@ -138,6 +127,8 @@ const CoinOptionsTable = () => {
                     <h1>Options on
                         <span className='purple'> {coin.name}</span>
                     </h1>
+                    {coin.symbol ? <p className='coin-symbol'> {coin.symbol.toUpperCase()}/EUR</p> : null}
+
                 </div>
                 <div className='content'>
                     <div className='info'>
@@ -145,62 +136,58 @@ const CoinOptionsTable = () => {
                             {coin.image ? <img src={coin.image.small} alt=''/> : null}
                             <h2 className='underlined'><Link to={`/coin/${coin.id}`} element={<CoinDetails/>}
                                                              key={coin.id}>
-                                {coin.name}</Link></h2><p></p>
-                            {coin.symbol ? <h2>{coin.symbol.toUpperCase()}/EUR</h2> : null}
+                                {coin.name}</Link></h2>
                         </div>
                         <div className='coin-price'>
-                            <span className='rank-btn'>Spot</span>
+                            <span className='spot_label'>Spot</span>
                             {coin.market_data?.current_price ?
-                                <h1>{coin.market_data.current_price.eur.toLocaleString()} €</h1> : null}
+                                <h1 className='spot_value'>{coin.market_data.current_price.eur.toLocaleString()} €</h1> : null}
                         </div>
                     </div>
                     <div>
-                        <TextField className='pricing-input-field' id="input-vol" label="Volatility input (%)"
+                        <TextField className='vol-input-field' id="input-vol" label="Volatility input (%)"
                                    variant="filled" defaultValue={defaultVol} onBlur={priceAllOptions}
                                    error={!isInputVolValid} inputRef={inputVolRef}
                                    onKeyDown={handleKeyPress}   //connecting inputRef property of TextField to the inputVolRef
                         />
-                        <TextField className='pricing-input-field' id="input-rate" label="Risk-free rate (%)"
-                                   variant="filled" defaultValue={defaultRiskFreeRate} disabled={true}/>
+                        <button className={"button_price"} onClick={priceAllOptions} >PRICE ALL</button>
+                        <TextField className='risk-free-rate-field' id="input-rate" label="Risk-free rate"
+                                   variant="filled" defaultValue={defaultRiskFreeRate + ' %'} disabled={true}/>
 
-                        {/*<button className={"button_view_options"} onClick={priceOTCOption}>OTC Pricer</button>*/}
-                        {/*{index + 1}*/}
                     </div>
                 </div>
                 <div className='content'>
-                    <h2><span className='rank-btn'>CALLS</span></h2>
-                    <br/>
+                    <h2><span className='calls_puts_label'>CALLS</span></h2>
                     <OptionsGrid key={OptionType.Call + twoWeeksFromNow} trigger={trigger} optionType={OptionType.Call}
                                  spotValue={getCurrentSpotValue()}
                                  currentDate={currentDate} inputVol={getCurrentInputVol()}
                                  expiry={twoWeeksFromNow} riskFreeRate={defaultRiskFreeRate} strikeStep={strikeStep}/>
-                    <br/>
-                    <br/><br/>
+
                     <OptionsGrid key={OptionType.Call + oneMonthExpiry} trigger={trigger} optionType={OptionType.Call}
                                  spotValue={getCurrentSpotValue()}
                                  currentDate={currentDate} inputVol={getCurrentInputVol()}
                                  expiry={oneMonthExpiry} riskFreeRate={defaultRiskFreeRate} strikeStep={strikeStep}/>
-                    <br/><br/>
+
                     <OptionsGrid key={OptionType.Call + twoMonthsExpiry} trigger={trigger} optionType={OptionType.Call}
                                  spotValue={getCurrentSpotValue()}
                                  currentDate={currentDate} inputVol={getCurrentInputVol()}
                                  expiry={twoMonthsExpiry} riskFreeRate={defaultRiskFreeRate} strikeStep={strikeStep}/>
                 </div>
                 <div className='content'>
-                    <h2><span className='rank-btn'>PUTS</span></h2>
-                    <br/><br/>
+                    <h2><span className='calls_puts_label'>PUTS</span></h2>
+
                     <OptionsGrid key={OptionType.Put + twoWeeksFromNow} trigger={trigger} optionType={OptionType.Put}
                                  spotValue={getCurrentSpotValue()}
                                  currentDate={currentDate} inputVol={getCurrentInputVol()}
                                  expiry={twoWeeksFromNow} riskFreeRate={defaultRiskFreeRate}
                                  strikeStep={strikeStep}/>
-                    <br/><br/>
+
                     <OptionsGrid key={OptionType.Put + oneMonthExpiry} trigger={trigger} optionType={OptionType.Put}
                                  spotValue={getCurrentSpotValue()}
                                  currentDate={currentDate} inputVol={getCurrentInputVol()}
                                  expiry={oneMonthExpiry} riskFreeRate={defaultRiskFreeRate}
                                  strikeStep={strikeStep}/>
-                    <br/><br/>
+
                     <OptionsGrid key={OptionType.Put + twoMonthsExpiry} trigger={trigger} optionType={OptionType.Put}
                                  spotValue={getCurrentSpotValue()}
                                  currentDate={currentDate} inputVol={getCurrentInputVol()}

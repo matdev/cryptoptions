@@ -11,7 +11,7 @@ const CoinItem = (props) => {
 
     return (
         <div className='coin-row'>
-            <p>{props.coins.market_cap_rank}</p>
+            <p className='hide-mobile'>{props.coins.market_cap_rank}</p>
             <Link to={`/coin/${props.coins.id}`} element={<CoinDetails/>} key={props.coins.id}>
                 <div className='img-symbol'>
                     <img src={props.coins.image} alt='' width={50} height={50}/>

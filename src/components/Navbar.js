@@ -1,6 +1,7 @@
 import React from 'react'
 
 import {MdEuroSymbol} from "react-icons/md";
+import logo from '../assets/img.png'
 
 import {Link} from 'react-router-dom'
 import './Navbar.css'
@@ -9,8 +10,9 @@ const Navbar = () => {
     return (
         <Link to='/'>
             <div className='navbar'>
-                <MdEuroSymbol className='icon'/>
-                <h1>Crypt<span className='purple'>Options</span></h1>
+                {/*<MdEuroSymbol className='icon'/>*/}
+                <img src={logo} className="App-logo" alt="CryptOptions" />
+                <h1>Crypt<span className='options'>Options</span></h1>
                 <h3>
                     The app for crypto derivatives traders
                 </h3>

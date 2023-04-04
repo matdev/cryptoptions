@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 
-import '../routes/CoinOptionsTable.css'
+import './OptionsGrid.css'
 import DataGrid from "react-data-grid";
 import * as PricingUtils from "../util/PricingUtils";
 import * as MathsUtils from "../util/MathsUtils";
@@ -18,8 +18,7 @@ const OptionsGrid = (props) => {
         {key: 'strike', name: 'Strike'},
         {key: 'vol', name: 'Vol Input (%)'},
         {key: 'theo_price', name: 'Theo Price'},
-        {key: 'delta', name: 'Delta'},
-        {key: 'id', name: 'ID'}
+        {key: 'delta', name: 'Delta'}
     ];
 
     // Strikes UP
@@ -38,14 +37,14 @@ const OptionsGrid = (props) => {
     // console.log(" strike_1_DOWN = " + strike_1_DOWN);
 
     const initialRows = [
-        {id: 0, strike: strike_4_DOWN, vol: props.inputVol, theo_price: '', delta: ''},
-        {id: 1, strike: strike_3_DOWN, vol: props.inputVol, theo_price: '', delta: ''},
-        {id: 2, strike: strike_2_DOWN, vol: props.inputVol, theo_price: '', delta: ''},
-        {id: 3, strike: strike_1_DOWN, vol: props.inputVol, theo_price: '', delta: ''},
-        {id: 4, strike: strike_1_UP, vol: props.inputVol, theo_price: '', delta: ''},
-        {id: 5, strike: strike_2_UP, vol: props.inputVol, theo_price: '', delta: ''},
-        {id: 6, strike: strike_3_UP, vol: props.inputVol, theo_price: '', delta: ''},
-        {id: 7, strike: strike_4_UP, vol: props.inputVol, theo_price: '', delta: ''}
+        {strike: strike_4_DOWN, vol: props.inputVol, theo_price: '', delta: ''},
+        {strike: strike_3_DOWN, vol: props.inputVol, theo_price: '', delta: ''},
+        {strike: strike_2_DOWN, vol: props.inputVol, theo_price: '', delta: ''},
+        {strike: strike_1_DOWN, vol: props.inputVol, theo_price: '', delta: ''},
+        {strike: strike_1_UP, vol: props.inputVol, theo_price: '', delta: ''},
+        {strike: strike_2_UP, vol: props.inputVol, theo_price: '', delta: ''},
+        {strike: strike_3_UP, vol: props.inputVol, theo_price: '', delta: ''},
+        {strike: strike_4_UP, vol: props.inputVol, theo_price: '', delta: ''}
     ];
 
     const [rowsParam, setRowsParam] = useState(initialRows);
@@ -68,7 +67,7 @@ const OptionsGrid = (props) => {
             rowsParam[i].vol = inputVol;
             let priceResult;
 
-            if (props.optionType == OptionType.Put){
+            if (props.optionType == OptionType.Put) {
                 priceResult = PricingUtils.pricePut(props.currentDate, props.expiry, rowsParam[i].strike, props.spotValue, props.riskFreeRate / 100, inputVol / 100);
             } else {
                 priceResult = PricingUtils.priceCall(props.currentDate, props.expiry, rowsParam[i].strike, props.spotValue, props.riskFreeRate / 100, inputVol / 100);
@@ -83,9 +82,7 @@ const OptionsGrid = (props) => {
 
     return (
         <div>
-
-            <h3>Expiry: {props.expiry.toLocaleDateString()}</h3>
-            <br/>
+            <h3 className='expiry'>Expiry: {props.expiry.toLocaleDateString()}</h3>
 
             <DataGrid
                 columns={columns}

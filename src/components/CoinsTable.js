@@ -8,8 +8,8 @@ const CoinsTable = (props) => {
         <div className='container'>
             <div>
                 <div className='heading'>
-                    <p>#</p>
-                    <p className='coin-name'>Coin</p>
+                    <p className='hide-mobile'>#</p>
+                    <p className=''>Coin</p>
                     <p className={'coin-cell'}>Price</p>
                     <p className={'coin-cell'}>24 h</p>
                     <p className='hide-mobile'>Volume / 24 h</p>
