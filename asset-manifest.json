@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/cryptoptions/static/css/main.cb70e69a.css",
-    "main.js": "/cryptoptions/static/js/main.9c341c48.js",
-    "index.html": "/cryptoptions/index.html",
-    "main.cb70e69a.css.map": "/cryptoptions/static/css/main.cb70e69a.css.map",
-    "main.9c341c48.js.map": "/cryptoptions/static/js/main.9c341c48.js.map"
+    "main.css": "/static/css/main.cb70e69a.css",
+    "main.js": "/static/js/main.9c341c48.js",
+    "index.html": "/index.html",
+    "main.cb70e69a.css.map": "/static/css/main.cb70e69a.css.map",
+    "main.9c341c48.js.map": "/static/js/main.9c341c48.js.map"
   },
   "entrypoints": [
     "static/css/main.cb70e69a.css",
