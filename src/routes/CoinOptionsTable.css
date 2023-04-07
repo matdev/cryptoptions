@@ -106,7 +106,7 @@ th {
 }
 
 .button_price {
-    background-color: var(--bitcoin-color);
+    background-color: #9a031e;
     margin-bottom: 4px;
     margin-right: 8px;
     margin-top: 5px;
@@ -115,7 +115,6 @@ th {
     padding-top: 16px;
     padding-bottom: 16px;
     border-radius: 5px;
-    color: black;
     font-size: 1em;
     font-weight: bold;
 }
@@ -149,15 +148,15 @@ th {
 }
 
 .calls_label {
-    border: 1px solid #006c73;
-    background-color: #006c73;
+    border: 1px solid #118ab2;
+    background-color: #118ab2;
     border-radius: 8px;
     padding: .2rem;
 }
 
 .spot_label {
-    border: 1px solid #780000;
-    background-color: #780000;
+    border: 1px solid #006c73;
+    background-color: #006c73;
     border-radius: 8px;
     padding: .2rem;
     font-weight: bold;
@@ -175,7 +174,7 @@ th {
     .coin-container .content {
         max-width: 100%;
         margin: .5rem;
-        padding: 0 .5rem;
+        padding: 0.5rem .5rem;
     }
 
     .stats {
