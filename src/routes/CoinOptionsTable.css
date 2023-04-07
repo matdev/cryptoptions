@@ -32,6 +32,11 @@
     grid-template-columns: repeat(2, 1fr);
 }
 
+.pricing-parameters {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+}
+
 .info .coin-heading {
     display: flex;
     align-items: center;
@@ -85,21 +90,40 @@ th {
     text-decoration: underline;
 }
 
-.vol-input-field input {
+.pricer-input-field input {
     background: wheat;
     border-radius: 5px;
-    width: 100px;
+    width: 85px;
+    margin-right: 10px;
+    margin-top: 5px;
 }
 
 .risk-free-rate-field input {
-    background: wheat;
+    background: lightgrey;
     border-radius: 5px;
     width: 80px;
+    margin-top: 5px;
+}
+
+.button_price {
+    background-color: var(--bitcoin-color);
+    margin-bottom: 4px;
+    margin-right: 8px;
+    margin-top: 5px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    border-radius: 5px;
+    color: black;
+    font-size: 1em;
+    font-weight: bold;
 }
 
 .MuiFormHelperText-root {
     color: white !important;
 }
+
 /****************************/
 /*   REACT DATA GRID STYLE  */
 /****************************/
@@ -124,12 +148,19 @@ th {
     padding: .2rem;
 }
 
-.spot_label {
-    border: 1px solid var(--main-color);;
-    background-color: var(--main-color);;
+.calls_label {
+    border: 1px solid #006c73;
+    background-color: #006c73;
     border-radius: 8px;
     padding: .2rem;
-    color: black;
+}
+
+.spot_label {
+    border: 1px solid #780000;
+    background-color: #780000;
+    border-radius: 8px;
+    padding: .2rem;
+    font-weight: bold;
 }
 
 .spot_value {
@@ -138,21 +169,6 @@ th {
 
 .coin-symbol {
     text-align: center;
-}
-
-.button_price {
-    background-color: var(--bitcoin-color);
-    margin-bottom: 4px;
-    margin-left: 16px;
-    margin-right: 16px;
-    padding-left: 8px;
-    padding-right: 8px;
-    padding-top: 16px;
-    padding-bottom: 16px;
-    border-radius: 5px;
-    color: black;
-    font-size: 1em;
-    font-weight: bold;
 }
 
 @media screen and (max-width: 700px) {
@@ -166,7 +182,7 @@ th {
         grid-template-columns: 1fr;
     }
 
-    td,th {
+    td, th {
         padding: 3px;
     }
 

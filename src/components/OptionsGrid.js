@@ -51,11 +51,25 @@ const OptionsGrid = (props) => {
 
     function priceOptions() {
 
-        console.log("priceOptions() index = " + index + " inputVol = " + props.inputVol);
+        console.log("OptionsGrid.priceOptions() index = " + index + " spotValue = " + props.spotValue);
+
+        let inputAsOfDate = props.currentDate;
+
+        // Check Input asOfDate
+        if (isNaN(inputAsOfDate) || (!inputAsOfDate)) {
+            inputAsOfDate = NaN;
+        }
+
+        let spotValue = props.spotValue;
+
+        // Check Input spot
+        if (isNaN(spotValue) || (!spotValue)) {
+            spotValue = NaN;
+        }
 
         let inputVol = props.inputVol;
 
-        // Input vol check
+        // Check Input vol
         if (isNaN(inputVol) || (!inputVol)) {
             inputVol = NaN;
         } else if (!MathsUtils.isNumberBetweenMinMax(inputVol)) {
@@ -68,9 +82,9 @@ const OptionsGrid = (props) => {
             let priceResult;
 
             if (props.optionType == OptionType.Put) {
-                priceResult = PricingUtils.pricePut(props.currentDate, props.expiry, rowsParam[i].strike, props.spotValue, props.riskFreeRate / 100, inputVol / 100);
+                priceResult = PricingUtils.pricePut(inputAsOfDate, props.expiry, rowsParam[i].strike, spotValue, props.riskFreeRate / 100, inputVol / 100);
             } else {
-                priceResult = PricingUtils.priceCall(props.currentDate, props.expiry, rowsParam[i].strike, props.spotValue, props.riskFreeRate / 100, inputVol / 100);
+                priceResult = PricingUtils.priceCall(inputAsOfDate, props.expiry, rowsParam[i].strike, spotValue, props.riskFreeRate / 100, inputVol / 100);
             }
 
             rowsParam[i].theo_price = priceResult.theoPrice.toFixed(2);

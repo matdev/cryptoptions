@@ -45,8 +45,8 @@ export function priceCall(spotDate, expiryDate, strike, S_0, r, vol) {
 
 export function pricePut(spotDate, expiryDate, strike, S_0, r, vol) {
 
-    console.log("pricePut() as of " + spotDate.toLocaleDateString() + " expiry : " + expiryDate.toLocaleDateString()
-        + " strike : " + strike + " S_0 : " + S_0 + " r=" + r + " vol=" + vol);
+    // console.log("pricePut() as of " + spotDate.toLocaleDateString() + " expiry : " + expiryDate.toLocaleDateString()
+    //     + " strike : " + strike + " S_0 : " + S_0 + " r=" + r + " vol=" + vol);
 
     let T = DateUtils.getNumberOfDays(spotDate, expiryDate) / 365;
 

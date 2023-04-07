@@ -13,7 +13,7 @@ const Navbar = () => {
                 {/*<MdEuroSymbol className='icon'/>*/}
                 <img src={logo} className="App-logo" alt="CryptOptions" />
                 <h1>Crypt<span className='options'>Options</span><p className='beta_label'>Beta</p></h1>
-                <h3>
+                <h3 class="hide-mobile purple">
                     The app for crypto derivatives traders
                 </h3>
             </div>

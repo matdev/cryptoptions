@@ -48,6 +48,11 @@ export function getNumberOfDays(start, end) {
     return diffInDays;
 }
 
+export function toDate(dateStr) {
+    var parts = dateStr.split("/")
+    return new Date(parts[2], parts[1] - 1, parts[0])
+}
+
 export function TEST_getLastBusinessDay() {
 
     let d = new Date();

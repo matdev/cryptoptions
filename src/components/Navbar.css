@@ -1,6 +1,7 @@
 :root {
     --main-color: #FB9B9C;
     --logo_blue: #61dcfe;
+    --beta-color: #ff6900
 }
 
 .navbar {
@@ -29,8 +30,8 @@ h1 {
 .beta_label {
     width: 50px;
     font-size: 14px;
-    border: 1px solid #6900ff;
-    background-color: #6900ff;
+    border: 1px solid var(--beta-color);
+    background-color: var(--beta-color);
     border-radius: 8px;
     padding: .2rem;
 }
