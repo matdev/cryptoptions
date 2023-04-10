@@ -53,27 +53,30 @@ const OptionsGrid = (props) => {
 
         console.log("OptionsGrid.priceOptions() index = " + index + " spotValue = " + props.spotValue);
 
-        let inputAsOfDate = props.currentDate;
-
         // Check Input asOfDate
+        let inputAsOfDate = props.currentDate;
         if (isNaN(inputAsOfDate) || (!inputAsOfDate)) {
             inputAsOfDate = NaN;
         }
 
-        let spotValue = props.spotValue;
-
         // Check Input spot
+        let spotValue = props.spotValue;
         if (isNaN(spotValue) || (!spotValue)) {
             spotValue = NaN;
         }
 
-        let inputVol = props.inputVol;
-
         // Check Input vol
+        let inputVol = props.inputVol;
         if (isNaN(inputVol) || (!inputVol)) {
             inputVol = NaN;
-        } else if (!MathsUtils.isNumberBetweenMinMax(inputVol)) {
+        } else if (!MathsUtils.isNumberBetweenMinMax(inputVol, 0 , 100)) {
             inputVol = NaN;
+        }
+
+        // Check Input rate
+        let inputRate = props.riskFreeRate;
+        if (isNaN(inputRate) || (!inputRate)) {
+            inputRate = NaN;
         }
 
         for (var i = 0; i < rowsParam.length; i++) {
@@ -82,9 +85,9 @@ const OptionsGrid = (props) => {
             let priceResult;
 
             if (props.optionType == OptionType.Put) {
-                priceResult = PricingUtils.pricePut(inputAsOfDate, props.expiry, rowsParam[i].strike, spotValue, props.riskFreeRate / 100, inputVol / 100);
+                priceResult = PricingUtils.pricePut(inputAsOfDate, props.expiry, rowsParam[i].strike, spotValue, inputRate / 100, inputVol / 100);
             } else {
-                priceResult = PricingUtils.priceCall(inputAsOfDate, props.expiry, rowsParam[i].strike, spotValue, props.riskFreeRate / 100, inputVol / 100);
+                priceResult = PricingUtils.priceCall(inputAsOfDate, props.expiry, rowsParam[i].strike, spotValue, inputRate / 100, inputVol / 100);
             }
 
             rowsParam[i].theo_price = priceResult.theoPrice.toFixed(2);

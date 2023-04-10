@@ -2,6 +2,8 @@
     --main-color: #FB9B9C;
     --rdg-border-color: #000;
     --logo_blue: #61dcfe;
+    --spot-violet: #6900ff;
+    --bitcoin-color: #F68B1F;
 }
 
 .coin-container .content {
@@ -34,7 +36,6 @@
 
 .pricing-parameters {
     display: grid;
-    grid-template-columns: 3fr 1fr;
 }
 
 .info .coin-heading {
@@ -98,14 +99,20 @@ th {
     margin-top: 5px;
 }
 
-.risk-free-rate-field input {
-    background: lightgrey;
+.button_price {
+    width: 110px;
+    background-color: var(--bitcoin-color);
+    margin-right: 8px;
+    padding-top: 16px;
+    padding-bottom: 16px;
     border-radius: 5px;
-    width: 80px;
-    margin-top: 5px;
+    color: black;
+    text-decoration: underline;
+    font-size: 1em;
+    font-weight: bold;
 }
 
-.button_price {
+.reset_params {
     background-color: #9a031e;
     margin-bottom: 4px;
     margin-right: 8px;
@@ -140,23 +147,23 @@ th {
     text-decoration: underline;
 }
 
-.calls_puts_label {
-    border: 1px solid #6900ff;
-    background-color: #6900ff;
+.calls_label {
+    border: 1px solid #3a86ff;
+    background-color: #3a86ff;
     border-radius: 8px;
     padding: .2rem;
 }
 
-.calls_label {
-    border: 1px solid #118ab2;
-    background-color: #118ab2;
+.puts_label {
+    border: 1px solid #9a031e;
+    background-color: #9a031e;
     border-radius: 8px;
     padding: .2rem;
 }
 
 .spot_label {
-    border: 1px solid #006c73;
-    background-color: #006c73;
+    border: 1px solid var(--spot-violet);
+    background-color: var(--spot-violet);
     border-radius: 8px;
     padding: .2rem;
     font-weight: bold;

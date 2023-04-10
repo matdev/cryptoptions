@@ -10,6 +10,7 @@ import './CoinOptionsTable.css'
 import TextField from '@mui/material/TextField';
 import OptionsGrid from "../components/OptionsGrid";
 import {OptionType} from "../util/PricingUtils";
+import InputAdornment from '@mui/material/InputAdornment';
 
 const CoinOptionsTable = () => {
 
@@ -18,19 +19,24 @@ const CoinOptionsTable = () => {
 
     const [trigger, setTrigger] = useState(false);
 
+    // As of date
     const currentDate = new Date();
     //TEST
     //const asOfDate = new Date(2023, 2, 28);
     const asOfDate = new Date();
 
+    // Vol
     const defaultVol = 64; // %
     const [inputVol, setInputVol] = useState(defaultVol);
 
+    // Risk-free rate
+    const defaultRiskFreeRate = 1; // %
+    const [inputRate, setInputRate] = useState(defaultRiskFreeRate);
+
+    // Spot
     const defaultSpot = getCurrentSpotValue();
     const [inputSpot, setInputSpot] = useState(defaultSpot);
     const [inputAsOfDate, setInputAsOfDate] = useState(currentDate);
-
-    const defaultRiskFreeRate = 1; // %
 
     let oneMonthExpiry;
     let twoWeeksFromNow;
@@ -49,6 +55,7 @@ const CoinOptionsTable = () => {
     const inputVolRef = useRef();
     const inputSpotRef = useRef();
     const inputAsOfDateRef = useRef();
+    const inputRateRef = useRef();
 
     useEffect(() => {
         axios.get(url).then((res) => {
@@ -74,6 +81,7 @@ const CoinOptionsTable = () => {
     const [isInputVolValid, setIsInputVolValid] = useState(true);
     const [isInputSpotValid, setIsInputSpotValid] = useState(true);
     const [isInputAsOfDateValid, setIsInputAsOfDateValid] = useState(true);
+    const [isInputRateValid, setIsInputRateValid] = useState(true);
 
     function checkInputValues() {
 
@@ -109,14 +117,14 @@ const CoinOptionsTable = () => {
             setInputSpot(inputSpot);
         }
 
+        // Check input vol
         let inputVol = Number(inputVolRef.current.value.replace('%', ''));
 
-        // Check input vol
         if (isNaN(inputVol) || (!inputVol)) {
             console.error("CoinOptionsTable.checkInputValues() ERROR : Input vol is invalid : " + inputVol)
             setIsInputVolValid(false);
             setInputVol(NaN);
-        } else if (!MathsUtils.isNumberBetweenMinMax(inputVol)) {
+        } else if (!MathsUtils.isNumberBetweenMinMax(inputVol, 0, 100)) {
             console.error("CoinOptionsTable.checkInputValues() ERROR: Input vol is out of range : " + inputVol)
             setIsInputVolValid(false);
         } else {
@@ -124,9 +132,32 @@ const CoinOptionsTable = () => {
             setInputVol(inputVol);
         }
 
+        // Check input rate
+        let inputRate = Number(inputRateRef.current.value.replace('%', ''));
+
+        if (isNaN(inputRate) || (!inputRate)) {
+            console.error("CoinOptionsTable.checkInputValues() ERROR : Input rate is invalid : " + inputRate)
+            setIsInputRateValid(false);
+            setInputRate(NaN);
+        } else {
+            setIsInputRateValid(true);
+            setInputRate(inputRate);
+        }
+
         setTrigger(trigger => !trigger);
 
         setIndex(index + 1);
+    }
+
+    function resetParamsValues() {
+
+        inputVolRef.current.value = defaultVol;
+        inputSpotRef.current.value = defaultSpot;
+        inputRateRef.current.value = defaultRiskFreeRate;
+
+        inputAsOfDateRef.current.value = currentDate.toLocaleDateString();
+
+        checkInputValues();
     }
 
     function getCurrentInputAsOfDate() {
@@ -144,6 +175,15 @@ const CoinOptionsTable = () => {
             return defaultVol;
         } else {
             return inputVolRef.current.value;
+        }
+    }
+
+    function getCurrentInputRate() {
+
+        if (!inputRateRef.current) {
+            return defaultRiskFreeRate;
+        } else {
+            return inputRateRef.current.value;
         }
     }
 
@@ -192,34 +232,37 @@ const CoinOptionsTable = () => {
                                 {coin.name}</Link></h2>
                         </div>
                         <div className='coin-price'>
-                            <span className='spot_label'>Spot</span>
+                            <span className='spot_label hide-mobile'>Spot</span>
                             {coin.market_data?.current_price ?
                                 <h1 className='spot_value'>{coin.market_data.current_price.eur.toLocaleString()} €</h1> : null}
                         </div>
                     </div>
                     <div className='pricing-parameters'>
                         <div>
-                            <TextField className='pricer-input-field' id="input-as-of-date" label="As of date"
-                                       variant="filled" defaultValue={currentDate.toLocaleDateString()}
-                                       onBlur={checkInputValues}
-                                       error={!isInputAsOfDateValid} inputRef={inputAsOfDateRef}
-                                       onKeyDown={handleKeyPress}   //connecting inputRef property of TextField to the inputAsOfDateRef
-                            />
                             <TextField className='pricer-input-field' id="input-spot" label="Spot input"
                                        variant="filled" defaultValue={defaultSpot} onBlur={checkInputValues}
                                        error={!isInputSpotValid} inputRef={inputSpotRef}
-                                       onKeyDown={handleKeyPress}   //connecting inputRef property of TextField to the inputSpotRef
+                                       onKeyDown={handleKeyPress} InputLabelProps={{shrink: true}}
                             />
                             <TextField className='pricer-input-field' id="input-vol" label="Vol input (%)"
                                        variant="filled" defaultValue={defaultVol} onBlur={checkInputValues}
                                        error={!isInputVolValid} inputRef={inputVolRef}
-                                       onKeyDown={handleKeyPress}   //connecting inputRef property of TextField to the inputVolRef
+                                       onKeyDown={handleKeyPress} InputLabelProps={{shrink: true}}
                             />
+                            <TextField className='pricer-input-field' id="input-as-of-date" label="As of date"
+                                       variant="filled" defaultValue={currentDate.toLocaleDateString()}
+                                       onBlur={checkInputValues}
+                                       error={!isInputAsOfDateValid} inputRef={inputAsOfDateRef}
+                                       onKeyDown={handleKeyPress} InputLabelProps={{shrink: true}}
+                            />
+                            <TextField className='pricer-input-field' id="input-rate" label="Risk-free rate (%)"
+                                       variant="filled" defaultValue={defaultRiskFreeRate} onBlur={checkInputValues}
+                                       error={!isInputRateValid} inputRef={inputRateRef}
+                                       onKeyDown={handleKeyPress} InputLabelProps={{shrink: true}}
+                            />
+
                             <button className={"button_price"} onClick={checkInputValues}>PRICE ALL</button>
-                        </div>
-                        <div>
-                            <TextField className='risk-free-rate-field' id="input-rate" label="Risk-free rate"
-                                       variant="filled" defaultValue={defaultRiskFreeRate + ' %'} disabled={true}/>
+                            <button className={"reset_params"} onClick={resetParamsValues}>RESET</button>
                         </div>
                     </div>
                 </div>
@@ -228,37 +271,37 @@ const CoinOptionsTable = () => {
                     <OptionsGrid key={OptionType.Call + twoWeeksFromNow} trigger={trigger} optionType={OptionType.Call}
                                  spotValue={getCurrentInputSpot()}
                                  currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}
-                                 expiry={twoWeeksFromNow} riskFreeRate={defaultRiskFreeRate} strikeStep={strikeStep}/>
+                                 expiry={twoWeeksFromNow} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep}/>
 
                     <OptionsGrid key={OptionType.Call + oneMonthExpiry} trigger={trigger} optionType={OptionType.Call}
                                  spotValue={getCurrentInputSpot()}
                                  currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}
-                                 expiry={oneMonthExpiry} riskFreeRate={defaultRiskFreeRate} strikeStep={strikeStep}/>
+                                 expiry={oneMonthExpiry} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep}/>
 
                     <OptionsGrid key={OptionType.Call + twoMonthsExpiry} trigger={trigger} optionType={OptionType.Call}
                                  spotValue={getCurrentInputSpot()}
                                  currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}
-                                 expiry={twoMonthsExpiry} riskFreeRate={defaultRiskFreeRate} strikeStep={strikeStep}/>
+                                 expiry={twoMonthsExpiry} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep}/>
                 </div>
                 <div className='content'>
-                    <h2><span className='calls_puts_label'>PUTS</span></h2>
+                    <h2><span className='puts_label'>PUTS</span></h2>
 
                     <OptionsGrid key={OptionType.Put + twoWeeksFromNow} trigger={trigger} optionType={OptionType.Put}
                                  spotValue={getCurrentInputSpot()}
                                  currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}
-                                 expiry={twoWeeksFromNow} riskFreeRate={defaultRiskFreeRate}
+                                 expiry={twoWeeksFromNow} riskFreeRate={getCurrentInputRate()}
                                  strikeStep={strikeStep}/>
 
                     <OptionsGrid key={OptionType.Put + oneMonthExpiry} trigger={trigger} optionType={OptionType.Put}
                                  spotValue={getCurrentInputSpot()}
                                  currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}
-                                 expiry={oneMonthExpiry} riskFreeRate={defaultRiskFreeRate}
+                                 expiry={oneMonthExpiry} riskFreeRate={getCurrentInputRate()}
                                  strikeStep={strikeStep}/>
 
                     <OptionsGrid key={OptionType.Put + twoMonthsExpiry} trigger={trigger} optionType={OptionType.Put}
                                  spotValue={getCurrentInputSpot()}
                                  currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}
-                                 expiry={twoMonthsExpiry} riskFreeRate={defaultRiskFreeRate}
+                                 expiry={twoMonthsExpiry} riskFreeRate={getCurrentInputRate()}
                                  strikeStep={strikeStep}/>
                 </div>
             </div>
