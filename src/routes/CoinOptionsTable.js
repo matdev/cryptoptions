@@ -256,13 +256,13 @@ const CoinOptionsTable = () => {
                                        error={!isInputVolValid} inputRef={inputVolRef}
                                        onKeyDown={handleKeyPress} InputLabelProps={{shrink: true}}
                             />
-                            <TextField className='pricer-input-field' id="input-as-of-date" label="As of date"
+                            <TextField className='pricer-input-field-longer' id="input-as-of-date" label="As of date"
                                        variant="filled" defaultValue={currentDate.toLocaleDateString()}
                                        onBlur={checkInputValues}
                                        error={!isInputAsOfDateValid} inputRef={inputAsOfDateRef}
                                        onKeyDown={handleKeyPress} InputLabelProps={{shrink: true}}
                             />
-                            <TextField className='pricer-input-field' id="input-rate" label="Risk-free rate (%)"
+                            <TextField className='pricer-input-field-longer' id="input-rate" label="Risk-free rate (%)"
                                        variant="filled" defaultValue={defaultRiskFreeRate} onBlur={checkInputValues}
                                        error={!isInputRateValid} inputRef={inputRateRef}
                                        onKeyDown={handleKeyPress} InputLabelProps={{shrink: true}}
