@@ -221,7 +221,6 @@ const CoinOptionsTable = () => {
                         <span className='purple'> {coin.name}</span>
                     </h1>
                     {coin.symbol ? <p className='coin-symbol'> {coin.symbol.toUpperCase()}/EUR</p> : null}
-
                 </div>
                 <div className='content'>
                     <div className='info'>
@@ -284,7 +283,7 @@ const CoinOptionsTable = () => {
                                  expiry={twoMonthsExpiry} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep}/>
                 </div>
                 <div className='content'>
-                    <h2><span className='puts_label'>PUTS</span></h2>
+                    <h2 className='h2_puts'><span className='puts_label'>PUTS</span></h2>
 
                     <OptionsGrid key={OptionType.Put + twoWeeksFromNow} trigger={trigger} optionType={OptionType.Put}
                                  spotValue={getCurrentInputSpot()}

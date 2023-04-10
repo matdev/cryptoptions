@@ -19,7 +19,7 @@ const CoinItem = (props) => {
                 </div>
             </Link>
             <Link to={`/coin/${props.coins.id}`} element={<CoinDetails/>} key={props.coins.id}>
-                <p className={'coin-cell'}>{props.coins.current_price.toFixed(2).padStart(7, '\xa0')} €</p>
+                <p className={'coin-cell'}>{props.coins.current_price} €</p>
             </Link>
             <Link to={`/coin/${props.coins.id}`} element={<CoinDetails/>} key={props.coins.id}>
                 <p className={'coin-cell'}>{props.coins.price_change_percentage_24h.toFixed(2).padStart(8, '\xa0')} %</p>
@@ -30,7 +30,7 @@ const CoinItem = (props) => {
             <Link to={`/option-prices/${props.coins.id}`} state={{spotValue: spotValue}} element={<CoinOptionsTable/>}
                   key={`${props.coins.id}-options`}>
                 <p>
-                    <button className={"button_view_options"}>Option Prices</button>
+                    <button className={"button_view_options"}>Option pricer</button>
                 </p>
             </Link>
 

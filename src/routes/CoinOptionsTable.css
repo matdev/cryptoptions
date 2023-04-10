@@ -155,10 +155,15 @@ th {
 }
 
 .puts_label {
-    border: 1px solid #9a031e;
-    background-color: #9a031e;
+    margin-top: 20px;
+    border: 1px solid var(--spot-violet);
+    background-color: var(--spot-violet);
     border-radius: 8px;
     padding: .2rem;
+}
+
+.h2_puts {
+    margin-top: 25px;
 }
 
 .spot_label {

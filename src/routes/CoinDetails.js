@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {Link, useParams} from 'react-router-dom'
+import {Link, useLocation, useParams} from 'react-router-dom'
 import React, {useState, useEffect} from 'react'
 import DOMPurify from 'dompurify'
 
@@ -8,17 +8,21 @@ import CoinOptionsTable from "./CoinOptionsTable";
 
 const CoinDetails = () => {
 
-    const params = useParams()
-    const [coin, setCoin] = useState({})
-    const [spotValue, setSpotValue] = useState(coin.current_price);
+    const location = useLocation();
+    const params = useParams();
+
+    const [coin, setCoin] = useState({});
+    const [spotValue, setSpotValue] = useState(28000);
 
     const url = `https://api.coingecko.com/api/v3/coins/${params.coinId}`
-
 
     useEffect(() => {
         axios.get(url).then((res) => {
             setCoin(res.data)
-            setSpotValue(coin.current_price);
+            setSpotValue(coin.market_data.current_price.eur);
+
+            console.log("CoinDetails.useEffect() spotValue : " + coin.market_data.current_price.eur);
+
         }).catch((error) => {
             console.log(error)
         })
@@ -28,7 +32,9 @@ const CoinDetails = () => {
         <div>
             <div className='coin-container'>
                 <div className='content'>
-                    <h1>{coin.name}</h1>
+                    <h1>{coin.name}
+                    </h1>
+                    {coin.symbol ? <p className='coin-symbol'> {coin.symbol.toUpperCase()}/EUR</p> : null}
                 </div>
                 <div className='content'>
                     <div className='rank'>
@@ -39,19 +45,11 @@ const CoinDetails = () => {
                             {coin.image ? <img src={coin.image.small} alt=''/> : null}
                             <h2>
                                 {coin.name}</h2><p></p>
-                            {coin.symbol ? <h2>{coin.symbol.toUpperCase()}/EUR</h2> : null}
                         </div>
                         <div className='coin-price'>
                             {coin.market_data?.current_price ?
                                 <h1>{coin.market_data.current_price.eur.toLocaleString()} €</h1> : null}
                         </div>
-
-                        {/*<Link to={`/option-prices/${coin.id}`} state={{spotValue: spotValue}} element={<CoinOptionsTable/>}*/}
-                        {/*      key={coin.id}>*/}
-                        {/*    <p>*/}
-                        {/*        <button className={"button_view_options"}>Option Prices</button>*/}
-                        {/*    </p>*/}
-                        {/*</Link>*/}
                     </div>
                 </div>
 
@@ -99,7 +97,12 @@ const CoinDetails = () => {
                                 {coin.market_data?.high_24h ?
                                     <p>{coin.market_data.high_24h.eur.toLocaleString()} €</p> : null}
                             </div>
-
+                            <Link to={`/option-prices/${coin.id}`} state={{spotValue: spotValue}} element={<CoinOptionsTable/>}
+                                  key={coin.id}>
+                                <p>
+                                    <button className={"button_view_options"}>Option pricer</button>
+                                </p>
+                            </Link>
                         </div>
                         <div className='right'>
                             <div className='row'>
@@ -111,14 +114,13 @@ const CoinDetails = () => {
                                 <h4>Circulating Supply</h4>
                                 {coin.market_data ? <p>{coin.market_data.circulating_supply}</p> : null}
                             </div>
-
                         </div>
                     </div>
                 </div>
 
                 <div className='content'>
                     <div className='about'>
-                        <h3>About</h3>
+                        <h3>About {coin.name}</h3>
                         <p dangerouslySetInnerHTML={{
                             __html: DOMPurify.sanitize(coin.description ? coin.description.en : ''),
                         }}>

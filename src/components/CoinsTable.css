@@ -1,6 +1,6 @@
 :root {
     --main-color: #FB9B9C;
-    --bitcoin-color:  #F68B1F;
+    --bitcoin-color: #F68B1F;
 }
 
 .container {
@@ -53,6 +53,7 @@ img {
 }
 
 .img-symbol {
+    min-width: 100px;
     display: flex;
     align-items: center;
     width: 75px;
@@ -61,7 +62,6 @@ img {
 
 .button_view_options {
     background-color: var(--bitcoin-color);
-    margin: 4px;
     padding: 8px;
     border-radius: 5px;
     color: black;
@@ -76,5 +76,9 @@ img {
 @media screen and (max-width: 720px) {
     .hide-mobile {
         display: none;
+    }
+
+    .heading {
+        margin-left: 30px;
     }
 }
