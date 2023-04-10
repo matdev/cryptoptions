@@ -30,7 +30,7 @@ const CoinItem = (props) => {
             <Link to={`/option-prices/${props.coins.id}`} state={{spotValue: spotValue}} element={<CoinOptionsTable/>}
                   key={`${props.coins.id}-options`}>
                 <p>
-                    <button className={"button_view_options"}>Option pricer</button>
+                    <button className={"button_view_options"}>Options pricer</button>
                 </p>
             </Link>
 

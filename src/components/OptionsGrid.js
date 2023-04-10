@@ -5,6 +5,7 @@ import DataGrid from "react-data-grid";
 import * as PricingUtils from "../util/PricingUtils";
 import * as MathsUtils from "../util/MathsUtils";
 import {OptionType} from "../util/PricingUtils";
+const mathjs = require('mathjs')
 
 const OptionsGrid = (props) => {
 
@@ -16,25 +17,25 @@ const OptionsGrid = (props) => {
 
     const columns = [
         {key: 'strike', name: 'Strike'},
-        {key: 'vol', name: 'Vol Input (%)'},
-        {key: 'theo_price', name: 'Theo Price'},
+        {key: 'vol', name: 'Vol (%)'},
+        {key: 'theo_price', name: 'Theo Price (eur)'},
         {key: 'delta', name: 'Delta'}
     ];
 
     // Strikes UP
     let strike_1_UP = (MathsUtils.roundToNextStepUp(props.spotValue, props.strikeStep, props.strikeStep));
-    let strike_2_UP = strike_1_UP + props.strikeStep;
-    let strike_3_UP = strike_2_UP + props.strikeStep;
-    let strike_4_UP = strike_3_UP + props.strikeStep;
+    let strike_2_UP = mathjs.round(strike_1_UP + props.strikeStep, 1);
+    let strike_3_UP = mathjs.round(strike_2_UP + props.strikeStep, 1);
+    let strike_4_UP = mathjs.round(strike_3_UP + props.strikeStep, 1);
 
     // Strikes DOWN
-    let strike_1_DOWN = strike_1_UP - props.strikeStep;
-    let strike_2_DOWN = strike_1_DOWN - props.strikeStep;
-    let strike_3_DOWN = strike_2_DOWN - props.strikeStep;
-    let strike_4_DOWN = strike_3_DOWN - props.strikeStep;
+    let strike_1_DOWN = mathjs.round(strike_1_UP - props.strikeStep,1);
+    let strike_2_DOWN = mathjs.round(strike_1_DOWN - props.strikeStep,1);
+    let strike_3_DOWN = mathjs.round(strike_2_DOWN - props.strikeStep,1);
+    let strike_4_DOWN = mathjs.round(strike_3_DOWN - props.strikeStep,1);
 
-    // console.log("spotValue = " + props.spotValue + " => strike_1_UP = " + strike_1_UP);
-    // console.log(" strike_1_DOWN = " + strike_1_DOWN);
+    console.log("spotValue = " + props.spotValue + " => strike_1_UP = " + strike_1_UP);
+    console.log(" strike_1_DOWN = " + strike_1_DOWN);
 
     const initialRows = [
         {strike: strike_4_DOWN, vol: props.inputVol, theo_price: '', delta: ''},

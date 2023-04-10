@@ -10,7 +10,7 @@ import './CoinOptionsTable.css'
 import TextField from '@mui/material/TextField';
 import OptionsGrid from "../components/OptionsGrid";
 import {OptionType} from "../util/PricingUtils";
-import InputAdornment from '@mui/material/InputAdornment';
+const mathjs = require('mathjs')
 
 const CoinOptionsTable = () => {
 
@@ -76,7 +76,15 @@ const CoinOptionsTable = () => {
 
     if (params.coinId == 'bitcoin') {
         strikeStep = 1000;
+    } else if (params.coinId == 'ethereum') {
+        strikeStep = 25;
     }
+
+    if (getCurrentSpotValue() < 200) {
+        strikeStep = mathjs.round(getCurrentSpotValue() / 10, 1);
+    }
+
+    console.log("CoinOptionsTable: strikeStep = " + strikeStep);
 
     const [isInputVolValid, setIsInputVolValid] = useState(true);
     const [isInputSpotValid, setIsInputSpotValid] = useState(true);

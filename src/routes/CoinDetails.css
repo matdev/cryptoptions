@@ -17,6 +17,15 @@
     margin: .5 0;
 }
 
+.button_view_option_pricer {
+    background-color: var(--bitcoin-color);
+    padding: 8px;
+    border-radius: 5px;
+    color: black;
+    font-size: 1em;
+    font-weight: bold;
+}
+
 .rank-btn {
     border: 1px solid #6900ff;
     box-shadow: 0px 0px 8px #6900ff;
@@ -93,7 +102,7 @@ th {
         grid-template-columns: 1fr;
     }
 
-    td,th {
+    td, th {
         padding: 3px;
     }
 

@@ -12,7 +12,7 @@ const CoinDetails = () => {
     const params = useParams();
 
     const [coin, setCoin] = useState({});
-    const [spotValue, setSpotValue] = useState(28000);
+    const [spotValue, setSpotValue] = useState(getCurrentSpotValue);
 
     const url = `https://api.coingecko.com/api/v3/coins/${params.coinId}`
 
@@ -27,6 +27,15 @@ const CoinDetails = () => {
             console.log(error)
         })
     }, [])
+
+    function getCurrentSpotValue() {
+
+        if (!coin.market_data) {
+            return NaN;
+        } else {
+            return coin.market_data.current_price.eur;
+        }
+    }
 
     return (
         <div>
@@ -97,10 +106,10 @@ const CoinDetails = () => {
                                 {coin.market_data?.high_24h ?
                                     <p>{coin.market_data.high_24h.eur.toLocaleString()} €</p> : null}
                             </div>
-                            <Link to={`/option-prices/${coin.id}`} state={{spotValue: spotValue}} element={<CoinOptionsTable/>}
+                            <Link to={`/option-prices/${coin.id}`} state={{spotValue: getCurrentSpotValue()}} element={<CoinOptionsTable/>}
                                   key={coin.id}>
                                 <p>
-                                    <button className={"button_view_options"}>Option pricer</button>
+                                    <button className={"button_view_option_pricer"}>Options pricer</button>
                                 </p>
                             </Link>
                         </div>

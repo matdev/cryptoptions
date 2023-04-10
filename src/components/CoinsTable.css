@@ -67,6 +67,7 @@ img {
     color: black;
     font-size: 1em;
     font-weight: bold;
+    max-width: 80px;
 }
 
 .placeholder {
