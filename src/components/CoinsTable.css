@@ -30,7 +30,7 @@
 }
 
 .coin-cell-price {
-    padding: .5rem 0.5rem;
+    padding: 0rem 0rem;
     white-space: nowrap;
     min-width: 80px;
 }
@@ -53,7 +53,7 @@
 }
 
 img {
-    height: 40px;
+    height: 25px;
     margin-right: 8px;
     width: auto;
 }
@@ -68,7 +68,7 @@ img {
 
 .button_view_options {
     background-color: var(--bitcoin-color);
-    padding: 8px;
+    padding: 4px;
     border-radius: 5px;
     color: black;
     font-size: 1em;
