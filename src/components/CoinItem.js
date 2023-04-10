@@ -19,10 +19,10 @@ const CoinItem = (props) => {
                 </div>
             </Link>
             <Link to={`/coin/${props.coins.id}`} element={<CoinDetails/>} key={props.coins.id}>
-                <p className={'coin-cell'}>{props.coins.current_price} €</p>
+                <p className={'coin-cell-price'}>{props.coins.current_price} €</p>
             </Link>
             <Link to={`/coin/${props.coins.id}`} element={<CoinDetails/>} key={props.coins.id}>
-                <p className={'coin-cell'}>{props.coins.price_change_percentage_24h.toFixed(2).padStart(8, '\xa0')} %</p>
+                <p className={'coin-cell'}>{props.coins.price_change_percentage_24h.toFixed(2)} %</p>
             </Link>
             <Link to={`/coin/${props.coins.id}`} element={<CoinDetails/>} key={props.coins.id}>
                 <p className='hide-mobile'>{props.coins.total_volume.toLocaleString().padStart(20, '\xa0')} €</p>

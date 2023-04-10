@@ -29,6 +29,12 @@
     white-space: nowrap;
 }
 
+.coin-cell-price {
+    padding: .5rem 0.5rem;
+    white-space: nowrap;
+    min-width: 80px;
+}
+
 .coin-row {
     display: flex;
     justify-content: space-between;
