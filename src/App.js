@@ -5,8 +5,7 @@ import CoinsTable from './components/CoinsTable'
 import CoinDetails from './routes/CoinDetails'
 import Navbar from './components/Navbar'
 import CoinOptionsTable from "./routes/CoinOptionsTable";
-import * as PricingUtils from './util/PricingUtils';
-import * as DateUtils from './util/DateUtils';
+import Footer from './components/Footer';
 
 function App() {
 
@@ -41,7 +40,7 @@ function App() {
                     <Route path=':coinId' element={<CoinOptionsTable spotValue={1500} />}/>
                 </Route>
             </Routes>
-
+            <Footer/>
         </>
     );
 }
