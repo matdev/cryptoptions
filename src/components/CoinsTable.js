@@ -16,9 +16,10 @@ const CoinsTable = (props) => {
                     <p className='placeholder'></p>
                 </div>
 
-                {props.coins.map(coins => {
+                {props.coins.map(coin => {
                     return (
-                        <CoinItem coins={coins}/>
+                        <CoinItem key={coin.id} coin={coin} spotValue={coin.current_price} state={{spotValue: coin.current_price}}
+                                  baseCurrency={props.baseCurrency} stateChanger={props.stateChanger}/>
                     )
                 })}
 

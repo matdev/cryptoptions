@@ -4,6 +4,16 @@
     --beta-color: #ff6900
 }
 
+.App-logo {
+    height: 35px;
+    margin-right: 4px;
+    width: auto;
+}
+
+.app_name {
+    text-align: left;
+}
+
 .navbar {
     display: flex;
     justify-content: center;
@@ -24,20 +34,30 @@
 }
 
 h1 {
-    margin: 1rem;
+    margin: 0.5rem;
 }
 
 .beta_label {
-    width: 50px;
     font-size: 14px;
     border: 1px solid var(--beta-color);
     background-color: var(--beta-color);
     border-radius: 8px;
-    padding: .2rem;
+    padding: .3rem;
+    font-weight: bold;
+}
+
+.app_pitch {
+    font-size: 16px;
+    border-radius: 8px;
+    padding: 0.2rem;
+    font-weight: bold;
+    color: var(--main-color);
 }
 
 @media screen and (max-width: 700px) {
     h1 {
         margin: 0.5rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
     }
 }

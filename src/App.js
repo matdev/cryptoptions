@@ -6,6 +6,7 @@ import CoinDetails from './routes/CoinDetails'
 import Navbar from './components/Navbar'
 import CoinOptionsTable from "./routes/CoinOptionsTable";
 import Footer from './components/Footer';
+import * as CurrencyUtils from "./util/CurrencyUtils";
 
 function App() {
 
@@ -16,28 +17,39 @@ function App() {
     /******** END OF TEST CASES ********/
 
     const [coins, setCoins] = useState([])
+    const [baseCurrency, setBaseCurrency] = React.useState(CurrencyUtils.currencies.EUR);
 
-    const url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=eur&order=market_cap_desc&per_page=5&page=1&sparkline=false'
+    //const url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=eur&order=market_cap_desc&per_page=5&page=1&sparkline=false'
+    const baseUrl = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=';
+    const paramUrl = '&order=market_cap_desc&per_page=5&page=1&sparkline=false';
 
     useEffect(() => {
-        axios.get(url).then((response) => {
+
+        let currencyLabel = baseCurrency.code;
+
+        let data_url = baseUrl + currencyLabel + paramUrl;
+        console.log("App().useEffect() data_url = " + data_url);
+
+        axios.get(data_url).then((response) => {
             setCoins(response.data)
             console.log(response.data[0])
         }).catch((error) => {
             console.log(error)
         })
-    }, [])
+    }, [baseCurrency])
+
 
     return (
         <>
-            <Navbar/>
+            <Navbar baseCurrency={baseCurrency} stateChanger={setBaseCurrency}/>
             <Routes>
-                <Route path='/' element={<CoinsTable coins={coins}/>}/>
+
+                <Route path='/' element={<CoinsTable coins={coins} baseCurrency={baseCurrency} stateChanger={setBaseCurrency}/>}/>
                 <Route path='/coin' element={<CoinDetails/>}>
                     <Route path=':coinId' element={<CoinDetails/>}/>
                 </Route>
                 <Route path='/option-prices' element={<CoinOptionsTable/>}>
-                    <Route path=':coinId' element={<CoinOptionsTable spotValue={1500} />}/>
+                    <Route path=':coinId' element={<CoinOptionsTable spotValue={1500}/>}/>
                 </Route>
             </Routes>
             <Footer/>

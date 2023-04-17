@@ -34,8 +34,10 @@ const CoinOptionsTable = () => {
     const [inputRate, setInputRate] = useState(defaultRiskFreeRate);
 
     // Spot
-    const defaultSpot = getCurrentSpotValue();
-    const [inputSpot, setInputSpot] = useState(defaultSpot);
+    //const defaultSpot = getCurrentSpotValue();
+    const [spotValue, setSpotValue] = useState(location.state.spotValue);
+
+    const [inputSpot, setInputSpot] = useState(spotValue);
     const [inputAsOfDate, setInputAsOfDate] = useState(currentDate);
 
     let oneMonthExpiry;
@@ -57,16 +59,20 @@ const CoinOptionsTable = () => {
     const inputAsOfDateRef = useRef();
     const inputRateRef = useRef();
 
+    const [coin, setCoin] = useState({});
+
     useEffect(() => {
         axios.get(url).then((res) => {
             setCoin(res.data)
+            setSpotValue(res.data.market_data.current_price[location.state.baseCurrency.code]);
+
+            console.log("CoinDetails.useEffect() res.data.market_data.current_price : " + res.data.market_data.current_price[location.state.baseCurrency.code]);
+
             checkInputValues();
         }).catch((error) => {
             console.log(error)
         })
     }, [])
-
-    const [coin, setCoin] = useState({});
 
     const url = `https://api.coingecko.com/api/v3/coins/${params.coinId}`;
 
@@ -80,11 +86,11 @@ const CoinOptionsTable = () => {
         strikeStep = 25;
     }
 
-    if (getCurrentSpotValue() < 200) {
+    if (spotValue < 200) {
         strikeStep = mathjs.round(getCurrentSpotValue() / 10, 1);
     }
 
-    console.log("CoinOptionsTable: strikeStep = " + strikeStep);
+    //console.log("CoinOptionsTable: props.spotValue = " + props.spotValue +" location.state.spotValue = " + location.state.spotValue + " location.state.baseCurrency.code: " + location.state.baseCurrency.code);
 
     const [isInputVolValid, setIsInputVolValid] = useState(true);
     const [isInputSpotValid, setIsInputSpotValid] = useState(true);
@@ -93,11 +99,7 @@ const CoinOptionsTable = () => {
 
     function checkInputValues() {
 
-
-        var fromDate = DateUtils.toDate(inputAsOfDateRef.current.value);
-
-        console.log("checkInputValues() inputAsOfDateRef.current.value = " + inputAsOfDateRef.current.value
-            + " fromDate = " + fromDate);
+        let fromDate = DateUtils.toDate(inputAsOfDateRef.current.value);
 
         // Check input asOfDate
         if (isNaN(fromDate) || (!fromDate)) {
@@ -110,19 +112,21 @@ const CoinOptionsTable = () => {
         }
 
         // Check input spot
-        let inputSpot = Number(inputSpotRef.current.value);
+        let inputSpotAsNumber = Number(inputSpotRef.current.value);
 
-        if (isNaN(inputSpot) || (!inputSpot)) {
-            console.error("CoinOptionsTable.checkInputValues() ERROR : Input spot is invalid : " + inputSpot)
+        console.log("CoinOptionsTable.checkInputValues() inputSpotAsNumber = " + inputSpotAsNumber);
+
+        if (isNaN(inputSpotAsNumber) || (!inputSpotAsNumber)) {
+            console.error("CoinOptionsTable.checkInputValues() ERROR : Input spot is invalid : " + inputSpotAsNumber)
             setIsInputSpotValid(false);
             setInputSpot(NaN);
-        } else if (inputSpot < 0) {
+        } else if (inputSpotAsNumber < 0) {
             console.error("CoinOptionsTable.checkInputValues() ERROR: Input spot is out of range : " + inputSpot)
             setIsInputSpotValid(false);
             setInputSpot(NaN);
         } else {
             setIsInputSpotValid(true);
-            setInputSpot(inputSpot);
+            setInputSpot(inputSpotAsNumber);
         }
 
         // Check input vol
@@ -160,7 +164,7 @@ const CoinOptionsTable = () => {
     function resetParamsValues() {
 
         inputVolRef.current.value = defaultVol;
-        inputSpotRef.current.value = defaultSpot;
+        inputSpotRef.current.value = spotValue;
         inputRateRef.current.value = defaultRiskFreeRate;
 
         inputAsOfDateRef.current.value = currentDate.toLocaleDateString();
@@ -198,7 +202,7 @@ const CoinOptionsTable = () => {
     function getCurrentInputSpot() {
 
         if (!inputSpotRef.current) {
-            return defaultSpot;
+            return spotValue;
         } else {
             return inputSpotRef.current.value;
         }
@@ -206,11 +210,7 @@ const CoinOptionsTable = () => {
 
     function getCurrentSpotValue() {
 
-        if (!location.state) {
-            return NaN;
-        } else {
-            return location.state.spotValue;
-        }
+        return spotValue;
     }
 
     function handleKeyPress(event) {
@@ -228,26 +228,26 @@ const CoinOptionsTable = () => {
                     <h1>Options on
                         <span className='purple'> {coin.name}</span>
                     </h1>
-                    {coin.symbol ? <p className='coin-symbol'> {coin.symbol.toUpperCase()}/EUR</p> : null}
+                    {coin.symbol ? <p className='coin-symbol'> {coin.symbol.toUpperCase()}/{location.state.baseCurrency.label}</p> : null}
                 </div>
                 <div className='content'>
                     <div className='info'>
                         <div className='coin-heading'>
                             {coin.image ? <img src={coin.image.small} alt=''/> : null}
-                            <h2 className='underlined'><Link to={`/coin/${coin.id}`} element={<CoinDetails/>}
-                                                             key={coin.id}>
+                            <h2 className='underlined'><Link key={coin.id} to={`/coin/${coin.id}`} state={{spotValue: spotValue, baseCurrency: location.state.baseCurrency}}
+                                                             element={<CoinDetails/>} >
                                 {coin.name}</Link></h2>
                         </div>
                         <div className='coin-price'>
                             <span className='spot_label hide-mobile'>Spot</span>
                             {coin.market_data?.current_price ?
-                                <h1 className='spot_value'>{coin.market_data.current_price.eur.toLocaleString()} €</h1> : null}
+                                <h1 className='spot_value'>{spotValue.toLocaleString()} {location.state.baseCurrency.symbol}</h1> : null}
                         </div>
                     </div>
                     <div className='pricing-parameters'>
                         <div>
-                            <TextField className='pricer-input-field' id="input-spot" label="Spot input"
-                                       variant="filled" defaultValue={defaultSpot} onBlur={checkInputValues}
+                            <TextField key={spotValue} className='pricer-input-field' id="input-spot" label="Spot input"
+                                       variant="filled" defaultValue={spotValue} onBlur={checkInputValues}
                                        error={!isInputSpotValid} inputRef={inputSpotRef}
                                        onKeyDown={handleKeyPress} InputLabelProps={{shrink: true}}
                             />
@@ -276,40 +276,37 @@ const CoinOptionsTable = () => {
                 <div className='content'>
                     <h2><span className='calls_label'>CALLS</span></h2>
                     <OptionsGrid key={OptionType.Call + twoWeeksFromNow} trigger={trigger} optionType={OptionType.Call}
-                                 spotValue={getCurrentInputSpot()}
+                                 spotValue={getCurrentInputSpot()} actualSpotValue={spotValue} baseCurrency={location.state.baseCurrency}
                                  currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}
-                                 expiry={twoWeeksFromNow} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep}/>
+                                 expiry={twoWeeksFromNow} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep} />
 
                     <OptionsGrid key={OptionType.Call + oneMonthExpiry} trigger={trigger} optionType={OptionType.Call}
-                                 spotValue={getCurrentInputSpot()}
+                                 spotValue={getCurrentInputSpot()} actualSpotValue={spotValue} baseCurrency={location.state.baseCurrency}
                                  currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}
-                                 expiry={oneMonthExpiry} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep}/>
+                                 expiry={oneMonthExpiry} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep} />
 
                     <OptionsGrid key={OptionType.Call + twoMonthsExpiry} trigger={trigger} optionType={OptionType.Call}
-                                 spotValue={getCurrentInputSpot()}
+                                 spotValue={getCurrentInputSpot()} actualSpotValue={spotValue} baseCurrency={location.state.baseCurrency}
                                  currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}
-                                 expiry={twoMonthsExpiry} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep}/>
+                                 expiry={twoMonthsExpiry} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep} />
                 </div>
                 <div className='content'>
                     <h2 className='h2_puts'><span className='puts_label'>PUTS</span></h2>
 
                     <OptionsGrid key={OptionType.Put + twoWeeksFromNow} trigger={trigger} optionType={OptionType.Put}
-                                 spotValue={getCurrentInputSpot()}
+                                 spotValue={getCurrentInputSpot()} actualSpotValue={spotValue} baseCurrency={location.state.baseCurrency}
                                  currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}
-                                 expiry={twoWeeksFromNow} riskFreeRate={getCurrentInputRate()}
-                                 strikeStep={strikeStep}/>
+                                 expiry={twoWeeksFromNow} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep} />
 
                     <OptionsGrid key={OptionType.Put + oneMonthExpiry} trigger={trigger} optionType={OptionType.Put}
-                                 spotValue={getCurrentInputSpot()}
+                                 spotValue={getCurrentInputSpot()} actualSpotValue={spotValue} baseCurrency={location.state.baseCurrency}
                                  currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}
-                                 expiry={oneMonthExpiry} riskFreeRate={getCurrentInputRate()}
-                                 strikeStep={strikeStep}/>
+                                 expiry={oneMonthExpiry} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep} />
 
                     <OptionsGrid key={OptionType.Put + twoMonthsExpiry} trigger={trigger} optionType={OptionType.Put}
-                                 spotValue={getCurrentInputSpot()}
+                                 spotValue={getCurrentInputSpot()} actualSpotValue={spotValue} baseCurrency={location.state.baseCurrency}
                                  currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}
-                                 expiry={twoMonthsExpiry} riskFreeRate={getCurrentInputRate()}
-                                 strikeStep={strikeStep}/>
+                                 expiry={twoMonthsExpiry} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep} />
                 </div>
             </div>
         </div>

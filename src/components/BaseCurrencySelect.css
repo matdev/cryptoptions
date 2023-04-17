@@ -1,0 +1,10 @@
+
+.MuiSelect-select {
+    background-color: wheat;
+    height: 2rem;
+    width: 85px;
+}
+
+.MuiSelect-box {
+    padding-left: 8px;
+}
