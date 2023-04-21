@@ -10,7 +10,9 @@ import './CoinOptionsTable.css'
 import TextField from '@mui/material/TextField';
 import OptionsGrid from "../components/OptionsGrid";
 import {OptionType} from "../util/PricingUtils";
-const mathjs = require('mathjs')
+import { useSelector } from 'react-redux';
+
+const mathjs = require('mathjs');
 
 const CoinOptionsTable = () => {
 
@@ -35,7 +37,7 @@ const CoinOptionsTable = () => {
 
     // Spot
     //const defaultSpot = getCurrentSpotValue();
-    const [spotValue, setSpotValue] = useState(location.state.spotValue);
+    const [spotValue, setSpotValue] = useState(location.state?.spotValue);
 
     const [inputSpot, setInputSpot] = useState(spotValue);
     const [inputAsOfDate, setInputAsOfDate] = useState(currentDate);
@@ -61,18 +63,24 @@ const CoinOptionsTable = () => {
 
     const [coin, setCoin] = useState({});
 
+    const userCurrency = useSelector(store => store.userCurrency.value);
+
+    console.log("CoinOptionsTable.userCurrency() : " + userCurrency.code);
+
     useEffect(() => {
+
+
         axios.get(url).then((res) => {
             setCoin(res.data)
-            setSpotValue(res.data.market_data.current_price[location.state.baseCurrency.code]);
+            setSpotValue(res.data.market_data.current_price[userCurrency.code]);
 
-            console.log("CoinDetails.useEffect() res.data.market_data.current_price : " + res.data.market_data.current_price[location.state.baseCurrency.code]);
+            console.log("CoinDetails.useEffect() res.data.market_data.current_price : " + res.data.market_data.current_price[userCurrency.code]);
 
             checkInputValues();
         }).catch((error) => {
             console.log(error)
         })
-    }, [])
+    }, [userCurrency])
 
     const url = `https://api.coingecko.com/api/v3/coins/${params.coinId}`;
 
@@ -90,7 +98,7 @@ const CoinOptionsTable = () => {
         strikeStep = mathjs.round(getCurrentSpotValue() / 10, 1);
     }
 
-    //console.log("CoinOptionsTable: props.spotValue = " + props.spotValue +" location.state.spotValue = " + location.state.spotValue + " location.state.baseCurrency.code: " + location.state.baseCurrency.code);
+    //console.log("CoinOptionsTable: props.spotValue = " + props.spotValue +" location.state.spotValue = " + location.state.spotValue);
 
     const [isInputVolValid, setIsInputVolValid] = useState(true);
     const [isInputSpotValid, setIsInputSpotValid] = useState(true);
@@ -228,20 +236,20 @@ const CoinOptionsTable = () => {
                     <h1>Options on
                         <span className='purple'> {coin.name}</span>
                     </h1>
-                    {coin.symbol ? <p className='coin-symbol'> {coin.symbol.toUpperCase()}/{location.state.baseCurrency.label}</p> : null}
+                    {coin.symbol ? <p className='coin-symbol'> {coin.symbol.toUpperCase()}/{userCurrency.label}</p> : null}
                 </div>
                 <div className='content'>
                     <div className='info'>
                         <div className='coin-heading'>
                             {coin.image ? <img src={coin.image.small} alt=''/> : null}
-                            <h2 className='underlined'><Link key={coin.id} to={`/coin/${coin.id}`} state={{spotValue: spotValue, baseCurrency: location.state.baseCurrency}}
+                            <h2 className='underlined'><Link key={coin.id} to={`/coin/${coin.id}`} state={{spotValue: spotValue, baseCurrency: userCurrency}}
                                                              element={<CoinDetails/>} >
                                 {coin.name}</Link></h2>
                         </div>
                         <div className='coin-price'>
                             <span className='spot_label hide-mobile'>Spot</span>
                             {coin.market_data?.current_price ?
-                                <h1 className='spot_value'>{spotValue.toLocaleString()} {location.state.baseCurrency.symbol}</h1> : null}
+                                <h1 className='spot_value'>{spotValue.toLocaleString()} {userCurrency.symbol}</h1> : null}
                         </div>
                     </div>
                     <div className='pricing-parameters'>
@@ -276,17 +284,17 @@ const CoinOptionsTable = () => {
                 <div className='content'>
                     <h2><span className='calls_label'>CALLS</span></h2>
                     <OptionsGrid key={OptionType.Call + twoWeeksFromNow} trigger={trigger} optionType={OptionType.Call}
-                                 spotValue={getCurrentInputSpot()} actualSpotValue={spotValue} baseCurrency={location.state.baseCurrency}
+                                 spotValue={getCurrentInputSpot()} actualSpotValue={spotValue}
                                  currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}
                                  expiry={twoWeeksFromNow} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep} />
 
                     <OptionsGrid key={OptionType.Call + oneMonthExpiry} trigger={trigger} optionType={OptionType.Call}
-                                 spotValue={getCurrentInputSpot()} actualSpotValue={spotValue} baseCurrency={location.state.baseCurrency}
+                                 spotValue={getCurrentInputSpot()} actualSpotValue={spotValue}
                                  currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}
                                  expiry={oneMonthExpiry} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep} />
 
                     <OptionsGrid key={OptionType.Call + twoMonthsExpiry} trigger={trigger} optionType={OptionType.Call}
-                                 spotValue={getCurrentInputSpot()} actualSpotValue={spotValue} baseCurrency={location.state.baseCurrency}
+                                 spotValue={getCurrentInputSpot()} actualSpotValue={spotValue}
                                  currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}
                                  expiry={twoMonthsExpiry} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep} />
                 </div>
@@ -294,17 +302,17 @@ const CoinOptionsTable = () => {
                     <h2 className='h2_puts'><span className='puts_label'>PUTS</span></h2>
 
                     <OptionsGrid key={OptionType.Put + twoWeeksFromNow} trigger={trigger} optionType={OptionType.Put}
-                                 spotValue={getCurrentInputSpot()} actualSpotValue={spotValue} baseCurrency={location.state.baseCurrency}
+                                 spotValue={getCurrentInputSpot()} actualSpotValue={spotValue}
                                  currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}
                                  expiry={twoWeeksFromNow} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep} />
 
                     <OptionsGrid key={OptionType.Put + oneMonthExpiry} trigger={trigger} optionType={OptionType.Put}
-                                 spotValue={getCurrentInputSpot()} actualSpotValue={spotValue} baseCurrency={location.state.baseCurrency}
+                                 spotValue={getCurrentInputSpot()} actualSpotValue={spotValue}
                                  currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}
                                  expiry={oneMonthExpiry} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep} />
 
                     <OptionsGrid key={OptionType.Put + twoMonthsExpiry} trigger={trigger} optionType={OptionType.Put}
-                                 spotValue={getCurrentInputSpot()} actualSpotValue={spotValue} baseCurrency={location.state.baseCurrency}
+                                 spotValue={getCurrentInputSpot()} actualSpotValue={spotValue}
                                  currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}
                                  expiry={twoMonthsExpiry} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep} />
                 </div>

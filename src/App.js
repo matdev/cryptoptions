@@ -6,7 +6,7 @@ import CoinDetails from './routes/CoinDetails'
 import Navbar from './components/Navbar'
 import CoinOptionsTable from "./routes/CoinOptionsTable";
 import Footer from './components/Footer';
-import * as CurrencyUtils from "./util/CurrencyUtils";
+import { useSelector } from 'react-redux';
 
 function App() {
 
@@ -17,15 +17,15 @@ function App() {
     /******** END OF TEST CASES ********/
 
     const [coins, setCoins] = useState([])
-    const [baseCurrency, setBaseCurrency] = React.useState(CurrencyUtils.currencies.EUR);
+    const userCurrency = useSelector(store => store.userCurrency.value);
 
-    //const url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=eur&order=market_cap_desc&per_page=5&page=1&sparkline=false'
     const baseUrl = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=';
     const paramUrl = '&order=market_cap_desc&per_page=5&page=1&sparkline=false';
 
     useEffect(() => {
 
-        let currencyLabel = baseCurrency.code;
+        let currencyLabel = userCurrency.code;
+        //let currencyLabel = 'eur';
 
         let data_url = baseUrl + currencyLabel + paramUrl;
         console.log("App().useEffect() data_url = " + data_url);
@@ -36,15 +36,15 @@ function App() {
         }).catch((error) => {
             console.log(error)
         })
-    }, [baseCurrency])
+    }, [userCurrency])
 
 
     return (
         <>
-            <Navbar baseCurrency={baseCurrency} stateChanger={setBaseCurrency}/>
+            <Navbar />
             <Routes>
 
-                <Route path='/' element={<CoinsTable coins={coins} baseCurrency={baseCurrency} stateChanger={setBaseCurrency}/>}/>
+                <Route path='/' element={<CoinsTable coins={coins} />}/>
                 <Route path='/coin' element={<CoinDetails/>}>
                     <Route path=':coinId' element={<CoinDetails/>}/>
                 </Route>

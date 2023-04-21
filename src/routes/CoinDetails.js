@@ -5,15 +5,16 @@ import DOMPurify from 'dompurify'
 import './CoinDetails.css'
 import CoinOptionsTable from "./CoinOptionsTable";
 import * as CurrencyUtils from "../util/CurrencyUtils";
+import { useSelector } from 'react-redux';
 
 const CoinDetails = (props) => {
 
     const location = useLocation();
     const params = useParams();
 
+    const userCurrency = useSelector(store => store.userCurrency.value);
     const [coin, setCoin] = useState({});
-    //const [spotValue, setSpotValue] = useState(getCurrentSpotValue);
-    const [spotValue, setSpotValue] = useState(location.state.spotValue);
+    const [spotValue, setSpotValue] = useState(location.state?.spotValue);
 
     const url = `https://api.coingecko.com/api/v3/coins/${params.coinId}`
 
@@ -22,10 +23,10 @@ const CoinDetails = (props) => {
     useEffect(() => {
         axios.get(url).then((res) => {
             setCoin(res.data)
-            setSpotValue(res.data.market_data.current_price[location.state.baseCurrency.code]);
+            setSpotValue(res.data.market_data.current_price[userCurrency.code]);
 
-            console.log("CoinDetails.useEffect() res.data.market_data.current_price : " + res.data.market_data.current_price[location.state.baseCurrency.code]);
-            //console.log("CoinDetails. currency:" + location.state.baseCurrency.code + " spotValue : " + location.state.spotValue);
+            console.log("CoinDetails.useEffect() res.data.market_data.current_price : " + res.data.market_data.current_price[userCurrency.code]);
+            //console.log("CoinDetails. currency:" + userCurrency.code + " spotValue : " + location.state.spotValue);
 
         }).catch((error) => {
             console.log(error)
@@ -36,9 +37,9 @@ const CoinDetails = (props) => {
 
         if (!coin.market_data) {
             return NaN;
-        } else if (location.state.baseCurrency.code == CurrencyUtils.currencies.EUR.code){
+        } else if (userCurrency.code == CurrencyUtils.currencies.EUR.code){
             return coin.market_data.current_price.eur;
-        } else if (location.state.baseCurrency.code == CurrencyUtils.currencies.USD.code){
+        } else if (userCurrency.code == CurrencyUtils.currencies.USD.code){
             return coin.market_data.current_price.usd;
         }
     }
@@ -49,7 +50,7 @@ const CoinDetails = (props) => {
                 <div className='content'>
                     <h1>{coin.name}
                     </h1>
-                    {coin.symbol ? <p className='coin-symbol'> {coin.symbol.toUpperCase()}/{location.state.baseCurrency.label}</p> : null}
+                    {coin.symbol ? <p className='coin-symbol'> {coin.symbol.toUpperCase()}/{userCurrency.label}</p> : null}
                 </div>
                 <div className='content'>
                     <div className='rank'>
@@ -63,7 +64,7 @@ const CoinDetails = (props) => {
                         </div>
                         <div className='coin-price'>
                             {coin.market_data?.current_price ?
-                                <h1>{coin.market_data.current_price[location.state.baseCurrency.code].toLocaleString()} {location.state.baseCurrency.symbol}</h1> : null}
+                                <h1>{coin.market_data.current_price[userCurrency.code].toLocaleString()} {userCurrency.symbol}</h1> : null}
                         </div>
                     </div>
                 </div>
@@ -83,17 +84,17 @@ const CoinDetails = (props) => {
                         <tbody>
                         <tr>
                             <td>{coin.market_data?.price_change_percentage_1h_in_currency ?
-                                <p>{coin.market_data.price_change_percentage_1h_in_currency[location.state.baseCurrency.code].toFixed(1)}%</p> : null}</td>
+                                <p>{coin.market_data.price_change_percentage_1h_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
                             <td>{coin.market_data?.price_change_percentage_24h_in_currency ?
-                                <p>{coin.market_data.price_change_percentage_24h_in_currency[location.state.baseCurrency.code].toFixed(1)}%</p> : null}</td>
+                                <p>{coin.market_data.price_change_percentage_24h_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
                             <td>{coin.market_data?.price_change_percentage_24h_in_currency ?
-                                <p>{coin.market_data.price_change_percentage_7d_in_currency[location.state.baseCurrency.code].toFixed(1)}%</p> : null}</td>
+                                <p>{coin.market_data.price_change_percentage_7d_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
                             <td>{coin.market_data?.price_change_percentage_24h_in_currency ?
-                                <p>{coin.market_data.price_change_percentage_14d_in_currency[location.state.baseCurrency.code].toFixed(1)}%</p> : null}</td>
+                                <p>{coin.market_data.price_change_percentage_14d_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
                             <td>{coin.market_data?.price_change_percentage_24h_in_currency ?
-                                <p>{coin.market_data.price_change_percentage_30d_in_currency[location.state.baseCurrency.code].toFixed(1)}%</p> : null}</td>
+                                <p>{coin.market_data.price_change_percentage_30d_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
                             <td>{coin.market_data?.price_change_percentage_24h_in_currency ?
-                                <p>{coin.market_data.price_change_percentage_1y_in_currency[location.state.baseCurrency.code].toFixed(1)}%</p> : null}</td>
+                                <p>{coin.market_data.price_change_percentage_1y_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
 
                         </tr>
                         </tbody>
@@ -105,14 +106,14 @@ const CoinDetails = (props) => {
                             <div className='row'>
                                 <h4>24 Hour Low</h4>
                                 {coin.market_data?.low_24h ?
-                                    <p>{coin.market_data.low_24h[location.state.baseCurrency.code].toLocaleString()} {location.state.baseCurrency.symbol}</p> : null}
+                                    <p>{coin.market_data.low_24h[userCurrency.code].toLocaleString()} {userCurrency.symbol}</p> : null}
                             </div>
                             <div className='row'>
                                 <h4>24 Hour High</h4>
                                 {coin.market_data?.high_24h ?
-                                    <p>{coin.market_data.high_24h[location.state.baseCurrency.code].toLocaleString()} {location.state.baseCurrency.symbol}</p> : null}
+                                    <p>{coin.market_data.high_24h[userCurrency.code].toLocaleString()} {userCurrency.symbol}</p> : null}
                             </div>
-                            <Link to={`/option-prices/${coin.id}`} state={{spotValue: spotValue, baseCurrency: location.state.baseCurrency}} element={<CoinOptionsTable />}
+                            <Link to={`/option-prices/${coin.id}`} state={{spotValue: spotValue, baseCurrency: userCurrency}} element={<CoinOptionsTable />}
                                   key={coin.id}>
                                 <p>
                                     <button className={"button_view_option_pricer"}>Options pricer</button>
@@ -123,7 +124,7 @@ const CoinDetails = (props) => {
                             <div className='row'>
                                 <h4>Market Cap</h4>
                                 {coin.market_data?.market_cap ?
-                                    <p>{coin.market_data.market_cap[location.state.baseCurrency.code].toLocaleString()} {location.state.baseCurrency.symbol}</p> : null}
+                                    <p>{coin.market_data.market_cap[userCurrency.code].toLocaleString()} {userCurrency.symbol}</p> : null}
                             </div>
                             <div className='row'>
                                 <h4>Circulating Supply</h4>

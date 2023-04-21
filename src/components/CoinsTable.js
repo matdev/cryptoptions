@@ -18,8 +18,7 @@ const CoinsTable = (props) => {
 
                 {props.coins.map(coin => {
                     return (
-                        <CoinItem key={coin.id} coin={coin} spotValue={coin.current_price} state={{spotValue: coin.current_price}}
-                                  baseCurrency={props.baseCurrency} stateChanger={props.stateChanger}/>
+                        <CoinItem key={coin.id} coin={coin} spotValue={coin.current_price} state={{spotValue: coin.current_price}} />
                     )
                 })}
 

@@ -6,16 +6,22 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import './BaseCurrencySelect.css';
 import * as CurrencyUtils from "../util/CurrencyUtils";
+import {useDispatch, useSelector} from 'react-redux';
+import { setUserCurrency } from '../features/userCurrencySlice';
 
 export default function BaseCurrencySelect(props) {
 
-    const [baseCurrency, setBaseCurrency] = React.useState(props.baseCurrency);
+    const defaultCurrency = useSelector(store => store.userCurrency.value);
+
+    const [baseCurrency, setBaseCurrency] = React.useState(defaultCurrency);
+    const dispatch = useDispatch();
 
     const handleChange = (event) => {
         console.log("handleChange() : " + event.target.value);
         let selectedCurrency = CurrencyUtils.getCurrencyFromId(event.target.value)
         setBaseCurrency(selectedCurrency);
-        props.stateChanger(selectedCurrency);
+
+        dispatch(setUserCurrency(selectedCurrency));
     };
 
     return (
@@ -23,8 +29,8 @@ export default function BaseCurrencySelect(props) {
             <FormControl fullWidth>
                 <Select
                     className="MuiSelect-select"
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
+                    labelId="currency-select-label"
+                    id="currency-select"
                     value={baseCurrency.id}
                     onChange={handleChange}
                 >
