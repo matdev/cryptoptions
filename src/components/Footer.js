@@ -13,7 +13,7 @@ const Footer = () => {
             </p>
 
             <p className={'version_tag'}>
-                Got feedback or feature request ? <br/><br/>
+                Got feedback ? Feature request ? <br/><br/>
                 Please share it on<Link to="https://discord.gg/wbqzNJhv" target='_blank'> Discord </Link>
             </p>
             <p className={'version_tag'}>
