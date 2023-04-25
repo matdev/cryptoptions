@@ -77,7 +77,7 @@ const OptionsGrid = (props) => {
     }
     function priceOptions() {
 
-        console.log("OptionsGrid.priceOptions() index = " + index + " spotValue = " + props.spotValue);
+        console.log("OptionsGrid.priceOptions() spotValue = " + props.spotValue);
 
         // Check Input asOfDate
         let inputAsOfDate = props.currentDate;

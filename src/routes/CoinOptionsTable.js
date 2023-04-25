@@ -65,16 +65,17 @@ const CoinOptionsTable = () => {
 
     const userCurrency = useSelector(store => store.userCurrency.value);
 
-    console.log("CoinOptionsTable.userCurrency() : " + userCurrency.code);
+    //console.log("CoinOptionsTable.userCurrency() : " + userCurrency.code);
 
     useEffect(() => {
 
 
         axios.get(url).then((res) => {
             setCoin(res.data)
-            setSpotValue(res.data.market_data.current_price[userCurrency.code]);
-
-            console.log("CoinDetails.useEffect() res.data.market_data.current_price : " + res.data.market_data.current_price[userCurrency.code]);
+            let newSpotValue = res.data.market_data.current_price[userCurrency.code];
+            inputSpotRef.current.value = newSpotValue;
+            setSpotValue(newSpotValue);
+            //console.log("CoinDetails.useEffect() res.data.market_data.current_price : " + newSpotValue);
 
             checkInputValues();
         }).catch((error) => {
@@ -122,14 +123,14 @@ const CoinOptionsTable = () => {
         // Check input spot
         let inputSpotAsNumber = Number(inputSpotRef.current.value);
 
-        console.log("CoinOptionsTable.checkInputValues() inputSpotAsNumber = " + inputSpotAsNumber);
+        //console.log("CoinOptionsTable.checkInputValues() inputSpotAsNumber = " + inputSpotAsNumber);
 
         if (isNaN(inputSpotAsNumber) || (!inputSpotAsNumber)) {
-            console.error("CoinOptionsTable.checkInputValues() ERROR : Input spot is invalid : " + inputSpotAsNumber)
+            console.error("CoinOptionsTable.checkInputValues() ERROR : Input spot is invalid : " + inputSpotAsNumber);
             setIsInputSpotValid(false);
             setInputSpot(NaN);
         } else if (inputSpotAsNumber < 0) {
-            console.error("CoinOptionsTable.checkInputValues() ERROR: Input spot is out of range : " + inputSpot)
+            console.error("CoinOptionsTable.checkInputValues() ERROR: Input spot is out of range : " + inputSpot);
             setIsInputSpotValid(false);
             setInputSpot(NaN);
         } else {
@@ -216,6 +217,17 @@ const CoinOptionsTable = () => {
         }
     }
 
+    // function getCurrentInputSpot_TMP() {
+    //
+    //     if (!inputSpotRef.current) {
+    //         console.log("getCurrentInputSpot_TMP !inputSpotRef.current =>return " + inputSpotRef.current?.value)
+    //         return inputSpotRef.current.value;
+    //     } else {
+    //         console.log("getCurrentInputSpot_TMP return inputSpotRef.current.value = " + inputSpotRef.current.value)
+    //         return inputSpotRef.current.value;
+    //     }
+    // }
+
     function getCurrentSpotValue() {
 
         return spotValue;
@@ -283,6 +295,7 @@ const CoinOptionsTable = () => {
                 </div>
                 <div className='content'>
                     <h2><span className='calls_label'>CALLS</span></h2>
+
                     <OptionsGrid key={OptionType.Call + twoWeeksFromNow} trigger={trigger} optionType={OptionType.Call}
                                  spotValue={getCurrentInputSpot()} actualSpotValue={spotValue}
                                  currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}
@@ -309,12 +322,12 @@ const CoinOptionsTable = () => {
                     <OptionsGrid key={OptionType.Put + oneMonthExpiry} trigger={trigger} optionType={OptionType.Put}
                                  spotValue={getCurrentInputSpot()} actualSpotValue={spotValue}
                                  currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}
-                                 expiry={oneMonthExpiry} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep} />
+                                 expiry={oneMonthExpiry} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep}/>
 
                     <OptionsGrid key={OptionType.Put + twoMonthsExpiry} trigger={trigger} optionType={OptionType.Put}
                                  spotValue={getCurrentInputSpot()} actualSpotValue={spotValue}
                                  currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}
-                                 expiry={twoMonthsExpiry} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep} />
+                                 expiry={twoMonthsExpiry} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep}/>
                 </div>
             </div>
         </div>

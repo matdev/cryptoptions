@@ -9,7 +9,7 @@ const Footer = () => {
             <h1>
             </h1>
             <p className={'version_tag'}>
-                version 0.6.2
+                version 0.6.3
             </p>
 
             <p className={'version_tag'}>

@@ -17,7 +17,7 @@ export default function BaseCurrencySelect(props) {
     const dispatch = useDispatch();
 
     const handleChange = (event) => {
-        console.log("handleChange() : " + event.target.value);
+        //console.log("handleChange() : " + event.target.value);
         let selectedCurrency = CurrencyUtils.getCurrencyFromId(event.target.value)
         setBaseCurrency(selectedCurrency);
 

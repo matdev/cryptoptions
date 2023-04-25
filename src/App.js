@@ -28,11 +28,11 @@ function App() {
         //let currencyLabel = 'eur';
 
         let data_url = baseUrl + currencyLabel + paramUrl;
-        console.log("App().useEffect() data_url = " + data_url);
+        //console.log("App().useEffect() data_url = " + data_url);
 
         axios.get(data_url).then((response) => {
             setCoins(response.data)
-            console.log(response.data[0])
+            //console.log(response.data[0])
         }).catch((error) => {
             console.log(error)
         })
