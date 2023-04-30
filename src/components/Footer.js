@@ -9,12 +9,12 @@ const Footer = () => {
             <h1>
             </h1>
             <p className={'version_tag'}>
-                version 0.6.3
+                version 0.6.4
             </p>
 
             <p className={'version_tag'}>
-                Got feedback ? Feature request ? <br/><br/>
-                Please share it on<Link to="https://discord.gg/wbqzNJhv" target='_blank'> Discord </Link>
+                Want to be notified when app is released ? <br/> Any feedback or feature request ? <br/><br/>
+                Please join us on<Link to="https://discord.gg/srYeUy9CcR" target='_blank'> Discord </Link>
             </p>
             <p className={'version_tag'}>
 
