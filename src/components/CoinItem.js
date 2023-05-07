@@ -34,6 +34,12 @@ const CoinItem = (props) => {
                   element={<CoinDetails/>}>
                 <p className='hide-mobile'>{props.coin.total_volume.toLocaleString().padStart(20, '\xa0')} {userCurrency.symbol}</p>
             </Link>
+            <Link key={props.coin.id + "-chart"} to={`/coin/${props.coin.id}`} state={{spotValue: spotValue}}
+                  element={<CoinDetails/>}>
+                <p>
+                    <button className={"button_view_chart"}>View Chart</button>
+                </p>
+            </Link>
             <Link key={props.coin.id + "-pricer"} to={`/option-prices/${props.coin.id}`}
                   state={{spotValue: spotValue}}
                   element={<CoinOptionsTable/>}>

@@ -1,6 +1,7 @@
 :root {
     --main-color: #FB9B9C;
     --bitcoin-color: #F68B1F;
+    --logo_blue: #61dcfe;
 }
 
 .container {
@@ -33,6 +34,7 @@
     padding: 0rem 0rem;
     white-space: nowrap;
     min-width: 80px;
+    width: 80px;
 }
 
 .coin-row {
@@ -68,6 +70,16 @@ img {
 
 .button_view_options {
     background-color: var(--bitcoin-color);
+    padding: 4px;
+    border-radius: 5px;
+    color: black;
+    font-size: 1em;
+    font-weight: bold;
+    max-width: 80px;
+}
+
+.button_view_chart {
+    background-color: var(--logo_blue);
     padding: 4px;
     border-radius: 5px;
     color: black;

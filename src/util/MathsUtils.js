@@ -1,3 +1,4 @@
+import {forEach} from "mathjs";
 
 export function isNumberBetweenMinMax(val, minValue, maxValue) {
 
@@ -14,4 +15,14 @@ export function isNumberBetweenMinMax(val, minValue, maxValue) {
 
 export function roundToNextStepUp(number, increment, offset) {
     return Math.ceil((number - offset) / increment ) * increment + offset;
+}
+
+export function standardDeviation(valuesAsArray){
+
+    const elementCount = valuesAsArray.length;
+
+    for (const v of valuesAsArray) {
+
+    }
+
 }

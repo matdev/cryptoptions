@@ -14,13 +14,17 @@ const CoinsTable = (props) => {
                     <p className={'coin-cell'}>24 h</p>
                     <p className='hide-mobile'>Volume / 24 h</p>
                     <p className='placeholder'></p>
+                    <p className='hide-mobile placeholder'></p>
                 </div>
 
-                {props.coins.map(coin => {
-                    return (
-                        <CoinItem key={coin.id} coin={coin} spotValue={coin.current_price} state={{spotValue: coin.current_price}} />
-                    )
-                })}
+                {(props.coins != undefined) &&
+                    props.coins.map(coin => {
+                        return (
+                            <CoinItem key={coin.id} coin={coin} spotValue={coin.current_price}
+                                      state={{spotValue: coin.current_price}}/>
+                        )
+                    })
+                }
 
             </div>
         </div>

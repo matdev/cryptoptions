@@ -4,8 +4,10 @@ import React, {useState, useEffect} from 'react'
 import DOMPurify from 'dompurify'
 import './CoinDetails.css'
 import CoinOptionsTable from "./CoinOptionsTable";
-import * as CurrencyUtils from "../util/CurrencyUtils";
-import { useSelector } from 'react-redux';
+import Chart from "chart.js/auto";
+import LineChart from "../components/LineChart";
+import {useSelector} from 'react-redux';
+const mathjs = require('mathjs');
 
 const CoinDetails = (props) => {
 
@@ -16,9 +18,29 @@ const CoinDetails = (props) => {
     const [coin, setCoin] = useState({});
     const [spotValue, setSpotValue] = useState(location.state?.spotValue);
 
-    const url = `https://api.coingecko.com/api/v3/coins/${params.coinId}`
+    const [pricesHistory, setPricesHistory] = useState([]);
+    const [dailyReturnHistory, setDailyReturnHistoryHistory] = useState([]);
 
+    const [historicalVol_30d, setHistoricalVol_30d] = useState(0);
+
+    const [chartData, setChartData] = useState({
+        title:  "Historical prices (" + userCurrency.symbol + ")",
+        labels: [], //testLabels.map((data) => data[0]),
+        datasets: [
+            {
+                label: "price hist INIT",
+                data: [], //testValues.map((data) => data[0]),
+                borderColor: 'rgb(255, 99, 132)',
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            },
+        ],
+    });
+
+    const url = `https://api.coingecko.com/api/v3/coins/${params.coinId}`
     //console.log("CoinDetails() url = " + url);
+
+    // URL for retrieving bitcoin daily prices over the last 30 days
+    const price_history_url = 'https://api.coingecko.com/api/v3/coins/' + params.coinId + '/market_chart?vs_currency=' + userCurrency.code + '&days=31&interval=daily';
 
     useEffect(() => {
         axios.get(url).then((res) => {
@@ -30,19 +52,59 @@ const CoinDetails = (props) => {
 
         }).catch((error) => {
             console.log(error)
-        })
-    }, [])
+        });
 
-    function getCurrentSpotValue() {
+        axios.get(price_history_url).then((res) => {
 
-        if (!coin.market_data) {
-            return NaN;
-        } else if (userCurrency.code == CurrencyUtils.currencies.EUR.code){
-            return coin.market_data.current_price.eur;
-        } else if (userCurrency.code == CurrencyUtils.currencies.USD.code){
-            return coin.market_data.current_price.usd;
-        }
-    }
+            //console.log("CoinDetails.useEffect() RECEIVED from price_history_url: " + res.data.prices + " SIZE = " + res.data.prices.length + " pricesHistory = " + pricesHistory);
+            let pricesHistoryFromService = res.data.prices;
+
+            let i = 0;
+            for (const entry of res.data.prices) {
+
+                //console.log("CoinDetails.useEffect() entry: " + entry);
+
+                if (entry[1] === undefined) {
+                    console.log("CoinDetails.useEffect() i=  " + i + " undefined ");
+                } else {
+
+                    pricesHistory[i] = entry[1];
+
+                    if (i > 0){
+                        dailyReturnHistory[i - 1] = mathjs.log(pricesHistory[i] / pricesHistory[i - 1]);
+                    }
+                    // console.log("CoinDetails.useEffect() labelsHistory[i]: " + labelsHistory[i] + " pricesHistory[i] = " + pricesHistory[i]
+                    //     + " dailyReturnHistory[i] = " + dailyReturnHistory[i]);
+                }
+
+                i = i + 1;
+            }
+
+            let standardDeviation_30d = mathjs.std(dailyReturnHistory);
+
+            setHistoricalVol_30d(standardDeviation_30d * mathjs.sqrt(365) * 100);
+
+            console.log("CoinDetails.useEffect() historicalVol_30d : " + historicalVol_30d);
+
+            setChartData({
+                title: "Historical Price Chart (" + userCurrency.symbol + ")",
+                labels: pricesHistoryFromService.map(function (data) {
+                    return new Date(data[0]).toLocaleDateString();
+                }),
+                datasets: [
+                    {
+                        label: "price history",
+                        data: pricesHistoryFromService.map((data) => data[1]),
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    },
+                ],
+            });
+
+        }).catch((error) => {
+            console.log(error)
+        });
+    }, [userCurrency])
 
     return (
         <div>
@@ -50,11 +112,12 @@ const CoinDetails = (props) => {
                 <div className='content'>
                     <h1>{coin.name}
                     </h1>
-                    {coin.symbol ? <p className='coin-symbol'> {coin.symbol.toUpperCase()}/{userCurrency.label}</p> : null}
+                    {coin.symbol ?
+                        <p className='coin-symbol'> {coin.symbol.toUpperCase()}/{userCurrency.label}</p> : null}
                 </div>
                 <div className='content'>
                     <div className='rank'>
-                        <span className='rank-btn'>Rank # {coin.market_cap_rank}</span>
+                        <span className='rank-btn'>Market Cap # {coin.market_cap_rank}</span>
                     </div>
                     <div className='info'>
                         <div className='coin-heading'>
@@ -101,6 +164,22 @@ const CoinDetails = (props) => {
                     </table>
                 </div>
                 <div className='content'>
+                    <div className='info'>
+                        <div className='historical-vol'>
+                            <h3>Historical Volatility : </h3>
+                        </div>
+                        <div className='coin-price'>
+                            <h1>{historicalVol_30d.toFixed(2)} %</h1>
+                        </div>
+                    </div>
+                    <div className='info'>
+                        Calculated over the last 30 daily returns
+                    </div>
+                </div>
+                <div className='content'>
+                    <LineChart chartData={chartData}/>
+                </div>
+                <div className='content'>
                     <div className='stats'>
                         <div className='left'>
                             <div className='row'>
@@ -113,7 +192,9 @@ const CoinDetails = (props) => {
                                 {coin.market_data?.high_24h ?
                                     <p>{coin.market_data.high_24h[userCurrency.code].toLocaleString()} {userCurrency.symbol}</p> : null}
                             </div>
-                            <Link to={`/option-prices/${coin.id}`} state={{spotValue: spotValue, baseCurrency: userCurrency}} element={<CoinOptionsTable />}
+                            <Link to={`/option-prices/${coin.id}`}
+                                  state={{spotValue: spotValue, baseCurrency: userCurrency}}
+                                  element={<CoinOptionsTable/>}
                                   key={coin.id}>
                                 <p>
                                     <button className={"button_view_option_pricer"}>Options pricer</button>

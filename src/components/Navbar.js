@@ -16,8 +16,7 @@ const Navbar = (props) => {
             </Link>
             <Link to='/'>
                 <h1 className='app_name'>Crypt<span className='options'>Options</span><p
-                    className='app_pitch hide-mobile'>The app for crypto derivatives
-                    traders</p>
+                    className='app_pitch hide-mobile'>Fair prices of options on cryptocurrencies</p>
                 </h1>
             </Link>
             <p className='beta_label'>Beta</p>

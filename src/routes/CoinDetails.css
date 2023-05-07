@@ -39,6 +39,16 @@
     grid-template-columns: repeat(2, 1fr);
 }
 
+.historical-vol {
+    display: flex;
+    align-items: center;
+    /*margin-left: 32px;*/
+}
+
+.historical-vol h3 {
+    /*font-weight: normal;*/
+}
+
 .info .coin-heading {
     display: flex;
     align-items: center;

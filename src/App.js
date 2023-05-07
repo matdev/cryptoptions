@@ -6,7 +6,7 @@ import CoinDetails from './routes/CoinDetails'
 import Navbar from './components/Navbar'
 import CoinOptionsTable from "./routes/CoinOptionsTable";
 import Footer from './components/Footer';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 
 function App() {
 
@@ -31,20 +31,21 @@ function App() {
         //console.log("App().useEffect() data_url = " + data_url);
 
         axios.get(data_url).then((response) => {
-            setCoins(response.data)
+            setCoins(response.data);
             //console.log(response.data[0])
         }).catch((error) => {
-            console.log(error)
+            console.log(error);
+            setCoins(null);
         })
     }, [userCurrency])
 
 
     return (
         <>
-            <Navbar />
+            <Navbar/>
             <Routes>
 
-                <Route path='/' element={<CoinsTable coins={coins} />}/>
+                <Route path='/' element={<CoinsTable coins={coins}/>}/>
                 <Route path='/coin' element={<CoinDetails/>}>
                     <Route path=':coinId' element={<CoinDetails/>}/>
                 </Route>

@@ -9,7 +9,7 @@ export const userCurrencySlice = createSlice({
 
     reducers: {
         setUserCurrency: (state, action) => {
-            //console.log('in setUserCurrency() action.payload = ' + action.payload.label);
+            console.log('in setUserCurrency() action.payload = ' + action.payload.label);
             state.value = action.payload;
         },
     },

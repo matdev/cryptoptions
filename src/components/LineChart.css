@@ -1,7 +1,10 @@
 
-.version_tag {
+.chart-container {
+    background-color: white;
+    padding: 16px;
+}
+
+.chart-title {
     text-align: center;
-    color: lightgrey;
-    margin-top: 25px;
-    margin-bottom: 25px;
+    color: black;
 }
