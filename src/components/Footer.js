@@ -13,7 +13,7 @@ const Footer = () => {
                 <b>Join us on<Link to="https://discord.gg/srYeUy9CcR" target='_blank'> Discord </Link> </b>
             </p>
             <p className={'version_tag'}>
-                version 0.6.7
+                version 0.6.8
             </p>
         </div>
     )

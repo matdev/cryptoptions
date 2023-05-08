@@ -28,8 +28,9 @@ const CoinOptionsTable = () => {
     const asOfDate = new Date();
 
     // Vol
-    const defaultVol = 64; // %
-    const [inputVol, setInputVol] = useState(defaultVol);
+    //const defaultVol = 64; // %
+    const [historicalVol_30d, setHistoricalVol_30d] = useState(64);
+    const [inputVol, setInputVol] = useState(historicalVol_30d);
 
     // Risk-free rate
     const defaultRiskFreeRate = 1; // %
@@ -65,25 +66,57 @@ const CoinOptionsTable = () => {
 
     const userCurrency = useSelector(store => store.userCurrency.value);
 
-    //console.log("CoinOptionsTable.userCurrency() : " + userCurrency.code);
+    const url = `https://api.coingecko.com/api/v3/coins/${params.coinId}`;
+    const price_history_url = 'https://api.coingecko.com/api/v3/coins/' + params.coinId + '/market_chart?vs_currency=' + userCurrency.code + '&days=31&interval=daily';
 
     useEffect(() => {
-
 
         axios.get(url).then((res) => {
             setCoin(res.data)
             let newSpotValue = res.data.market_data.current_price[userCurrency.code];
             inputSpotRef.current.value = newSpotValue;
             setSpotValue(newSpotValue);
-            //console.log("CoinDetails.useEffect() res.data.market_data.current_price : " + newSpotValue);
 
             checkInputValues();
         }).catch((error) => {
             console.log(error)
-        })
-    }, [userCurrency])
+        });
 
-    const url = `https://api.coingecko.com/api/v3/coins/${params.coinId}`;
+        axios.get(price_history_url).then((res) => {
+
+            let pricesHistory = [];
+            let dailyReturnHistory = [];
+
+            let i = 0;
+            for (const entry of res.data.prices) {
+
+                if (entry[1] === undefined) {
+                    console.log("CoinOptionsTable.useEffect() i=  " + i + " undefined ");
+                } else {
+
+                    pricesHistory[i] = entry[1];
+
+                    if (i > 0){
+                        dailyReturnHistory[i - 1] = mathjs.log(pricesHistory[i] / pricesHistory[i - 1]);
+                    }
+                    // console.log("CoinOptionsTable.useEffect() pricesHistory[i] = " + pricesHistory[i]
+                    //     + " dailyReturnHistory[i] = " + dailyReturnHistory[i - 1]);
+                }
+
+                i = i + 1;
+            }
+
+            let standardDeviation_30d = mathjs.std(dailyReturnHistory);
+            let histoVol_30d = standardDeviation_30d * mathjs.sqrt(365) * 100;
+            console.log("CoinOptionsTable.useEffect() histoVol_30d : " + histoVol_30d);
+            inputVolRef.current.value = MathsUtils.roundToDecimalPlace(histoVol_30d, 1);
+
+            setHistoricalVol_30d(histoVol_30d);
+
+        }).catch((error) => {
+            console.log(error)
+        });
+    }, [userCurrency])
 
     const [index, setIndex] = useState(0);
 
@@ -172,7 +205,7 @@ const CoinOptionsTable = () => {
 
     function resetParamsValues() {
 
-        inputVolRef.current.value = defaultVol;
+        inputVolRef.current.value = MathsUtils.roundToDecimalPlace(historicalVol_30d, 1);
         inputSpotRef.current.value = spotValue;
         inputRateRef.current.value = defaultRiskFreeRate;
 
@@ -193,7 +226,7 @@ const CoinOptionsTable = () => {
     function getCurrentInputVol() {
 
         if (!inputVolRef.current) {
-            return defaultVol;
+            return historicalVol_30d;
         } else {
             return inputVolRef.current.value;
         }
@@ -272,7 +305,7 @@ const CoinOptionsTable = () => {
                                        onKeyDown={handleKeyPress} InputLabelProps={{shrink: true}}
                             />
                             <TextField className='pricer-input-field' id="input-vol" label="Vol input (%)"
-                                       variant="filled" defaultValue={defaultVol} onBlur={checkInputValues}
+                                       variant="filled" defaultValue={historicalVol_30d} onBlur={checkInputValues}
                                        error={!isInputVolValid} inputRef={inputVolRef}
                                        onKeyDown={handleKeyPress} InputLabelProps={{shrink: true}}
                             />

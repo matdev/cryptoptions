@@ -5,6 +5,7 @@ import {Link} from 'react-router-dom'
 import CoinDetails from "../routes/CoinDetails";
 import CoinOptionsTable from "../routes/CoinOptionsTable";
 import {useSelector} from "react-redux";
+import * as MathsUtils from "../util/MathsUtils";
 
 const CoinItem = (props) => {
 
@@ -24,11 +25,11 @@ const CoinItem = (props) => {
             </Link>
             <Link key={props.coin.id + "-price"} to={`/coin/${props.coin.id}`} state={{spotValue: spotValue}}
                   element={<CoinDetails/>}>
-                <p className={'coin-cell-price'}>{props.coin.current_price} {userCurrency.symbol}</p>
+                <p className={'coin-cell-price'}>{MathsUtils.roundSmart(props.coin.current_price)} {userCurrency.symbol}</p>
             </Link>
             <Link key={props.coin.id + "-change"} to={`/coin/${props.coin.id}`} state={{spotValue: spotValue}}
                   element={<CoinDetails/>}>
-                <p className={'coin-cell hide-mobile'}>{props.coin.price_change_percentage_24h.toFixed(2)} %</p>
+                <p className={'coin-cell'}>{props.coin.price_change_percentage_24h.toFixed(2)} %</p>
             </Link>
             <Link key={props.coin.id + "-volume"} to={`/coin/${props.coin.id}`} state={{spotValue: spotValue}}
                   element={<CoinDetails/>}>
