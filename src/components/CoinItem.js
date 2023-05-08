@@ -28,7 +28,7 @@ const CoinItem = (props) => {
             </Link>
             <Link key={props.coin.id + "-change"} to={`/coin/${props.coin.id}`} state={{spotValue: spotValue}}
                   element={<CoinDetails/>}>
-                <p className={'coin-cell'}>{props.coin.price_change_percentage_24h.toFixed(2)} %</p>
+                <p className={'coin-cell hide-mobile'}>{props.coin.price_change_percentage_24h.toFixed(2)} %</p>
             </Link>
             <Link key={props.coin.id + "-volume"} to={`/coin/${props.coin.id}`} state={{spotValue: spotValue}}
                   element={<CoinDetails/>}>
