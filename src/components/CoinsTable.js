@@ -2,6 +2,9 @@ import React from 'react'
 import CoinItem from './CoinItem'
 
 import './CoinsTable.css'
+import CoinDetails from "../routes/CoinDetails";
+import * as MathsUtils from "../util/MathsUtils";
+import {Link} from "react-router-dom";
 
 const CoinsTable = (props) => {
     return (
@@ -16,6 +19,23 @@ const CoinsTable = (props) => {
                     <p className='placeholder'></p>
                     <p className='placeholder hide-mobile'></p>
                 </div>
+
+                {(props.coins == undefined) &&
+                    <div className={'data-not-available'}>
+                        <p>
+                            Data not available right now.
+                            Please retry shortly or click the button below
+                        </p>
+                        <div>
+                            <br/>
+                            <Link to={`/coin/bitcoin`} element={<CoinDetails/>}>
+                                <p>
+                                    <button className={"button_view_chart"}>Bitcoin Chart</button>
+                                </p>
+                            </Link>
+                        </div>
+                    </div>}
+
 
                 {(props.coins != undefined) &&
                     props.coins.map(coin => {

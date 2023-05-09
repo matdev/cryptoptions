@@ -1,11 +1,8 @@
 import React from "react";
 import { Line } from "react-chartjs-2";
 import './LineChart.css';
-import {useSelector} from 'react-redux';
 
 function LineChart({ chartData }) {
-
-    const userCurrency = useSelector(store => store.userCurrency.value);
 
     return (
         <div className="chart-container">

@@ -92,12 +92,18 @@ img {
     width: 75px;
 }
 
+.data-not-available {
+    text-align: center;
+    color: red;
+    padding: 32px;
+}
+
 @media screen and (max-width: 720px) {
     .hide-mobile {
         display: none;
     }
 
     .heading {
-        padding-left: 30px;
+        padding-left: 0px;
     }
 }
