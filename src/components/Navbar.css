@@ -8,6 +8,7 @@
     height: 35px;
     margin-right: 4px;
     width: auto;
+    min-width: auto;
 }
 
 .app_name {
