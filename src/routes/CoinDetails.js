@@ -7,6 +7,7 @@ import CoinOptionsTable from "./CoinOptionsTable";
 import Chart from "chart.js/auto";
 import LineChart from "../components/LineChart";
 import {useSelector} from 'react-redux';
+import * as MathsUtils from "../util/MathsUtils";
 const mathjs = require('mathjs');
 
 const CoinDetails = (props) => {
@@ -205,11 +206,11 @@ const CoinDetails = (props) => {
                             <div className='row'>
                                 <h4>Market Cap</h4>
                                 {coin.market_data?.market_cap ?
-                                    <p>{coin.market_data.market_cap[userCurrency.code].toLocaleString()} {userCurrency.symbol}</p> : null}
+                                    <p>{MathsUtils.roundToMillionsIfPossible(coin.market_data.market_cap[userCurrency.code])} {userCurrency.symbol}</p> : null}
                             </div>
                             <div className='row'>
                                 <h4>Circulating Supply</h4>
-                                {coin.market_data ? <p>{coin.market_data.circulating_supply}</p> : null}
+                                {coin.market_data ? <p>{MathsUtils.roundToMillionsIfPossible(coin.market_data.circulating_supply)}</p> : null}
                             </div>
                         </div>
                     </div>

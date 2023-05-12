@@ -25,7 +25,7 @@ const CoinItem = (props) => {
             </Link>
             <Link key={props.coin.id + "-price"} to={`/coin/${props.coin.id}`} state={{spotValue: spotValue}}
                   element={<CoinDetails/>}>
-                <p className={'coin-cell-price'}>{MathsUtils.roundSmart(props.coin.current_price)} {userCurrency.symbol}</p>
+                <p className={'coin-cell-price'}>{MathsUtils.roundSmart(props.coin.current_price).toLocaleString()} {userCurrency.symbol}</p>
             </Link>
             <Link key={props.coin.id + "-change"} to={`/coin/${props.coin.id}`} state={{spotValue: spotValue}}
                   element={<CoinDetails/>}>
@@ -33,7 +33,7 @@ const CoinItem = (props) => {
             </Link>
             <Link key={props.coin.id + "-volume"} to={`/coin/${props.coin.id}`} state={{spotValue: spotValue}}
                   element={<CoinDetails/>}>
-                <p className='hide-mobile'>{props.coin.total_volume.toLocaleString().padStart(20, '\xa0')} {userCurrency.symbol}</p>
+                <p className='hide-mobile'>{MathsUtils.roundToMillionsIfPossible(props.coin.total_volume)} {userCurrency.symbol}</p>
             </Link>
             <Link key={props.coin.id + "-chart"} to={`/coin/${props.coin.id}`} state={{spotValue: spotValue}}
                   element={<CoinDetails/>}>

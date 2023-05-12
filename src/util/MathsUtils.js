@@ -40,3 +40,20 @@ export function roundToDecimalPlace(value, decimalPlace) {
 
     return Math.round(value * h) / h;
 }
+
+/*
+ * If value >= 1 M e.g. 1 400 000 : rounds to 1.4
+ * else: do not round
+ */
+export function roundToMillionsIfPossible(value) {
+
+    let result = value;
+
+    if (value >= 1000000){
+        let valueAsMillion = value / 1000000;
+        result = roundToDecimalPlace(valueAsMillion, 1);
+        result = result.toLocaleString() + " M";
+    }
+
+    return result;
+}
