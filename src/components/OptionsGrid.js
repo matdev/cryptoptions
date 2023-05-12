@@ -5,7 +5,8 @@ import DataGrid from "react-data-grid";
 import * as PricingUtils from "../util/PricingUtils";
 import * as MathsUtils from "../util/MathsUtils";
 import {OptionType} from "../util/PricingUtils";
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
+
 const mathjs = require('mathjs')
 
 const OptionsGrid = (props) => {
@@ -27,16 +28,15 @@ const OptionsGrid = (props) => {
 
         updateStrikes();
 
-        //console.log("OptionsGrid.useEffect() props.spotValue = " + props.spotValue + " props.actualSpotValue = " + props.actualSpotValue);
-
         setIndex(index + 1);
         priceOptions();
-    }, [props.trigger, userCurrency]);
+
+    }, [props.inputVol, props.trigger, userCurrency]);
 
     const columns = [
         {key: 'strike', name: 'Strike'},
         {key: 'vol', name: 'Vol (%)'},
-        {key: 'theo_price', name: 'Theo Price (' + userCurrency.label +')'},
+        {key: 'theo_price', name: 'Theo Price (' + userCurrency.label + ')'},
         {key: 'delta', name: 'Delta'}
     ];
 
@@ -53,7 +53,7 @@ const OptionsGrid = (props) => {
 
     const [rowsParam, setRowsParam] = useState(initialRows);
 
-    function updateStrikes(){
+    function updateStrikes() {
 
         //strike_1_UP = MathsUtils.roundToNextStepUp(props.spotValue, props.strikeStep, props.strikeStep);
         strike_1_UP = MathsUtils.roundToNextStepUp(props.actualSpotValue, props.strikeStep, props.strikeStep);
@@ -62,10 +62,10 @@ const OptionsGrid = (props) => {
         strike_3_UP = mathjs.round(strike_2_UP + props.strikeStep, 1);
         strike_4_UP = mathjs.round(strike_3_UP + props.strikeStep, 1);
 
-        strike_1_DOWN = mathjs.round(strike_1_UP - props.strikeStep,1);
-        strike_2_DOWN = mathjs.round(strike_1_DOWN - props.strikeStep,1);
-        strike_3_DOWN = mathjs.round(strike_2_DOWN - props.strikeStep,1);
-        strike_4_DOWN = mathjs.round(strike_3_DOWN - props.strikeStep,1);
+        strike_1_DOWN = mathjs.round(strike_1_UP - props.strikeStep, 1);
+        strike_2_DOWN = mathjs.round(strike_1_DOWN - props.strikeStep, 1);
+        strike_3_DOWN = mathjs.round(strike_2_DOWN - props.strikeStep, 1);
+        strike_4_DOWN = mathjs.round(strike_3_DOWN - props.strikeStep, 1);
 
         //console.log("OptionsGrid.updateStrikes() strike_1_UP = " + strike_1_UP);
 
@@ -75,9 +75,10 @@ const OptionsGrid = (props) => {
             rowsParam[i].strike = strikesArray[i];
         }
     }
+
     function priceOptions() {
 
-        console.log("OptionsGrid.priceOptions() spotValue = " + props.spotValue);
+        //console.log("OptionsGrid.priceOptions() spotValue = " + props.spotValue + " inputVol = " + props.inputVol);
 
         // Check Input asOfDate
         let inputAsOfDate = props.currentDate;
@@ -95,7 +96,7 @@ const OptionsGrid = (props) => {
         let inputVol = props.inputVol;
         if (isNaN(inputVol) || (!inputVol)) {
             inputVol = NaN;
-        } else if (!MathsUtils.isNumberBetweenMinMax(inputVol, 0 , 100)) {
+        } else if (!MathsUtils.isNumberBetweenMinMax(inputVol, 0, 100)) {
             inputVol = NaN;
         }
 

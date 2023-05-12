@@ -29,8 +29,8 @@ const CoinOptionsTable = () => {
 
     // Vol
     //const defaultVol = 64; // %
-    const [historicalVol_30d, setHistoricalVol_30d] = useState(64);
-    const [inputVol, setInputVol] = useState(historicalVol_30d);
+    const [historicalVol_30d, setHistoricalVol_30d] = useState(54);
+    const [inputVol, setInputVol] = useState();
 
     // Risk-free rate
     const defaultRiskFreeRate = 1; // %
@@ -108,11 +108,14 @@ const CoinOptionsTable = () => {
 
             let standardDeviation_30d = mathjs.std(dailyReturnHistory);
             let histoVol_30d = standardDeviation_30d * mathjs.sqrt(365) * 100;
+            histoVol_30d = MathsUtils.roundToDecimalPlace(histoVol_30d, 1);
             console.log("CoinOptionsTable.useEffect() histoVol_30d : " + histoVol_30d);
-            inputVolRef.current.value = MathsUtils.roundToDecimalPlace(histoVol_30d, 1);
 
+            inputVolRef.current.value = histoVol_30d
             setHistoricalVol_30d(histoVol_30d);
+            setInputVol(histoVol_30d);
 
+            checkInputValues();
         }).catch((error) => {
             console.log(error)
         });
@@ -182,6 +185,7 @@ const CoinOptionsTable = () => {
             console.error("CoinOptionsTable.checkInputValues() ERROR: Input vol is out of range : " + inputVol)
             setIsInputVolValid(false);
         } else {
+            //console.log("CoinOptionsTable.checkInputValues() Input vol is OK : " + inputVol)
             setIsInputVolValid(true);
             setInputVol(inputVol);
         }
@@ -249,17 +253,6 @@ const CoinOptionsTable = () => {
             return inputSpotRef.current.value;
         }
     }
-
-    // function getCurrentInputSpot_TMP() {
-    //
-    //     if (!inputSpotRef.current) {
-    //         console.log("getCurrentInputSpot_TMP !inputSpotRef.current =>return " + inputSpotRef.current?.value)
-    //         return inputSpotRef.current.value;
-    //     } else {
-    //         console.log("getCurrentInputSpot_TMP return inputSpotRef.current.value = " + inputSpotRef.current.value)
-    //         return inputSpotRef.current.value;
-    //     }
-    // }
 
     function getCurrentSpotValue() {
 
@@ -329,7 +322,7 @@ const CoinOptionsTable = () => {
                 <div className='content'>
                     <h2><span className='calls_label'>CALLS</span></h2>
 
-                    <OptionsGrid key={OptionType.Call + twoWeeksFromNow} trigger={trigger} optionType={OptionType.Call}
+                    <OptionsGrid key={OptionType.Call + twoWeeksFromNow} index={index} trigger={trigger} optionType={OptionType.Call}
                                  spotValue={getCurrentInputSpot()} actualSpotValue={spotValue}
                                  currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}
                                  expiry={twoWeeksFromNow} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep} />

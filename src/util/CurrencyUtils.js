@@ -5,20 +5,6 @@ export const currencies = Object.freeze({
     ETH: {id: '4', code:'eth', symbol: 'ETH', label:'ETH'}
 })
 
-export function getCurrencyLabel(id){
-    if (id == 1){
-        return currencies.EUR.code;
-    } else if (id == 2){
-        return currencies.USD.code;
-    } else if (id == 3){
-        return currencies.BTC.code;
-    } else if (id == 4){
-        return currencies.ETH.code;
-    } else {
-        return currencies.EUR.code;
-    }
-}
-
 export function getCurrencyFromId(id){
     if (id == 1){
         return currencies.EUR;
