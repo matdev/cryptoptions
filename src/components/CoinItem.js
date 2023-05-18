@@ -6,6 +6,7 @@ import CoinDetails from "../routes/CoinDetails";
 import CoinOptionsTable from "../routes/CoinOptionsTable";
 import {useSelector} from "react-redux";
 import * as MathsUtils from "../util/MathsUtils";
+var fixedWidthString = require('fixed-width-string');
 
 const CoinItem = (props) => {
 
@@ -20,20 +21,20 @@ const CoinItem = (props) => {
                   element={<CoinDetails/>}>
                 <div className='img-symbol'>
                     <img src={props.coin.image} alt='' width={50} height={50}/>
-                    <p className={'coin-name'}>{props.coin.symbol.toUpperCase()}</p>
+                    <p className={'coin-name'}>{fixedWidthString(props.coin.symbol.toUpperCase(), 5, { padding: ' ' })}</p>
                 </div>
             </Link>
             <Link key={props.coin.id + "-price"} to={`/coin/${props.coin.id}`} state={{spotValue: spotValue}}
                   element={<CoinDetails/>}>
-                <p className={'coin-cell-price'}>{MathsUtils.roundSmart(props.coin.current_price).toLocaleString()} {userCurrency.symbol}</p>
+                <p className={'coin-cell-price'}>{fixedWidthString(MathsUtils.roundSmart(props.coin.current_price).toLocaleString() + ' ' + userCurrency.symbol, 11, { padding: ' ' })}</p>
             </Link>
             <Link key={props.coin.id + "-change"} to={`/coin/${props.coin.id}`} state={{spotValue: spotValue}}
                   element={<CoinDetails/>}>
-                <p className={'coin-cell'}>{props.coin.price_change_percentage_24h.toFixed(2)} %</p>
+                <p className={'coin-cell'}>{fixedWidthString(props.coin.price_change_percentage_24h.toFixed(2) + ' %',8, { padding: ' ' })}</p>
             </Link>
             <Link key={props.coin.id + "-volume"} to={`/coin/${props.coin.id}`} state={{spotValue: spotValue}}
                   element={<CoinDetails/>}>
-                <p className='hide-mobile'>{MathsUtils.roundToMillionsIfPossible(props.coin.total_volume)} {userCurrency.symbol}</p>
+                <p className='hide-mobile'>{fixedWidthString(MathsUtils.roundToMillionsIfPossible(props.coin.total_volume)+ ' ' + userCurrency.symbol, 12, { padding: ' ' })}</p>
             </Link>
             <Link key={props.coin.id + "-chart"} to={`/coin/${props.coin.id}`} state={{spotValue: spotValue}}
                   element={<CoinDetails/>}>
