@@ -123,4 +123,8 @@ img {
     .heading {
         padding-left: 0px;
     }
+
+    .placeholder {
+        width: 120px;
+    }
 }
