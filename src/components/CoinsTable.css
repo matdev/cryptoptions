@@ -19,13 +19,21 @@
     margin: 0rem 0rem;
     padding: .7rem 1rem;
     font-weight: 700;
+    margin-top: 20px;
 }
 
 .coin-name {
     text-decoration: underline;
 }
 
-.coin-cell {
+.coin-header-cell {
+    padding: .5rem 0.5rem;
+    white-space: nowrap;
+    width: 80px;
+    text-align: center;
+}
+
+.coin-cell-change-24h {
     padding: .5rem 0.5rem;
     white-space: nowrap;
 }
@@ -35,6 +43,15 @@
     white-space: nowrap;
     min-width: 80px;
     width: 80px;
+    text-align: end;
+}
+
+.coin-cell-volume-24h {
+    padding: 0rem 0rem;
+    white-space: nowrap;
+    min-width: 90px;
+    width: 90px;
+    text-align: end;
 }
 
 .coin-row {
@@ -61,7 +78,7 @@ img {
 }
 
 .img-symbol {
-    min-width: 100px;
+    min-width: 75px;
     display: flex;
     align-items: center;
     width: 75px;
@@ -89,7 +106,7 @@ img {
 }
 
 .placeholder {
-    width: 75px;
+    width: 80px;
 }
 
 .data-not-available {
@@ -98,7 +115,7 @@ img {
     padding: 32px;
 }
 
-@media screen and (max-width: 720px) {
+@media screen and (max-width: 700px) {
     .hide-mobile {
         display: none;
     }

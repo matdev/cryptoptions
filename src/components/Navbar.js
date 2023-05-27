@@ -19,7 +19,7 @@ const Navbar = (props) => {
                     className='app_pitch hide-mobile'>Fair prices of options on cryptocurrencies</p>
                 </h1>
             </Link>
-            <p className='beta_label'>Beta</p>
+            <p className='beta_label hide-mobile'>Beta</p>
             <BaseCurrencySelect />
         </div>
 

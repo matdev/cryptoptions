@@ -30,11 +30,11 @@ const CoinItem = (props) => {
             </Link>
             <Link key={props.coin.id + "-change"} to={`/coin/${props.coin.id}`} state={{spotValue: spotValue}}
                   element={<CoinDetails/>}>
-                <p className={'coin-cell'}>{fixedWidthString(props.coin.price_change_percentage_24h.toFixed(2) + ' %',8, { padding: ' ' })}</p>
+                <p className={'coin-cell-change-24h'}>{fixedWidthString(props.coin.price_change_percentage_24h.toFixed(2) + ' %',8, { padding: ' ' })}</p>
             </Link>
             <Link key={props.coin.id + "-volume"} to={`/coin/${props.coin.id}`} state={{spotValue: spotValue}}
                   element={<CoinDetails/>}>
-                <p className='hide-mobile'>{fixedWidthString(MathsUtils.roundToMillionsIfPossible(props.coin.total_volume)+ ' ' + userCurrency.symbol, 12, { padding: ' ' })}</p>
+                <p className='coin-cell-volume-24h hide-mobile'>{fixedWidthString(MathsUtils.roundToMillionsIfPossible(props.coin.total_volume)+ ' ' + userCurrency.symbol, 12, { padding: ' ' })}</p>
             </Link>
             <Link key={props.coin.id + "-chart"} to={`/coin/${props.coin.id}`} state={{spotValue: spotValue}}
                   element={<CoinDetails/>}>
