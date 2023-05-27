@@ -15,12 +15,14 @@ const Navbar = (props) => {
                 <img src={logo} className="App-logo" alt="CryptOptions"/>
             </Link>
             <Link to='/'>
-                <h1 className='app_name'>Crypt<span className='options'>Options</span><p
-                    className='app_pitch hide-mobile'>Fair prices of options on cryptocurrencies</p>
-                </h1>
+                <div className='app_name_div'>
+                    <h1 className='app_name'>Crypt<span className='options'>Options</span></h1>
+                    <p className='beta_label hide-mobile'>Beta</p>
+                </div>
+                <p className='app_pitch hide-mobile'>Fair prices of options on cryptocurrencies</p>
             </Link>
-            <p className='beta_label hide-mobile'>Beta</p>
-            <BaseCurrencySelect />
+
+            <BaseCurrencySelect/>
         </div>
 
     )

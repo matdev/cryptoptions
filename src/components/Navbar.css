@@ -6,12 +6,16 @@
 
 .App-logo {
     height: 35px;
-    margin-right: 4px;
+    margin-right: 0px;
     width: auto;
 }
 
 .app_name {
     text-align: left;
+}
+
+.app_name_div {
+    display: flex;
 }
 
 .navbar {
@@ -43,6 +47,9 @@ h1 {
     background-color: var(--beta-color);
     border-radius: 8px;
     padding: .3rem;
+    margin-top: 10px;
+    width: fit-content;
+    height: fit-content;
     font-weight: bold;
 }
 
