@@ -62,8 +62,10 @@ const CoinsTable = (props) => {
 
     return (
         <div className='container'>
-            <div>
 
+            <div className='header'>
+                <br/>
+                <h2 className='header_title'>Cryptocurrencies by Market Cap (Top 5)</h2>
             </div>
 
             <div>

@@ -24,6 +24,8 @@
 
 .coin-name {
     text-decoration: underline;
+    font-weight: bold;
+    word-break: break-all;
 }
 
 .coin-header-cell {
@@ -31,6 +33,7 @@
     white-space: nowrap;
     width: 80px;
     text-align: center;
+    margin-left: 1rem;
 }
 
 .coin-cell-change-24h {
@@ -81,7 +84,7 @@ img {
     min-width: 75px;
     display: flex;
     align-items: center;
-    width: 75px;
+    width: 125px;
     padding-right: 0.5rem;
 }
 
@@ -113,6 +116,14 @@ img {
     text-align: center;
     color: red;
     padding: 32px;
+}
+
+.header {
+    width: 75%;
+}
+
+.header_title {
+    padding: 1rem;
 }
 
 @media screen and (max-width: 700px) {

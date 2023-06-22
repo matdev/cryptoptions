@@ -7,6 +7,7 @@ import Navbar from './components/Navbar'
 import CoinOptionsTable from "./routes/CoinOptionsTable";
 import Footer from './components/Footer';
 import {useSelector} from 'react-redux';
+import LearnOptions from "./routes/LearnOptions";
 
 function App() {
 
@@ -52,6 +53,12 @@ function App() {
                 <Route path='/option-prices' element={<CoinOptionsTable/>}>
                     <Route path=':coinId' element={<CoinOptionsTable spotValue={1500}/>}/>
                 </Route>
+                {/*<Route path='/option-prices/bitcoin' element={<CoinOptionsTable spotValue={2500}/>}/>*/}
+
+                {/*<Route path='/option-prices/ethereum' element={<CoinOptionsTable spotValue={1800}/>}/>*/}
+
+                <Route path='/learn-options' element={<LearnOptions/>}/>
+
             </Routes>
             <Footer/>
         </>

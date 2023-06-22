@@ -1,10 +1,12 @@
-import React from 'react'
+import React from 'react';
 
-import logo from '../assets/img.png'
+import logo from '../assets/img.png';
 
-import {Link} from 'react-router-dom'
+import {Link, NavLink} from 'react-router-dom'
+
 import './Navbar.css'
 import BaseCurrencySelect from './BaseCurrencySelect'
+import CoinOptionsTable from "../routes/CoinOptionsTable";
 
 const Navbar = (props) => {
 
@@ -27,12 +29,16 @@ const Navbar = (props) => {
                     <p className='app_pitch hide-mobile'>Fair prices of options on cryptocurrencies</p>
                 </Link>
 
-                <Link className='navbar_link hide-mobile' to='/option-prices/bitcoin'>
+                <NavLink to='/option-prices/bitcoin' state={{ spotValue:'25000' }} className='navbar_link hide-mobile' >
                     <h4>Options on Bitcoin</h4>
-                </Link>
-                <Link className='navbar_link hide-mobile' to='/option-prices/ethereum'>
+                </NavLink>
+
+                <NavLink to='/option-prices/ethereum' state={{ spotValue:'1800' }} className='navbar_link hide-mobile' >
                     <h4>Options on Ethereum</h4>
-                </Link>
+                </NavLink>
+                <NavLink to='/learn-options' className='navbar_link hide-mobile' >
+                    <h4>Learn Options</h4>
+                </NavLink>
             </div>
             <div>
                 <BaseCurrencySelect/>

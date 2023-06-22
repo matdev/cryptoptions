@@ -21,7 +21,7 @@ const CoinItem = (props) => {
                   element={<CoinDetails/>}>
                 <div className='img-symbol'>
                     <img src={props.coin.image} alt='' width={50} height={50}/>
-                    <p className={'coin-name'}>{fixedWidthString(props.coin.symbol.toUpperCase(), 5, { padding: ' ' })}</p>
+                    <p className={'coin-name'}>{fixedWidthString(props.coin.name, 8, { padding: ' ' })}</p>
                 </div>
             </Link>
             <Link key={props.coin.id + "-price"} to={`/coin/${props.coin.id}`} state={{spotValue: spotValue}}
