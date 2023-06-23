@@ -91,6 +91,10 @@ th {
     text-decoration: underline;
 }
 
+h1 {
+    margin: 0.5rem;
+}
+
 .pricer-input-field input {
     background: wheat;
     border-radius: 5px;

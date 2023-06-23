@@ -6,7 +6,6 @@ import {Link, NavLink} from 'react-router-dom'
 
 import './Navbar.css'
 import BaseCurrencySelect from './BaseCurrencySelect'
-import CoinOptionsTable from "../routes/CoinOptionsTable";
 
 const Navbar = (props) => {
 
@@ -29,14 +28,17 @@ const Navbar = (props) => {
                     <p className='app_pitch hide-mobile'>Fair prices of options on cryptocurrencies</p>
                 </Link>
 
-                <NavLink to='/option-prices/bitcoin' state={{ spotValue:'25000' }} className='navbar_link hide-mobile' >
+                <NavLink to='/option-prices/bitcoin' state={{spotValue: '25000'}} className={({isActive}) =>
+                    isActive ? 'navbar_link_active' : 'navbar_link'}>
                     <h4>Options on Bitcoin</h4>
                 </NavLink>
 
-                <NavLink to='/option-prices/ethereum' state={{ spotValue:'1800' }} className='navbar_link hide-mobile' >
+                <NavLink to='/option-prices/ethereum' state={{spotValue: '1800'}} className={({isActive}) =>
+                    isActive ? 'navbar_link_active' : 'navbar_link'}>
                     <h4>Options on Ethereum</h4>
                 </NavLink>
-                <NavLink to='/learn-options' className='navbar_link hide-mobile' >
+                <NavLink to='/learn-options' className={({isActive}) =>
+                    isActive ? 'navbar_link_active' : 'navbar_link'}>
                     <h4>Learn Options</h4>
                 </NavLink>
             </div>

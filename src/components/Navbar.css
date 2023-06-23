@@ -24,7 +24,7 @@
     flex-direction: row;
     align-items: center;
     max-width: 1140px;
-    margin: auto;
+    margin: 1rem auto auto auto;
 }
 
 .logo_section {
@@ -50,6 +50,16 @@ h1 {
 }
 
 .navbar_link {
+    margin: auto;
+    padding: 1rem;
+    text-decoration: underline;
+}
+
+.navbar_link h4 {
+    font-weight: normal;
+}
+
+.navbar_link_active {
     margin: auto;
     padding: 1rem;
     text-decoration: underline;
@@ -81,6 +91,11 @@ h1 {
 }
 
 @media screen and (max-width: 700px) {
+
+    .navbar {
+        margin: auto;
+    }
+
     h1 {
         margin: 0.5rem;
         margin-top: 1rem;
@@ -90,5 +105,13 @@ h1 {
     .app_logo {
         margin-top: 1rem;
         margin-left: 1rem;
+    }
+
+    .navbar_link {
+        display: none;
+    }
+
+    .navbar_link_active {
+        display: none;
     }
 }

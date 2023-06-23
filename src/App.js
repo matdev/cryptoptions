@@ -53,9 +53,9 @@ function App() {
                 <Route path='/option-prices' element={<CoinOptionsTable/>}>
                     <Route path=':coinId' element={<CoinOptionsTable spotValue={1500}/>}/>
                 </Route>
-                {/*<Route path='/option-prices/bitcoin' element={<CoinOptionsTable spotValue={2500}/>}/>*/}
+                {/*<Route path='/option-prices/bitcoin' element={<CoinOptionsTable/>}/>*/}
 
-                {/*<Route path='/option-prices/ethereum' element={<CoinOptionsTable spotValue={1800}/>}/>*/}
+                {/*<Route path='/option-prices/ethereum' element={<CoinOptionsTable/>}/>*/}
 
                 <Route path='/learn-options' element={<LearnOptions/>}/>
 
