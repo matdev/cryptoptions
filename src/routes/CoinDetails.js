@@ -8,6 +8,7 @@ import Chart from "chart.js/auto";
 import LineChart from "../components/LineChart";
 import {useSelector} from 'react-redux';
 import * as MathsUtils from "../util/MathsUtils";
+
 const mathjs = require('mathjs');
 
 const CoinDetails = (props) => {
@@ -25,7 +26,7 @@ const CoinDetails = (props) => {
     const [historicalVol_30d, setHistoricalVol_30d] = useState(0);
 
     const [chartData, setChartData] = useState({
-        title:  "Historical prices (" + userCurrency.symbol + ")",
+        title: "Historical prices (" + userCurrency.symbol + ")",
         labels: [], //testLabels.map((data) => data[0]),
         datasets: [
             {
@@ -71,7 +72,7 @@ const CoinDetails = (props) => {
 
                     pricesHistory[i] = entry[1];
 
-                    if (i > 0){
+                    if (i > 0) {
                         dailyReturnHistory[i - 1] = mathjs.log(pricesHistory[i] / pricesHistory[i - 1]);
                     }
                     // console.log("CoinDetails.useEffect() labelsHistory[i]: " + labelsHistory[i] + " pricesHistory[i] = " + pricesHistory[i]
@@ -111,21 +112,21 @@ const CoinDetails = (props) => {
         <div>
             <div className='coin-container'>
                 <div className='content'>
-                    <h1>{coin.name}
-                    </h1>
-                    {coin.symbol ?
-                        <p className='coin-symbol'> {coin.symbol.toUpperCase()}/{userCurrency.label}</p> : null}
-                </div>
-                <div className='content'>
-                    <div className='rank'>
-                        <span className='rank-btn'>Market Cap # {coin.market_cap_rank}</span>
-                    </div>
-                    <div className='info'>
+                    <div className='details_info'>
                         <div className='coin-heading'>
                             {coin.image ? <img src={coin.image.small} alt=''/> : null}
                             <h2>
-                                {coin.name}</h2><p></p>
+                                {coin.name}</h2>
+                            {coin.symbol ?
+                                <p className='coin-symbol'> {coin.symbol.toUpperCase()}</p> : null}
                         </div>
+                        <div className='centered-in-cell'>
+                            <div className='rank'>
+                                <span className='rank-btn'>Market cap # {coin.market_cap_rank}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className='details_info'>
                         <div className='coin-price'>
                             {coin.market_data?.current_price ?
                                 <h1>{coin.market_data.current_price[userCurrency.code].toLocaleString()} {userCurrency.symbol}</h1> : null}
@@ -165,16 +166,28 @@ const CoinDetails = (props) => {
                     </table>
                 </div>
                 <div className='content'>
-                    <div className='info'>
+                    <div className='details_info'>
                         <div className='historical-vol'>
                             <h3>Historical Volatility : </h3>
                         </div>
-                        <div className='coin-price'>
+                        <div className='centered-in-cell'>
                             <h1>{historicalVol_30d.toFixed(2)} %</h1>
                         </div>
                     </div>
-                    <div className='info'>
-                        Calculated over the last 30 daily returns
+                    <div className='details_info'>
+                        <div>
+                            Calculated over the last 30 daily returns
+                        </div>
+                        <div className='centered-in-cell'>
+                            <Link to={`/option-prices/${coin.id}`}
+                                  state={{spotValue: spotValue, baseCurrency: userCurrency}}
+                                  element={<CoinOptionsTable/>}
+                                  key={coin.id}>
+                                <p>
+                                    <button className={"button_view_option_pricer"}>Options pricer</button>
+                                </p>
+                            </Link>
+                        </div>
                     </div>
                 </div>
                 <div className='content'>
@@ -193,24 +206,17 @@ const CoinDetails = (props) => {
                                 {coin.market_data?.high_24h ?
                                     <p>{coin.market_data.high_24h[userCurrency.code].toLocaleString()} {userCurrency.symbol}</p> : null}
                             </div>
-                            <Link to={`/option-prices/${coin.id}`}
-                                  state={{spotValue: spotValue, baseCurrency: userCurrency}}
-                                  element={<CoinOptionsTable/>}
-                                  key={coin.id}>
-                                <p>
-                                    <button className={"button_view_option_pricer"}>Options pricer</button>
-                                </p>
-                            </Link>
                         </div>
                         <div className='right'>
                             <div className='row'>
-                                <h4>Market Cap</h4>
+                                <h4>Market cap</h4>
                                 {coin.market_data?.market_cap ?
                                     <p>{MathsUtils.roundToMillionsIfPossible(coin.market_data.market_cap[userCurrency.code])} {userCurrency.symbol}</p> : null}
                             </div>
                             <div className='row'>
                                 <h4>Circulating Supply</h4>
-                                {coin.market_data ? <p>{MathsUtils.roundToMillionsIfPossible(coin.market_data.circulating_supply)}</p> : null}
+                                {coin.market_data ?
+                                    <p>{MathsUtils.roundToMillionsIfPossible(coin.market_data.circulating_supply)}</p> : null}
                             </div>
                         </div>
                     </div>

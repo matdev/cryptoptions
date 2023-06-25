@@ -10,7 +10,7 @@ import './CoinOptionsTable.css'
 import TextField from '@mui/material/TextField';
 import OptionsGrid from "../components/OptionsGrid";
 import {OptionType} from "../util/PricingUtils";
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 
 const mathjs = require('mathjs');
 
@@ -98,7 +98,7 @@ const CoinOptionsTable = () => {
 
                     pricesHistory[i] = entry[1];
 
-                    if (i > 0){
+                    if (i > 0) {
                         dailyReturnHistory[i - 1] = mathjs.log(pricesHistory[i] / pricesHistory[i - 1]);
                     }
                     // console.log("CoinOptionsTable.useEffect() pricesHistory[i] = " + pricesHistory[i]
@@ -276,20 +276,25 @@ const CoinOptionsTable = () => {
                     <h1>Options on
                         <span className='purple'> {coin.name}</span>
                     </h1>
-                    {coin.symbol ? <p className='coin-symbol'> {coin.symbol.toUpperCase()}/{userCurrency.label}</p> : null}
                 </div>
                 <div className='content'>
-                    <div className='info'>
+                    <div className='details_info'>
                         <div className='coin-heading'>
                             {coin.image ? <img src={coin.image.small} alt=''/> : null}
-                            <h2 className='underlined'><Link key={coin.id} to={`/coin/${coin.id}`} state={{spotValue: spotValue, baseCurrency: userCurrency}}
-                                                             element={<CoinDetails/>} >
+                            <h2 className='underlined'><Link key={coin.id} to={`/coin/${coin.id}`}
+                                                             state={{spotValue: spotValue, baseCurrency: userCurrency}}
+                                                             element={<CoinDetails/>}>
                                 {coin.name}</Link></h2>
+
+                            {coin.symbol ? <p className='coin-symbol'> {coin.symbol.toUpperCase()}</p> : null}
                         </div>
+                        <div className='spot_div'><span className='spot_label'>Spot</span></div>
+                    </div>
+
+                    <div className='details_info'>
                         <div className='coin-price'>
-                            <span className='spot_label hide-mobile'>Spot</span>
                             {coin.market_data?.current_price ?
-                                <h1 className='spot_value'>{spotValue.toLocaleString()} {userCurrency.symbol}</h1> : null}
+                                <h1>{coin.market_data.current_price[userCurrency.code].toLocaleString()} {userCurrency.symbol}</h1> : null}
                         </div>
                     </div>
                     <div className='pricing-parameters'>
@@ -324,20 +329,21 @@ const CoinOptionsTable = () => {
                 <div className='content'>
                     <h2><span className='calls_label'>CALLS</span></h2>
 
-                    <OptionsGrid key={OptionType.Call + twoWeeksFromNow} index={index} trigger={trigger} optionType={OptionType.Call}
+                    <OptionsGrid key={OptionType.Call + twoWeeksFromNow} index={index} trigger={trigger}
+                                 optionType={OptionType.Call}
                                  spotValue={getCurrentInputSpot()} actualSpotValue={spotValue}
                                  currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}
-                                 expiry={twoWeeksFromNow} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep} />
+                                 expiry={twoWeeksFromNow} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep}/>
 
                     <OptionsGrid key={OptionType.Call + oneMonthExpiry} trigger={trigger} optionType={OptionType.Call}
                                  spotValue={getCurrentInputSpot()} actualSpotValue={spotValue}
                                  currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}
-                                 expiry={oneMonthExpiry} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep} />
+                                 expiry={oneMonthExpiry} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep}/>
 
                     <OptionsGrid key={OptionType.Call + twoMonthsExpiry} trigger={trigger} optionType={OptionType.Call}
                                  spotValue={getCurrentInputSpot()} actualSpotValue={spotValue}
                                  currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}
-                                 expiry={twoMonthsExpiry} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep} />
+                                 expiry={twoMonthsExpiry} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep}/>
                 </div>
                 <div className='content'>
                     <h2 className='h2_puts'><span className='puts_label'>PUTS</span></h2>
@@ -345,7 +351,7 @@ const CoinOptionsTable = () => {
                     <OptionsGrid key={OptionType.Put + twoWeeksFromNow} trigger={trigger} optionType={OptionType.Put}
                                  spotValue={getCurrentInputSpot()} actualSpotValue={spotValue}
                                  currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}
-                                 expiry={twoWeeksFromNow} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep} />
+                                 expiry={twoWeeksFromNow} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep}/>
 
                     <OptionsGrid key={OptionType.Put + oneMonthExpiry} trigger={trigger} optionType={OptionType.Put}
                                  spotValue={getCurrentInputSpot()} actualSpotValue={spotValue}

@@ -34,7 +34,7 @@
     padding: .2rem;
 }
 
-.info {
+.details_info {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
 }
@@ -49,20 +49,34 @@
     /*font-weight: normal;*/
 }
 
-.info .coin-heading {
+.details_info .coin-heading {
     display: flex;
     align-items: center;
-    margin: 1rem 0;
+    margin: 0 0;
 }
 
-.info .coin-price {
+.details_info .coin-price {
+    display: flex;
+    align-items: center;
+}
+
+.details_info .coin-price h1 {
+    margin: 0;
+}
+
+.details_info .centered-in-cell {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.info p {
+.details_info p {
     padding-right: 1rem;
+}
+
+.row p {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
 }
 
 table {
@@ -99,6 +113,10 @@ th {
 
 .about h3 {
     margin: 1rem 0;
+}
+
+.about p {
+    text-align: justify;
 }
 
 @media screen and (max-width: 700px) {

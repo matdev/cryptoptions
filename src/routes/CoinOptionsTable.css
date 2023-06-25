@@ -31,20 +31,24 @@
 
 .info {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 60% 40%
+    /*grid-template-columns: repeat(3, 1fr);*/
+    /*grid-template-columns: 300px;*/
 }
 
 .pricing-parameters {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
     display: grid;
 }
 
 .info .coin-heading {
     display: flex;
     align-items: center;
-    margin: 1rem 0;
+    margin: 0 0 0 0;
 }
 
-.info .coin-price {
+.info .centered-in-cell {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -91,10 +95,6 @@ th {
     text-decoration: underline;
 }
 
-h1 {
-    margin: 0.5rem;
-}
-
 .pricer-input-field input {
     background: wheat;
     border-radius: 5px;
@@ -106,7 +106,7 @@ h1 {
 .pricer-input-field-longer input {
     background: wheat;
     border-radius: 5px;
-    width: 80px;
+    width: 90px;
     margin-right: 10px;
     margin-top: 5px;
 }
@@ -178,6 +178,10 @@ h1 {
     margin-top: 25px;
 }
 
+.spot_div {
+    margin: auto 0;
+}
+
 .spot_label {
     border: 1px solid var(--spot-violet);
     background-color: var(--spot-violet);
@@ -192,6 +196,7 @@ h1 {
 
 .coin-symbol {
     text-align: center;
+    margin: 1rem 0rem 1rem 0.5rem;
 }
 
 @media screen and (max-width: 700px) {
