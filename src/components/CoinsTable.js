@@ -65,7 +65,7 @@ const CoinsTable = (props) => {
 
             <div className='header'>
                 <br/>
-                <h2 className='header_title'>Cryptocurrencies by Market Cap (Top 5)</h2>
+                <h2 className='header_title'>Top 5 cryptocurrencies by market cap</h2>
             </div>
 
             <div>
@@ -91,7 +91,7 @@ const CoinsTable = (props) => {
                 {(props.coins == undefined) &&
                     <div className={'data-not-available'}>
                         <p>
-                            Data not available right now.
+                            This is a beta version, data access is limited.
                             Please retry shortly or click the button below
                         </p>
                         <div>

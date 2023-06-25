@@ -71,6 +71,8 @@ const CoinOptionsTable = () => {
 
     useEffect(() => {
 
+        console.log("CoinOptionsTable.useEffect() location.state?.spotValue = " + location.state?.spotValue + " params.coinId = " + params.coinId);
+
         axios.get(url).then((res) => {
             setCoin(res.data)
             let newSpotValue = res.data.market_data.current_price[userCurrency.code];
@@ -109,7 +111,7 @@ const CoinOptionsTable = () => {
             let standardDeviation_30d = mathjs.std(dailyReturnHistory);
             let histoVol_30d = standardDeviation_30d * mathjs.sqrt(365) * 100;
             histoVol_30d = MathsUtils.roundToDecimalPlace(histoVol_30d, 1);
-            console.log("CoinOptionsTable.useEffect() histoVol_30d : " + histoVol_30d);
+            //console.log("CoinOptionsTable.useEffect() histoVol_30d : " + histoVol_30d);
 
             inputVolRef.current.value = histoVol_30d
             setHistoricalVol_30d(histoVol_30d);
@@ -119,7 +121,7 @@ const CoinOptionsTable = () => {
         }).catch((error) => {
             console.log(error)
         });
-    }, [userCurrency])
+    }, [userCurrency, params.coinId])
 
     const [index, setIndex] = useState(0);
 
