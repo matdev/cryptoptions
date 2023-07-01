@@ -199,6 +199,12 @@ th {
     margin: 1rem 0rem 1rem 0.5rem;
 }
 
+
+.MuiBox-root {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
 @media screen and (max-width: 700px) {
     .coin-container .content {
         max-width: 95%;

@@ -35,7 +35,7 @@ const OptionsGrid = (props) => {
 
     const columns = [
         {key: 'strike', name: 'Strike'},
-        {key: 'vol', name: 'Vol (%)'},
+        {key: 'vol', name: 'Vol input (%)'},
         {key: 'theo_price', name: 'Theo Price (' + userCurrency.label + ')'},
         {key: 'delta', name: 'Delta'}
     ];
@@ -126,7 +126,7 @@ const OptionsGrid = (props) => {
 
     return (
         <div>
-            <h3 className='expiry'>Expiry: {props.expiry.toLocaleDateString()}</h3>
+            {/*<h3 className='expiry'>Expiry: {props.expiry.toLocaleDateString()}</h3>*/}
 
             <DataGrid
                 columns={columns}
