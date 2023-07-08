@@ -403,6 +403,8 @@ const CoinOptionsTable = () => {
                                   onChange={handleChange}
                                   aria-label="basic tabs example"
                                   textColor="inherit"
+                                  scrollButtons="auto"
+                                  variant="scrollable"
                                   indicatorColor="primary"
                                   TabIndicatorProps={{style: {background: COLORS.logo_blue}}}>
 
@@ -439,25 +441,6 @@ const CoinOptionsTable = () => {
                     </Box>
                 </div>
 
-                {/*<div className='content'>*/}
-                {/*    <h2><span className='calls_label'>CALLS</span></h2>*/}
-
-                {/*    <OptionsGrid key={OptionType.Call + twoWeeksFromNow} index={index} trigger={trigger}*/}
-                {/*                 optionType={OptionType.Call}*/}
-                {/*                 spotValue={getCurrentInputSpot()} actualSpotValue={spotValue}*/}
-                {/*                 currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}*/}
-                {/*                 expiry={twoWeeksFromNow} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep}/>*/}
-
-                {/*    <OptionsGrid key={OptionType.Call + oneMonthExpiry} trigger={trigger} optionType={OptionType.Call}*/}
-                {/*                 spotValue={getCurrentInputSpot()} actualSpotValue={spotValue}*/}
-                {/*                 currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}*/}
-                {/*                 expiry={oneMonthExpiry} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep}/>*/}
-
-                {/*    <OptionsGrid key={OptionType.Call + twoMonthsExpiry} trigger={trigger} optionType={OptionType.Call}*/}
-                {/*                 spotValue={getCurrentInputSpot()} actualSpotValue={spotValue}*/}
-                {/*                 currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}*/}
-                {/*                 expiry={twoMonthsExpiry} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep}/>*/}
-                {/*</div>*/}
                 <div className='content'>
                     <h2 className='h2_puts'><span className='puts_label'>PUTS</span></h2>
                     <Box sx={{width: '100%'}}>
@@ -466,6 +449,8 @@ const CoinOptionsTable = () => {
                                   onChange={handleTabPutChange}
                                   aria-label="basic tabs example"
                                   textColor="inherit"
+                                  scrollButtons="auto"
+                                  variant="scrollable"
                                   key="puts"
                                   indicatorColor="primary"
                                   TabIndicatorProps={{style: {background: COLORS.logo_blue}}}>
@@ -502,25 +487,6 @@ const CoinOptionsTable = () => {
                         </TabPanel>
                     </Box>
                 </div>
-
-                {/*<div className='content'>*/}
-                {/*    <h2 className='h2_puts'><span className='puts_label'>PUTS</span></h2>*/}
-
-                {/*    <OptionsGrid key={OptionType.Put + twoWeeksFromNow} trigger={trigger} optionType={OptionType.Put}*/}
-                {/*                 spotValue={getCurrentInputSpot()} actualSpotValue={spotValue}*/}
-                {/*                 currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}*/}
-                {/*                 expiry={twoWeeksFromNow} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep}/>*/}
-
-                {/*    <OptionsGrid key={OptionType.Put + oneMonthExpiry} trigger={trigger} optionType={OptionType.Put}*/}
-                {/*                 spotValue={getCurrentInputSpot()} actualSpotValue={spotValue}*/}
-                {/*                 currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}*/}
-                {/*                 expiry={oneMonthExpiry} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep}/>*/}
-
-                {/*    <OptionsGrid key={OptionType.Put + twoMonthsExpiry} trigger={trigger} optionType={OptionType.Put}*/}
-                {/*                 spotValue={getCurrentInputSpot()} actualSpotValue={spotValue}*/}
-                {/*                 currentDate={getCurrentInputAsOfDate()} inputVol={getCurrentInputVol()}*/}
-                {/*                 expiry={twoMonthsExpiry} riskFreeRate={getCurrentInputRate()} strikeStep={strikeStep}/>*/}
-                {/*</div>*/}
             </div>
         </div>
     )

@@ -16,7 +16,7 @@ const Footer = () => {
                 Coin prices provided by <Link to="https://www.coingecko.com" target='_blank'> CoinGecko </Link>
             </p>
             <p className={'version_tag'}>
-                version 0.7.14 (beta)
+                version 0.7.15 (beta)
             </p>
         </div>
     )
