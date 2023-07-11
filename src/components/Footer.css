@@ -1,3 +1,8 @@
+.twitter-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
 .version_tag {
     text-align: center;
@@ -8,7 +13,7 @@
 
 .coingecko_ref {
     text-align: center;
-    font-style: normal;
+    font-style: italic;
     color: lightgrey;
     margin-top: 25px;
     margin-bottom: 25px;
