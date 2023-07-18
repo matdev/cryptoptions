@@ -72,7 +72,7 @@ export function forecastTimeSeries(inputData, forecastLength) {
 
 export function forecastTimeSeries_v2(inputData, forecastLength) {
 
-    console.log("forecastTimeSeries_v2 : inputData = " + inputData);
+    //console.log("forecastTimeSeries_v2 : inputData = " + inputData);
 
     // Normalize the input data
     const normalizedData = normalizeData_v2(inputData);

@@ -27,13 +27,10 @@ const CoinDetails = (props) => {
     const [historicalVol_30d, setHistoricalVol_30d] = useState(0);
 
     const [priceForecast_24h, setPriceForecast_24h] = useState(location.state?.spotValue);
-    const [priceForecast_24h_percent, setPriceForecast_24h_percent] = useState();
 
     const [priceForecast_3d, setPriceForecast_3d] = useState(location.state?.spotValue);
-    const [priceForecast_3d_percent, setPriceForecast_3d_percent] = useState();
 
     const [priceForecast_7d, setPriceForecast_7d] = useState(location.state?.spotValue);
-    const [priceForecast_7d_percent, setPriceForecast_7d_percent] = useState();
 
     const [priceForecast_14d, setPriceForecast_14d] = useState(location.state?.spotValue);
 
@@ -100,7 +97,7 @@ const CoinDetails = (props) => {
 
             setHistoricalVol_30d(standardDeviation_30d * mathjs.sqrt(365) * 100);
 
-            console.log("CoinDetails.useEffect() historicalVol_30d : " + historicalVol_30d);
+            console.log("CoinDetails.useEffect() historicalVol_30d : " + historicalVol_30d + " spotValue = " + spotValue);
 
             // Price forecast
             // let pricesHistoryInput = RadialBasisNN.sliceTimeSeries(pricesHistory, 5);
@@ -109,21 +106,13 @@ const CoinDetails = (props) => {
             let priceForecasts = RadialBasisNN.forecastTimeSeries_v2(pricesHistory, 7);
 
             setPriceForecast_24h(priceForecasts[0]);
-            let priceForecast_24h_percent_test = (100 * (priceForecasts[0] - spotValue) / spotValue);
-            setPriceForecast_24h_percent(priceForecast_24h_percent_test);
-
             setPriceForecast_3d(priceForecasts[2]);
-            let priceForecast_3d_percent_test = (100 * (priceForecasts[2] - spotValue) / spotValue);
-            setPriceForecast_3d_percent(priceForecast_3d_percent_test);
-
             setPriceForecast_7d(priceForecasts[6]);
-            let priceForecast_7d_percent_test = (100 * (priceForecasts[6] - spotValue) / spotValue);
-            setPriceForecast_7d_percent(priceForecast_7d_percent_test);
 
             // setPriceForecast_14d(priceForecasts[13]);
             // setPriceForecast_30d(priceForecasts[29]);
 
-            console.log("CoinDetails.useEffect() priceForecasts : " + priceForecasts + " length : " + priceForecasts.length);
+            //console.log("CoinDetails.useEffect() priceForecasts : " + priceForecasts + " length : " + priceForecasts.length);
 
             // Chart data
             setChartData({
@@ -191,14 +180,14 @@ const CoinDetails = (props) => {
                             <td><p>{MathsUtils.roundSmart(priceForecast_7d).toLocaleString()}</p></td>
                         </tr>
                         <tr>
-                            <td><p style={{ color: Math.sign(priceForecast_24h_percent) === -1 ? "red" : "green"}}>{MathsUtils.roundToDecimalPlace(priceForecast_24h_percent, 1)} %</p></td>
-                            <td><p style={{ color: Math.sign(priceForecast_3d_percent) === -1 ? "red" : "green"}}>{MathsUtils.roundToDecimalPlace(priceForecast_3d_percent, 1)} %</p></td>
-                            <td><p style={{ color: Math.sign(priceForecast_7d_percent) === -1 ? "red" : "green"}}>{MathsUtils.roundToDecimalPlace(priceForecast_7d_percent, 1)} %</p></td>
+                            <td><p style={{ color: Math.sign(MathsUtils.getChangeAsPercent(priceForecast_24h, spotValue)) === -1 ? "red" : "green"}}>{MathsUtils.roundToDecimalPlace(MathsUtils.getChangeAsPercent(priceForecast_24h, spotValue), 1)} %</p></td>
+                            <td><p style={{ color: Math.sign(MathsUtils.getChangeAsPercent(priceForecast_3d, spotValue)) === -1 ? "red" : "green"}}>{MathsUtils.roundToDecimalPlace(MathsUtils.getChangeAsPercent(priceForecast_3d, spotValue), 1)} %</p></td>
+                            <td><p style={{ color: Math.sign(MathsUtils.getChangeAsPercent(priceForecast_7d, spotValue)) === -1 ? "red" : "green"}}>{MathsUtils.roundToDecimalPlace(MathsUtils.getChangeAsPercent(priceForecast_7d, spotValue), 1)} %</p></td>
                         </tr>
                         </tbody>
                     </table>
 
-                    <p style={{fontStyle: "italic"}}> Note: These price forecasts are obtained from a model currently being tested. Do not use them to make investment decisions. </p>
+                    <p style={{fontStyle: "italic"}}> Note: These price forecasts are obtained from a model being currently tested. Do not use them to make investment decisions. </p>
                 </div>
                 <div className='content'>
                     <LineChart chartData={chartData}/>

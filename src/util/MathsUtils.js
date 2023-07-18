@@ -57,3 +57,10 @@ export function roundToMillionsIfPossible(value) {
 
     return result;
 }
+
+export function getChangeAsPercent(currentValue, baseValue){
+
+    let result = 100 * (currentValue - baseValue) / baseValue;
+
+    return result;
+}
