@@ -1,10 +1,16 @@
-# Getting Started with Create React App
+# Getting Started with CryptOptions App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+# Available Scripts
 
 In the project directory, you can run:
+
+## Before build
+
+### `npm install`
+
+## After build
 
 ### `npm start`
 
@@ -14,6 +20,18 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 The page will reload when you make changes.\
 You may also see any lint errors in the console.
 
+## Commit & push into repo
+
+### `git add --all`
+### `git commit -m "no js map`
+### `git add --all`
+### `git push`
+
+## Deploy to production
+
+### `npm run deploy`
+
+## Other commands
 ### `npm test`
 
 Launches the test runner in the interactive watch mode.\

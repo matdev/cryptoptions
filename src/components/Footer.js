@@ -1,11 +1,10 @@
 import React from "react";
 import {Link} from 'react-router-dom';
 import {BsTwitter} from "react-icons/bs";
-
 import './Footer.css'
-import {MdMenu} from "react-icons/md";
 
 const Footer = () => {
+
     return (
         <div>
             <br/>
@@ -26,7 +25,7 @@ const Footer = () => {
                 Coin prices provided by <Link to="https://www.coingecko.com" target='_blank'> CoinGecko </Link>
             </p>
             <p className={'version_tag'}>
-                version 0.7.19 (beta)
+                version {process.env.REACT_APP_VERSION} (beta)
             </p>
         </div>
     )
