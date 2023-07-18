@@ -175,14 +175,14 @@ const CoinDetails = (props) => {
                         </thead>
                         <tbody>
                         <tr>
-                            <td><p>{MathsUtils.roundSmart(priceForecast_24h).toLocaleString()}</p></td>
-                            <td><p>{MathsUtils.roundSmart(priceForecast_3d).toLocaleString()}</p></td>
-                            <td><p>{MathsUtils.roundSmart(priceForecast_7d).toLocaleString()}</p></td>
+                            <td><p>{MathsUtils.roundSmart(priceForecast_24h).toLocaleString()} {userCurrency.symbol}</p></td>
+                            <td><p>{MathsUtils.roundSmart(priceForecast_3d).toLocaleString()} {userCurrency.symbol}</p></td>
+                            <td><p>{MathsUtils.roundSmart(priceForecast_7d).toLocaleString()} {userCurrency.symbol}</p></td>
                         </tr>
                         <tr>
-                            <td><p style={{ color: Math.sign(MathsUtils.getChangeAsPercent(priceForecast_24h, spotValue)) === -1 ? "red" : "green"}}>{MathsUtils.roundToDecimalPlace(MathsUtils.getChangeAsPercent(priceForecast_24h, spotValue), 1)} %</p></td>
-                            <td><p style={{ color: Math.sign(MathsUtils.getChangeAsPercent(priceForecast_3d, spotValue)) === -1 ? "red" : "green"}}>{MathsUtils.roundToDecimalPlace(MathsUtils.getChangeAsPercent(priceForecast_3d, spotValue), 1)} %</p></td>
-                            <td><p style={{ color: Math.sign(MathsUtils.getChangeAsPercent(priceForecast_7d, spotValue)) === -1 ? "red" : "green"}}>{MathsUtils.roundToDecimalPlace(MathsUtils.getChangeAsPercent(priceForecast_7d, spotValue), 1)} %</p></td>
+                            <td><p className={ (Math.sign(MathsUtils.getChangeAsPercent(priceForecast_24h, spotValue)) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(MathsUtils.getChangeAsPercent(priceForecast_24h, spotValue), 1)} %</p></td>
+                            <td><p className={ (Math.sign(MathsUtils.getChangeAsPercent(priceForecast_3d, spotValue)) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(MathsUtils.getChangeAsPercent(priceForecast_3d, spotValue), 1)} %</p></td>
+                            <td><p className={ (Math.sign(MathsUtils.getChangeAsPercent(priceForecast_7d, spotValue)) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(MathsUtils.getChangeAsPercent(priceForecast_7d, spotValue), 1)} %</p></td>
                         </tr>
                         </tbody>
                     </table>
@@ -235,17 +235,17 @@ const CoinDetails = (props) => {
                         <tbody>
                         <tr>
                             <td>{coin.market_data?.price_change_percentage_1h_in_currency ?
-                                <p style={{ color: Math.sign(coin.market_data.price_change_percentage_1h_in_currency[userCurrency.code]) === -1 ? "red" : "green"}}>{coin.market_data.price_change_percentage_1h_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
+                                <p className={(Math.sign(coin.market_data.price_change_percentage_1h_in_currency[userCurrency.code]) === -1) ? "change_negative" : "change_positive"}>{coin.market_data.price_change_percentage_1h_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
                             <td>{coin.market_data?.price_change_percentage_24h_in_currency ?
-                                <p style={{ color: Math.sign(coin.market_data.price_change_percentage_24h_in_currency[userCurrency.code]) === -1 ? "red" : "green"}}>{coin.market_data.price_change_percentage_24h_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
+                                <p className={(Math.sign(coin.market_data.price_change_percentage_24h_in_currency[userCurrency.code]) === -1) ? "change_negative" : "change_positive"}>{coin.market_data.price_change_percentage_24h_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
                             <td>{coin.market_data?.price_change_percentage_24h_in_currency ?
-                                <p style={{ color: Math.sign(coin.market_data.price_change_percentage_7d_in_currency[userCurrency.code]) === -1 ? "red" : "green"}}>{coin.market_data.price_change_percentage_7d_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
+                                <p className={(Math.sign(coin.market_data.price_change_percentage_7d_in_currency[userCurrency.code]) === -1) ? "change_negative" : "change_positive"}>{coin.market_data.price_change_percentage_7d_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
                             <td>{coin.market_data?.price_change_percentage_24h_in_currency ?
-                                <p style={{ color: Math.sign(coin.market_data.price_change_percentage_14d_in_currency[userCurrency.code]) === -1 ? "red" : "green"}}>{coin.market_data.price_change_percentage_14d_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
+                                <p className={(Math.sign(coin.market_data.price_change_percentage_14d_in_currency[userCurrency.code]) === -1) ? "change_negative" : "change_positive"}>{coin.market_data.price_change_percentage_14d_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
                             <td>{coin.market_data?.price_change_percentage_24h_in_currency ?
-                                <p style={{ color: Math.sign(coin.market_data.price_change_percentage_30d_in_currency[userCurrency.code]) === -1 ? "red" : "green"}}>{coin.market_data.price_change_percentage_30d_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
+                                <p className={(Math.sign(coin.market_data.price_change_percentage_30d_in_currency[userCurrency.code]) === -1) ? "change_negative" : "change_positive"}>{coin.market_data.price_change_percentage_30d_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
                             <td>{coin.market_data?.price_change_percentage_24h_in_currency ?
-                                <p style={{ color: Math.sign(coin.market_data.price_change_percentage_1y_in_currency[userCurrency.code]) === -1 ? "red" : "green"}}>{coin.market_data.price_change_percentage_1y_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
+                                <p className={(Math.sign(coin.market_data.price_change_percentage_1y_in_currency[userCurrency.code]) === -1) ? "change_negative" : "change_positive"}>{coin.market_data.price_change_percentage_1y_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
 
                         </tr>
                         </tbody>

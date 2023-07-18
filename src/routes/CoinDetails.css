@@ -1,5 +1,17 @@
 :root {
     --main-color: #FB9B9C;
+    --positive-green: #57e4bd;
+    --negative-red: #FF5276;
+}
+
+.change_positive {
+    color: var(--positive-green);
+    font-weight: bold;
+}
+
+.change_negative {
+    color: var(--negative-red);
+    font-weight: bold;
 }
 
 .coin-container .content {
