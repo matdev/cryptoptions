@@ -12,7 +12,7 @@ import {Link} from 'react-router-dom'
 import 'react-data-grid/lib/styles.css';
 import * as DateUtils from '../util/DateUtils';
 import * as MathsUtils from '../util/MathsUtils';
-import './CoinOptionsTable.css'
+import './CoinOptions.css'
 import TextField from '@mui/material/TextField';
 import OptionsGrid from "../components/OptionsGrid";
 import {OptionType} from "../util/PricingUtils";
@@ -21,7 +21,7 @@ import {useSelector} from 'react-redux';
 
 const mathjs = require('mathjs');
 
-const CoinOptionsTable = () => {
+const CoinOptions = () => {
 
     const params = useParams();
     const location = useLocation();
@@ -81,7 +81,7 @@ const CoinOptionsTable = () => {
 
     useEffect(() => {
 
-        console.log("CoinOptionsTable.useEffect() location.state?.spotValue = " + location.state?.spotValue + " params.coinId = " + params.coinId);
+        console.log("CoinOptions.useEffect() location.state?.spotValue = " + location.state?.spotValue + " params.coinId = " + params.coinId);
 
         axios.get(url).then((res) => {
             setCoin(res.data)
@@ -103,7 +103,7 @@ const CoinOptionsTable = () => {
             for (const entry of res.data.prices) {
 
                 if (entry[1] === undefined) {
-                    console.log("CoinOptionsTable.useEffect() i=  " + i + " undefined ");
+                    console.log("CoinOptions.useEffect() i=  " + i + " undefined ");
                 } else {
 
                     pricesHistory[i] = entry[1];
@@ -111,7 +111,7 @@ const CoinOptionsTable = () => {
                     if (i > 0) {
                         dailyReturnHistory[i - 1] = mathjs.log(pricesHistory[i] / pricesHistory[i - 1]);
                     }
-                    // console.log("CoinOptionsTable.useEffect() pricesHistory[i] = " + pricesHistory[i]
+                    // console.log("CoinOptions.useEffect() pricesHistory[i] = " + pricesHistory[i]
                     //     + " dailyReturnHistory[i] = " + dailyReturnHistory[i - 1]);
                 }
 
@@ -121,7 +121,7 @@ const CoinOptionsTable = () => {
             let standardDeviation_30d = mathjs.std(dailyReturnHistory);
             let histoVol_30d = standardDeviation_30d * mathjs.sqrt(365) * 100;
             histoVol_30d = MathsUtils.roundToDecimalPlace(histoVol_30d, 1);
-            //console.log("CoinOptionsTable.useEffect() histoVol_30d : " + histoVol_30d);
+            //console.log("CoinOptions.useEffect() histoVol_30d : " + histoVol_30d);
 
             inputVolRef.current.value = histoVol_30d
             setHistoricalVol_30d(histoVol_30d);
@@ -147,7 +147,7 @@ const CoinOptionsTable = () => {
         strikeStep = mathjs.round(getCurrentSpotValue() / 10, 1);
     }
 
-    //console.log("CoinOptionsTable: props.spotValue = " + props.spotValue +" location.state.spotValue = " + location.state.spotValue);
+    //console.log("CoinOptions: props.spotValue = " + props.spotValue +" location.state.spotValue = " + location.state.spotValue);
 
     const [isInputVolValid, setIsInputVolValid] = useState(true);
     const [isInputSpotValid, setIsInputSpotValid] = useState(true);
@@ -160,7 +160,7 @@ const CoinOptionsTable = () => {
 
         // Check input asOfDate
         if (isNaN(fromDate) || (!fromDate)) {
-            console.error("CoinOptionsTable.checkInputValues() ERROR : Input AsOfDate is invalid : " + fromDate)
+            console.error("CoinOptions.checkInputValues() ERROR : Input AsOfDate is invalid : " + fromDate)
             setIsInputAsOfDateValid(false);
             setInputAsOfDate(NaN);
         } else {
@@ -171,14 +171,14 @@ const CoinOptionsTable = () => {
         // Check input spot
         let inputSpotAsNumber = Number(inputSpotRef.current.value);
 
-        //console.log("CoinOptionsTable.checkInputValues() inputSpotAsNumber = " + inputSpotAsNumber);
+        //console.log("CoinOptions.checkInputValues() inputSpotAsNumber = " + inputSpotAsNumber);
 
         if (isNaN(inputSpotAsNumber) || (!inputSpotAsNumber)) {
-            console.error("CoinOptionsTable.checkInputValues() ERROR : Input spot is invalid : " + inputSpotAsNumber);
+            console.error("CoinOptions.checkInputValues() ERROR : Input spot is invalid : " + inputSpotAsNumber);
             setIsInputSpotValid(false);
             setInputSpot(NaN);
         } else if (inputSpotAsNumber < 0) {
-            console.error("CoinOptionsTable.checkInputValues() ERROR: Input spot is out of range : " + inputSpot);
+            console.error("CoinOptions.checkInputValues() ERROR: Input spot is out of range : " + inputSpot);
             setIsInputSpotValid(false);
             setInputSpot(NaN);
         } else {
@@ -190,14 +190,14 @@ const CoinOptionsTable = () => {
         let inputVol = Number(inputVolRef.current.value.replace('%', ''));
 
         if (isNaN(inputVol) || (!inputVol)) {
-            console.error("CoinOptionsTable.checkInputValues() ERROR : Input vol is invalid : " + inputVol)
+            console.error("CoinOptions.checkInputValues() ERROR : Input vol is invalid : " + inputVol)
             setIsInputVolValid(false);
             setInputVol(NaN);
         } else if (!MathsUtils.isNumberBetweenMinMax(inputVol, 0, 100)) {
-            console.error("CoinOptionsTable.checkInputValues() ERROR: Input vol is out of range : " + inputVol)
+            console.error("CoinOptions.checkInputValues() ERROR: Input vol is out of range : " + inputVol)
             setIsInputVolValid(false);
         } else {
-            //console.log("CoinOptionsTable.checkInputValues() Input vol is OK : " + inputVol)
+            //console.log("CoinOptions.checkInputValues() Input vol is OK : " + inputVol)
             setIsInputVolValid(true);
             setInputVol(inputVol);
         }
@@ -206,7 +206,7 @@ const CoinOptionsTable = () => {
         let inputRate = Number(inputRateRef.current.value.replace('%', ''));
 
         if (isNaN(inputRate) || (!inputRate)) {
-            console.error("CoinOptionsTable.checkInputValues() ERROR : Input rate is invalid : " + inputRate)
+            console.error("CoinOptions.checkInputValues() ERROR : Input rate is invalid : " + inputRate)
             setIsInputRateValid(false);
             setInputRate(NaN);
         } else {
@@ -492,4 +492,4 @@ const CoinOptionsTable = () => {
     )
 }
 
-export default CoinOptionsTable
+export default CoinOptions

@@ -3,7 +3,7 @@ import React, {useState} from 'react'
 import './CoinsTable.css'
 import {Link} from 'react-router-dom'
 import CoinDetails from "../routes/CoinDetails";
-import CoinOptionsTable from "../routes/CoinOptionsTable";
+import CoinOptions from "../routes/CoinOptions";
 import {useSelector} from "react-redux";
 import * as MathsUtils from "../util/MathsUtils";
 var fixedWidthString = require('fixed-width-string');
@@ -39,12 +39,12 @@ const CoinItem = (props) => {
             <Link key={props.coin.id + "-chart"} to={`/coin/${props.coin.id}`} state={{spotValue: spotValue}}
                   element={<CoinDetails/>}>
                 <p>
-                    <button className={"button_view_chart"}>View Chart</button>
+                    <button className={"button_view_chart"}>Price forecast</button>
                 </p>
             </Link>
             <Link key={props.coin.id + "-pricer"} to={`/option-prices/${props.coin.id}`}
                   state={{spotValue: spotValue}}
-                  element={<CoinOptionsTable/>}>
+                  element={<CoinOptions/>}>
                 <p>
                     <button className={"button_view_options"}>Options pricer</button>
                 </p>

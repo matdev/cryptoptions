@@ -94,11 +94,17 @@ const CoinsTable = (props) => {
                             This is a beta version, data access is limited.
                             Please retry shortly or click the button below
                         </p>
-                        <div>
+                        <div className={'data_not_available_buttons'}>
                             <br/>
                             <Link to={`/coin/bitcoin`} element={<CoinDetails/>}>
                                 <p>
-                                    <button className={"button_view_chart"}>Bitcoin Chart</button>
+                                    <button className={"button_view_chart"}>Bitcoin forecast</button>
+                                </p>
+                            </Link>
+
+                            <Link to={`/coin/ethereum`} element={<CoinDetails/>}>
+                                <p>
+                                    <button className={"button_view_chart"}>Ethereum forecast</button>
                                 </p>
                             </Link>
                         </div>

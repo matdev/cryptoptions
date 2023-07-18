@@ -1,6 +1,6 @@
 {
   "name": "CryptOptions",
-  "version": "0.7.15",
+  "version": "0.7.17",
   "private": false,
   "homepage": "https://www.cryptoptions.fr",
   "dependencies": {
@@ -8,6 +8,7 @@
     "@emotion/styled": "^11.10.6",
     "@mui/material": "^5.11.14",
     "@reduxjs/toolkit": "^1.9.5",
+    "@tensorflow/tfjs": "^4.8.0",
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",

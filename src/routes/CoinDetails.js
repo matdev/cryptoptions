@@ -3,12 +3,13 @@ import {Link, useLocation, useParams} from 'react-router-dom'
 import React, {useState, useEffect} from 'react'
 import DOMPurify from 'dompurify'
 import './CoinDetails.css'
-import CoinOptionsTable from "./CoinOptionsTable";
+import CoinOptions from "./CoinOptions";
 import Chart from "chart.js/auto";
 import LineChart from "../components/LineChart";
 import {useSelector} from 'react-redux';
 import * as MathsUtils from "../util/MathsUtils";
-
+import * as RadialBasisNN from "../util/NN_RadialBasis";
+import {roundToDecimalPlace} from "../util/MathsUtils";
 const mathjs = require('mathjs');
 
 const CoinDetails = (props) => {
@@ -24,6 +25,19 @@ const CoinDetails = (props) => {
     const [dailyReturnHistory, setDailyReturnHistoryHistory] = useState([]);
 
     const [historicalVol_30d, setHistoricalVol_30d] = useState(0);
+
+    const [priceForecast_24h, setPriceForecast_24h] = useState(location.state?.spotValue);
+    const [priceForecast_24h_percent, setPriceForecast_24h_percent] = useState();
+
+    const [priceForecast_3d, setPriceForecast_3d] = useState(location.state?.spotValue);
+    const [priceForecast_3d_percent, setPriceForecast_3d_percent] = useState();
+
+    const [priceForecast_7d, setPriceForecast_7d] = useState(location.state?.spotValue);
+    const [priceForecast_7d_percent, setPriceForecast_7d_percent] = useState();
+
+    const [priceForecast_14d, setPriceForecast_14d] = useState(location.state?.spotValue);
+
+    const [priceForecast_30d, setPriceForecast_30d] = useState(location.state?.spotValue);
 
     const [chartData, setChartData] = useState({
         title: "Historical prices (" + userCurrency.symbol + ")",
@@ -42,14 +56,14 @@ const CoinDetails = (props) => {
     //console.log("CoinDetails() url = " + url);
 
     // URL for retrieving bitcoin daily prices over the last 30 days
-    const price_history_url = 'https://api.coingecko.com/api/v3/coins/' + params.coinId + '/market_chart?vs_currency=' + userCurrency.code + '&days=31&interval=daily';
+    const price_history_url = 'https://api.coingecko.com/api/v3/coins/' + params.coinId + '/market_chart?vs_currency=' + userCurrency.code + '&days=90&interval=daily';
 
     useEffect(() => {
         axios.get(url).then((res) => {
             setCoin(res.data)
             setSpotValue(res.data.market_data.current_price[userCurrency.code]);
 
-            console.log("CoinDetails.useEffect() res.data.market_data.current_price : " + res.data.market_data.current_price[userCurrency.code]);
+            //console.log("CoinDetails.useEffect() res.data.market_data.current_price : " + res.data.market_data.current_price[userCurrency.code]);
             //console.log("CoinDetails. currency:" + userCurrency.code + " spotValue : " + location.state.spotValue);
 
         }).catch((error) => {
@@ -88,6 +102,30 @@ const CoinDetails = (props) => {
 
             console.log("CoinDetails.useEffect() historicalVol_30d : " + historicalVol_30d);
 
+            // Price forecast
+            // let pricesHistoryInput = RadialBasisNN.sliceTimeSeries(pricesHistory, 5);
+            // let priceForecasts = RadialBasisNN.forecastTimeSeries(pricesHistoryInput, 1);
+
+            let priceForecasts = RadialBasisNN.forecastTimeSeries_v2(pricesHistory, 7);
+
+            setPriceForecast_24h(priceForecasts[0]);
+            let priceForecast_24h_percent_test = (100 * (priceForecasts[0] - spotValue) / spotValue);
+            setPriceForecast_24h_percent(priceForecast_24h_percent_test);
+
+            setPriceForecast_3d(priceForecasts[2]);
+            let priceForecast_3d_percent_test = (100 * (priceForecasts[2] - spotValue) / spotValue);
+            setPriceForecast_3d_percent(priceForecast_3d_percent_test);
+
+            setPriceForecast_7d(priceForecasts[6]);
+            let priceForecast_7d_percent_test = (100 * (priceForecasts[6] - spotValue) / spotValue);
+            setPriceForecast_7d_percent(priceForecast_7d_percent_test);
+
+            // setPriceForecast_14d(priceForecasts[13]);
+            // setPriceForecast_30d(priceForecasts[29]);
+
+            console.log("CoinDetails.useEffect() priceForecasts : " + priceForecasts + " length : " + priceForecasts.length);
+
+            // Chart data
             setChartData({
                 title: "Historical Price Chart (" + userCurrency.symbol + ")",
                 labels: pricesHistoryFromService.map(function (data) {
@@ -135,35 +173,35 @@ const CoinDetails = (props) => {
                 </div>
 
                 <div className='content'>
+                    <div className='historical-vol'>
+                        <h3>Price forecast : </h3>
+                    </div>
                     <table>
                         <thead>
                         <tr>
-                            <th>1h</th>
-                            <th>24h</th>
-                            <th>7d</th>
-                            <th>14d</th>
-                            <th>30d</th>
-                            <th>1yr</th>
+                            <th>next 24 hours</th>
+                            <th>next 3 days</th>
+                            <th>next 7 days</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            <td>{coin.market_data?.price_change_percentage_1h_in_currency ?
-                                <p>{coin.market_data.price_change_percentage_1h_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
-                            <td>{coin.market_data?.price_change_percentage_24h_in_currency ?
-                                <p>{coin.market_data.price_change_percentage_24h_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
-                            <td>{coin.market_data?.price_change_percentage_24h_in_currency ?
-                                <p>{coin.market_data.price_change_percentage_7d_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
-                            <td>{coin.market_data?.price_change_percentage_24h_in_currency ?
-                                <p>{coin.market_data.price_change_percentage_14d_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
-                            <td>{coin.market_data?.price_change_percentage_24h_in_currency ?
-                                <p>{coin.market_data.price_change_percentage_30d_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
-                            <td>{coin.market_data?.price_change_percentage_24h_in_currency ?
-                                <p>{coin.market_data.price_change_percentage_1y_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
-
+                            <td><p>{MathsUtils.roundSmart(priceForecast_24h).toLocaleString()}</p></td>
+                            <td><p>{MathsUtils.roundSmart(priceForecast_3d).toLocaleString()}</p></td>
+                            <td><p>{MathsUtils.roundSmart(priceForecast_7d).toLocaleString()}</p></td>
+                        </tr>
+                        <tr>
+                            <td><p style={{ color: Math.sign(priceForecast_24h_percent) === -1 ? "red" : "green"}}>{MathsUtils.roundToDecimalPlace(priceForecast_24h_percent, 1)} %</p></td>
+                            <td><p style={{ color: Math.sign(priceForecast_3d_percent) === -1 ? "red" : "green"}}>{MathsUtils.roundToDecimalPlace(priceForecast_3d_percent, 1)} %</p></td>
+                            <td><p style={{ color: Math.sign(priceForecast_7d_percent) === -1 ? "red" : "green"}}>{MathsUtils.roundToDecimalPlace(priceForecast_7d_percent, 1)} %</p></td>
                         </tr>
                         </tbody>
                     </table>
+
+                    <p style={{fontStyle: "italic"}}> Note: These price forecasts are obtained from a model currently being tested. Do not use them to make investment decisions. </p>
+                </div>
+                <div className='content'>
+                    <LineChart chartData={chartData}/>
                 </div>
                 <div className='content'>
                     <div className='details_info'>
@@ -176,12 +214,12 @@ const CoinDetails = (props) => {
                     </div>
                     <div className='details_info'>
                         <div>
-                            Calculated over the last 30 daily returns
+                            Calculated over the last 90 daily returns
                         </div>
                         <div className='centered-in-cell'>
                             <Link to={`/option-prices/${coin.id}`}
                                   state={{spotValue: spotValue, baseCurrency: userCurrency}}
-                                  element={<CoinOptionsTable/>}
+                                  element={<CoinOptions/>}
                                   key={coin.id}>
                                 <p>
                                     <button className={"button_view_option_pricer"}>Options pricer</button>
@@ -191,7 +229,38 @@ const CoinDetails = (props) => {
                     </div>
                 </div>
                 <div className='content'>
-                    <LineChart chartData={chartData}/>
+                    <div className='historical-vol'>
+                        <h3>Historical price changes : </h3>
+                    </div>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>last 1h</th>
+                            <th>24h</th>
+                            <th>7d</th>
+                            <th>14d</th>
+                            <th>30d</th>
+                            <th>1yr</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>{coin.market_data?.price_change_percentage_1h_in_currency ?
+                                <p style={{ color: Math.sign(coin.market_data.price_change_percentage_1h_in_currency[userCurrency.code]) === -1 ? "red" : "green"}}>{coin.market_data.price_change_percentage_1h_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
+                            <td>{coin.market_data?.price_change_percentage_24h_in_currency ?
+                                <p style={{ color: Math.sign(coin.market_data.price_change_percentage_24h_in_currency[userCurrency.code]) === -1 ? "red" : "green"}}>{coin.market_data.price_change_percentage_24h_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
+                            <td>{coin.market_data?.price_change_percentage_24h_in_currency ?
+                                <p style={{ color: Math.sign(coin.market_data.price_change_percentage_7d_in_currency[userCurrency.code]) === -1 ? "red" : "green"}}>{coin.market_data.price_change_percentage_7d_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
+                            <td>{coin.market_data?.price_change_percentage_24h_in_currency ?
+                                <p style={{ color: Math.sign(coin.market_data.price_change_percentage_14d_in_currency[userCurrency.code]) === -1 ? "red" : "green"}}>{coin.market_data.price_change_percentage_14d_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
+                            <td>{coin.market_data?.price_change_percentage_24h_in_currency ?
+                                <p style={{ color: Math.sign(coin.market_data.price_change_percentage_30d_in_currency[userCurrency.code]) === -1 ? "red" : "green"}}>{coin.market_data.price_change_percentage_30d_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
+                            <td>{coin.market_data?.price_change_percentage_24h_in_currency ?
+                                <p style={{ color: Math.sign(coin.market_data.price_change_percentage_1y_in_currency[userCurrency.code]) === -1 ? "red" : "green"}}>{coin.market_data.price_change_percentage_1y_in_currency[userCurrency.code].toFixed(1)}%</p> : null}</td>
+
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
                 <div className='content'>
                     <div className='stats'>

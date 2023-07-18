@@ -4,10 +4,11 @@ import {Routes, Route} from 'react-router-dom'
 import CoinsTable from './components/CoinsTable'
 import CoinDetails from './routes/CoinDetails'
 import Navbar from './components/Navbar'
-import CoinOptionsTable from "./routes/CoinOptionsTable";
+import CoinOptions from "./routes/CoinOptions";
 import Footer from './components/Footer';
 import {useSelector} from 'react-redux';
 import LearnOptions from "./routes/LearnOptions";
+import {TEST_forecastTimeSeries, TEST_forecastTimeSeries_v2, TEST_sliceTimeSeries} from "./util/NN_Backtesting";
 
 function App() {
 
@@ -15,6 +16,9 @@ function App() {
     // DateUtils.TEST_getLastBusinessDay();
     // PricingUtils.TEST_cumulativeDistributionNormal();
     // PricingUtils.TEST_priceCall();
+
+    //TEST_sliceTimeSeries();
+    //TEST_forecastTimeSeries_v2();
     /******** END OF TEST CASES ********/
 
     const [coins, setCoins] = useState([])
@@ -50,12 +54,9 @@ function App() {
                 <Route path='/coin' element={<CoinDetails/>}>
                     <Route path=':coinId' element={<CoinDetails/>}/>
                 </Route>
-                <Route path='/option-prices' element={<CoinOptionsTable/>}>
-                    <Route path=':coinId' element={<CoinOptionsTable spotValue={1500}/>}/>
+                <Route path='/option-prices' element={<CoinOptions/>}>
+                    <Route path=':coinId' element={<CoinOptions spotValue={1500}/>}/>
                 </Route>
-                {/*<Route path='/option-prices/bitcoin' element={<CoinOptionsTable/>}/>*/}
-
-                {/*<Route path='/option-prices/ethereum' element={<CoinOptionsTable/>}/>*/}
 
                 <Route path='/learn-options' element={<LearnOptions/>}/>
 

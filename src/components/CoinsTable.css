@@ -90,22 +90,24 @@ img {
 
 .button_view_options {
     background-color: var(--bitcoin-color);
-    padding: 4px;
+    padding: 8px;
+    margin: 8px;
+    max-width: 100px;
     border-radius: 5px;
     color: black;
     font-size: 1em;
     font-weight: bold;
-    max-width: 80px;
 }
 
 .button_view_chart {
     background-color: var(--logo_blue);
-    padding: 4px;
+    padding: 8px;
+    margin: 8px;
+    max-width: 100px;
     border-radius: 5px;
     color: black;
     font-size: 1em;
     font-weight: bold;
-    max-width: 80px;
 }
 
 .placeholder {
@@ -116,6 +118,11 @@ img {
     text-align: center;
     color: red;
     padding: 32px;
+}
+
+.data_not_available_buttons {
+    display: inline-flex;
+    padding: 1rem;
 }
 
 .header {
