@@ -1,6 +1,6 @@
 {
   "short_name": "CryptOptions",
-  "name": "CryptOptions - Fair prices of options on cryptocurrencies",
+  "name": "Analytics and valuation tools for options on cryptocurrencies | CryptOptions",
   "icons": [
     {
       "src": "favicon.ico",
@@ -10,12 +10,12 @@
     {
       "src": "logo192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x107"
     },
     {
       "src": "logo512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x286"
     }
   ],
   "start_url": ".",

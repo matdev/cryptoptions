@@ -18,6 +18,7 @@ import OptionsGrid from "../components/OptionsGrid";
 import {OptionType} from "../util/PricingUtils";
 import {COLORS} from "../util/Colors.js";
 import {useSelector} from 'react-redux';
+import ReactGA from "react-ga4";
 
 const mathjs = require('mathjs');
 
@@ -81,7 +82,7 @@ const CoinOptions = () => {
 
     useEffect(() => {
 
-        console.log("CoinOptions.useEffect() location.state?.spotValue = " + location.state?.spotValue + " params.coinId = " + params.coinId);
+        //console.log("CoinOptions.useEffect() location.state?.spotValue = " + location.state?.spotValue + " params.coinId = " + params.coinId);
 
         axios.get(url).then((res) => {
             setCoin(res.data)
@@ -89,7 +90,15 @@ const CoinOptions = () => {
             inputSpotRef.current.value = newSpotValue;
             setSpotValue(newSpotValue);
 
-            checkInputValues();
+            checkInputValues("loaded_url");
+
+            let pageTitle = "Valuation tools for options on " + res.data.name + ": " + res.data.symbol.toUpperCase() + " derivatives prices | CryptOptions";
+            document.title = pageTitle;
+
+            // Log view into Google Analytics
+            //console.log("useEffect() pathname = " + location.pathname + " pageTitle = " + pageTitle);
+            ReactGA.send({hitType: "pageview", page: location.pathname, title: pageTitle});
+
         }).catch((error) => {
             console.log(error)
         });
@@ -127,7 +136,7 @@ const CoinOptions = () => {
             setHistoricalVol_30d(histoVol_30d);
             setInputVol(histoVol_30d);
 
-            checkInputValues();
+            checkInputValues("loaded_price_history_url");
         }).catch((error) => {
             console.log(error)
         });
@@ -154,7 +163,13 @@ const CoinOptions = () => {
     const [isInputAsOfDateValid, setIsInputAsOfDateValid] = useState(true);
     const [isInputRateValid, setIsInputRateValid] = useState(true);
 
-    function checkInputValues() {
+    function onPriceAllButton() {
+
+        checkInputValues("priceAllButton");
+
+    }
+
+    function checkInputValues(triggerName) {
 
         let fromDate = DateUtils.toDate(inputAsOfDateRef.current.value);
 
@@ -217,9 +232,18 @@ const CoinOptions = () => {
         setTrigger(trigger => !trigger);
 
         setIndex(index + 1);
+
+        // Send a custom event
+        ReactGA.event(triggerName, {
+            'coin_symbol': coin.symbol,
+            'input_spot': inputSpotAsNumber,
+            'input_vol': inputVol,
+            'input_as_of_date': fromDate?.toLocaleDateString(),
+            'input_rate': inputRate
+        });
     }
 
-    function resetParamsValues() {
+    function onResetButton() {
 
         inputVolRef.current.value = MathsUtils.roundToDecimalPlace(historicalVol_30d, 1);
         inputSpotRef.current.value = spotValue;
@@ -227,7 +251,7 @@ const CoinOptions = () => {
 
         inputAsOfDateRef.current.value = currentDate.toLocaleDateString();
 
-        checkInputValues();
+        checkInputValues("resetButton");
     }
 
     function getCurrentInputAsOfDate() {
@@ -275,7 +299,7 @@ const CoinOptions = () => {
 
         if (event.key === "Enter") {
             //alert("Enter !");
-            checkInputValues()
+            checkInputValues("enterKeyPress")
         }
     }
 
@@ -390,8 +414,8 @@ const CoinOptions = () => {
                                        onKeyDown={handleKeyPress} InputLabelProps={{shrink: true}}
                             />
 
-                            <button className={"button_price"} onClick={checkInputValues}>PRICE ALL</button>
-                            <button className={"reset_params"} onClick={resetParamsValues}>RESET</button>
+                            <button className={"button_price"} onClick={onPriceAllButton}>PRICE ALL</button>
+                            <button className={"reset_params"} onClick={onResetButton}>RESET</button>
                         </div>
                     </div>
                 </div>

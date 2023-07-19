@@ -7,6 +7,7 @@ import './BaseCurrencySelect.css';
 import * as CurrencyUtils from "../util/CurrencyUtils";
 import {useDispatch, useSelector} from 'react-redux';
 import { setUserCurrency } from '../features/userCurrencySlice';
+import ReactGA from "react-ga4";
 
 export default function BaseCurrencySelect(props) {
 
@@ -21,6 +22,11 @@ export default function BaseCurrencySelect(props) {
         setBaseCurrency(selectedCurrency);
 
         dispatch(setUserCurrency(selectedCurrency));
+
+        // Send a custom event
+        ReactGA.event("currencyChanged", {
+            'currency': selectedCurrency.label
+        });
     };
 
     return (

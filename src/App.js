@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import axios from 'axios'
-import {Routes, Route} from 'react-router-dom'
+import {Routes, Route, useLocation} from 'react-router-dom'
+import ReactGA from "react-ga4";
 import CoinsTable from './components/CoinsTable'
 import CoinDetails from './routes/CoinDetails'
 import Navbar from './components/Navbar'
@@ -20,6 +21,8 @@ function App() {
     //TEST_sliceTimeSeries();
     //TEST_forecastTimeSeries_v2();
     /******** END OF TEST CASES ********/
+
+    const location = useLocation();
 
     const [coins, setCoins] = useState([])
     const userCurrency = useSelector(store => store.userCurrency.value);
@@ -42,6 +45,13 @@ function App() {
             console.log(error);
             setCoins(null);
         })
+
+        let pageTitle = "Analytics and valuation tools for options on cryptocurrencies | CryptOptions";
+        document.title = pageTitle;
+
+        // Log view into Google Analytics
+        //console.log("useEffect() pathname = " + location.pathname + " pageTitle = " + pageTitle);
+        ReactGA.send({ hitType: "pageview", page: location.pathname, title: pageTitle });
     }, [userCurrency])
 
 
@@ -52,7 +62,7 @@ function App() {
 
                 <Route path='/' element={<CoinsTable coins={coins}/>}/>
                 <Route path='/coin' element={<CoinDetails/>}>
-                    <Route path=':coinId' element={<CoinDetails/>}/>
+                    <Route path=':coinId' element={<CoinDetails />}/>
                 </Route>
                 <Route path='/option-prices' element={<CoinOptions/>}>
                     <Route path=':coinId' element={<CoinOptions spotValue={1500}/>}/>

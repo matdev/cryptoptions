@@ -1,8 +1,21 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 
 import './LearnOptions.css'
+import ReactGA from "react-ga4";
+import {useLocation} from "react-router-dom";
 
 const LearnOptions = (props) => {
+
+    const location = useLocation();
+
+    useEffect(() => {
+        let pageTitle = "Learn about options and crypto derivatives | CryptOptions"
+        document.title = pageTitle;
+
+        // Log view into Google Analytics
+        //console.log("useEffect() pathname = " + location.pathname + " pageTitle = " + pageTitle);
+        ReactGA.send({ hitType: "pageview", page: location.pathname, title: pageTitle });
+    }, []);
 
     return (
         <div>

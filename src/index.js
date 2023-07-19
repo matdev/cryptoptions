@@ -7,7 +7,12 @@ import ReactGA from "react-ga4";
 import store from './store.js'
 import {Provider} from 'react-redux'
 
-ReactGA.initialize("G-CM3P82MGVP");
+if (!window.location.href.includes("localhost")) {
+    console.log("index.js href = " + window.location.href + " => init GA");
+    ReactGA.initialize("G-CM3P82MGVP");
+} else {
+    console.log("index.js This is localhost => do not init GA ");
+}
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>

@@ -10,6 +10,7 @@ import {useSelector} from 'react-redux';
 import * as MathsUtils from "../util/MathsUtils";
 import * as RadialBasisNN from "../util/NN_RadialBasis";
 import {roundToDecimalPlace} from "../util/MathsUtils";
+import ReactGA from "react-ga4";
 const mathjs = require('mathjs');
 
 const CoinDetails = (props) => {
@@ -56,12 +57,20 @@ const CoinDetails = (props) => {
     const price_history_url = 'https://api.coingecko.com/api/v3/coins/' + params.coinId + '/market_chart?vs_currency=' + userCurrency.code + '&days=90&interval=daily';
 
     useEffect(() => {
+
         axios.get(url).then((res) => {
             setCoin(res.data)
             setSpotValue(res.data.market_data.current_price[userCurrency.code]);
 
             //console.log("CoinDetails.useEffect() res.data.market_data.current_price : " + res.data.market_data.current_price[userCurrency.code]);
             //console.log("CoinDetails. currency:" + userCurrency.code + " spotValue : " + location.state.spotValue);
+
+            let pageTitle = res.data.name + " Price: " + res.data.symbol.toUpperCase() + " Live Price, forecast and historical chart | CryptOptions"
+            document.title = pageTitle;
+
+            // Log view into Google Analytics
+            //console.log("useEffect() pathname = " + location.pathname + " pageTitle = " + pageTitle);
+            ReactGA.send({ hitType: "pageview", page: location.pathname, title: pageTitle });
 
         }).catch((error) => {
             console.log(error)
@@ -97,7 +106,7 @@ const CoinDetails = (props) => {
 
             setHistoricalVol_30d(standardDeviation_30d * mathjs.sqrt(365) * 100);
 
-            console.log("CoinDetails.useEffect() historicalVol_30d : " + historicalVol_30d + " spotValue = " + spotValue);
+            //console.log("CoinDetails.useEffect() historicalVol_30d : " + historicalVol_30d + " spotValue = " + spotValue);
 
             // Price forecast
             // let pricesHistoryInput = RadialBasisNN.sliceTimeSeries(pricesHistory, 5);
