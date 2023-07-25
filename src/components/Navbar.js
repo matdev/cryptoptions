@@ -150,6 +150,11 @@ const Navbar = (props) => {
                         </React.Fragment>
                     </div>
 
+                    <NavLink to='/coin-correlations' className={({isActive}) =>
+                        isActive ? 'navbar_link_active' : 'navbar_link'}>
+                        <h4>Coin correlations</h4>
+                    </NavLink>
+
                     <NavLink to='/option-prices/bitcoin' state={{spotValue: '25000'}} className={({isActive}) =>
                         isActive ? 'navbar_link_active' : 'navbar_link'}>
                         <h4>Options on Bitcoin</h4>
@@ -159,6 +164,7 @@ const Navbar = (props) => {
                         isActive ? 'navbar_link_active' : 'navbar_link'}>
                         <h4>Options on Ethereum</h4>
                     </NavLink>
+
                     <NavLink to='/learn-options' className={({isActive}) =>
                         isActive ? 'navbar_link_active' : 'navbar_link'}>
                         <h4>Learn Options</h4>

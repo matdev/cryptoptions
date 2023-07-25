@@ -4,6 +4,15 @@
     --negative-red: #FF5276;
 }
 
+.forecasts_table th {
+    background-color: #FB9B9C;
+    color: black;
+}
+
+.forecasts_table p {
+    font-weight: bold;
+}
+
 .change_positive {
     color: var(--positive-green);
     font-weight: bold;

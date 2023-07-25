@@ -11,12 +11,17 @@ import * as MathsUtils from "../util/MathsUtils";
 import * as RadialBasisNN from "../util/NN_RadialBasis";
 import {roundToDecimalPlace} from "../util/MathsUtils";
 import ReactGA from "react-ga4";
+const { parse } = require('rss-to-json');
+
 const mathjs = require('mathjs');
 
 const CoinDetails = (props) => {
 
     const location = useLocation();
     const params = useParams();
+
+    const [rssUrl, setRssUrl] = useState("");
+    const [items, setItems] = useState([]);
 
     const userCurrency = useSelector(store => store.userCurrency.value);
     const [coin, setCoin] = useState({});
@@ -56,6 +61,33 @@ const CoinDetails = (props) => {
     // URL for retrieving bitcoin daily prices over the last 30 days
     const price_history_url = 'https://api.coingecko.com/api/v3/coins/' + params.coinId + '/market_chart?vs_currency=' + userCurrency.code + '&days=90&interval=daily';
 
+    // let parser = new Parser();
+    //
+    // (async () => {
+    //
+    //     let feed = await parser.parseURL('https://www.reddit.com/.rss');
+    //     console.log(feed.title);
+    //
+    //     feed.items.forEach(item => {
+    //         console.log(item.title + ':' + item.link)
+    //     });
+    //
+    // })();
+
+    // async await
+    // (async () => {
+    //
+    //     var rss = await parse('https://blog.ethereum.org/feed.xml');
+    //
+    //     console.log(JSON.stringify(rss, null, 3));
+    //
+    // })();
+// Promise
+
+    // parse("https://blog.ethereum.org/feed.xml").then(rss => {
+    //     console.log(JSON.stringify(rss, null, 3))
+    // })
+
     useEffect(() => {
 
         axios.get(url).then((res) => {
@@ -70,7 +102,7 @@ const CoinDetails = (props) => {
 
             // Log view into Google Analytics
             //console.log("useEffect() pathname = " + location.pathname + " pageTitle = " + pageTitle);
-            ReactGA.send({ hitType: "pageview", page: location.pathname, title: pageTitle });
+            ReactGA.send({hitType: "pageview", page: location.pathname, title: pageTitle});
 
         }).catch((error) => {
             console.log(error)
@@ -142,6 +174,40 @@ const CoinDetails = (props) => {
         }).catch((error) => {
             console.log(error)
         });
+
+        // setRssUrl("https://www.cryptodaily.co.uk/feed");
+        //
+        // console.log("get RSS feed from " + rssUrl);
+        // //axios.get(`https://api.allorigins.win/get?url=${rssUrl}`).then((res) => {
+        // axios.get(`${rssUrl}`).then((res) => {
+        //
+        //     const {contents} = res.json();
+        //     const feed = new window.DOMParser().parseFromString(contents, "text/xml");
+        //     const items = feed.querySelectorAll("item");
+        //
+        //     const feedItems = [...items].map((el) => ({
+        //         link: el.querySelector("link").innerHTML,
+        //         title: el.querySelector("title").innerHTML,
+        //         author: el.querySelector("author").innerHTML
+        //     }));
+        //
+        //     setItems(feedItems);
+        //
+        // }).catch((error) => {
+        //     console.log(error)
+        // });
+
+        // const res = await fetch();
+        // const { contents } = await res.json();
+        // const feed = new window.DOMParser().parseFromString(contents, "text/xml");
+        // const items = feed.querySelectorAll("item");
+        // const feedItems = [...items].map((el) => ({
+        //     link: el.querySelector("link").innerHTML,
+        //     title: el.querySelector("title").innerHTML,
+        //     author: el.querySelector("author").innerHTML
+        // }));
+        // setItems(feedItems);
+
     }, [userCurrency])
 
     return (
@@ -172,9 +238,9 @@ const CoinDetails = (props) => {
 
                 <div className='content'>
                     <div className='historical-vol'>
-                        <h3>Price forecast : </h3>
+                        <h3>Price forecasts</h3>
                     </div>
-                    <table>
+                    <table className={'forecasts_table'}>
                         <thead>
                         <tr>
                             <th>next 24 hours</th>
@@ -184,19 +250,29 @@ const CoinDetails = (props) => {
                         </thead>
                         <tbody>
                         <tr>
-                            <td><p>{MathsUtils.roundSmart(priceForecast_24h).toLocaleString()} {userCurrency.symbol}</p></td>
-                            <td><p>{MathsUtils.roundSmart(priceForecast_3d).toLocaleString()} {userCurrency.symbol}</p></td>
-                            <td><p>{MathsUtils.roundSmart(priceForecast_7d).toLocaleString()} {userCurrency.symbol}</p></td>
+                            <td><p>{MathsUtils.roundSmart(priceForecast_24h).toLocaleString()} {userCurrency.symbol}</p>
+                            </td>
+                            <td><p>{MathsUtils.roundSmart(priceForecast_3d).toLocaleString()} {userCurrency.symbol}</p>
+                            </td>
+                            <td><p>{MathsUtils.roundSmart(priceForecast_7d).toLocaleString()} {userCurrency.symbol}</p>
+                            </td>
                         </tr>
                         <tr>
-                            <td><p className={ (Math.sign(MathsUtils.getChangeAsPercent(priceForecast_24h, spotValue)) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(MathsUtils.getChangeAsPercent(priceForecast_24h, spotValue), 1)} %</p></td>
-                            <td><p className={ (Math.sign(MathsUtils.getChangeAsPercent(priceForecast_3d, spotValue)) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(MathsUtils.getChangeAsPercent(priceForecast_3d, spotValue), 1)} %</p></td>
-                            <td><p className={ (Math.sign(MathsUtils.getChangeAsPercent(priceForecast_7d, spotValue)) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(MathsUtils.getChangeAsPercent(priceForecast_7d, spotValue), 1)} %</p></td>
+                            <td><p
+                                className={(Math.sign(MathsUtils.getChangeAsPercent(priceForecast_24h, spotValue)) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(MathsUtils.getChangeAsPercent(priceForecast_24h, spotValue), 1)} %</p>
+                            </td>
+                            <td><p
+                                className={(Math.sign(MathsUtils.getChangeAsPercent(priceForecast_3d, spotValue)) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(MathsUtils.getChangeAsPercent(priceForecast_3d, spotValue), 1)} %</p>
+                            </td>
+                            <td><p
+                                className={(Math.sign(MathsUtils.getChangeAsPercent(priceForecast_7d, spotValue)) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(MathsUtils.getChangeAsPercent(priceForecast_7d, spotValue), 1)} %</p>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
 
-                    <p style={{fontStyle: "italic"}}> Note: These price forecasts are obtained from a model being currently tested. Do not use them to make investment decisions. </p>
+                    <p style={{fontStyle: "italic"}}> Note: These price forecasts are obtained from a model being
+                        currently tested. Do not use them to make investment decisions. </p>
                 </div>
                 <div className='content'>
                     <LineChart chartData={chartData}/>
@@ -286,6 +362,19 @@ const CoinDetails = (props) => {
                                     <p>{MathsUtils.roundToMillionsIfPossible(coin.market_data.circulating_supply)}</p> : null}
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <div className='content'>
+                    <div className='about'>
+                        <h3>{coin.name} News</h3>
+                        {items && items.map(item => (
+                            <div key={item.link}>
+                                {/*<h1>{item.title}</h1>*/}
+                                {/*<a href="">{item.link}</a>*/}
+                            </div>
+                        ))}
+
                     </div>
                 </div>
 

@@ -64,3 +64,19 @@ export function getChangeAsPercent(currentValue, baseValue){
 
     return result;
 }
+
+export function getCovariance(timeserie1, mean1, timeserie2, mean2){
+
+    let n = timeserie1.length;
+    //TODO: Check n equals timeserie2.length
+
+    let sum = 0
+
+    for (let i = 0; i < n; i++) {
+        sum = sum + (timeserie1[i] - mean1) * (timeserie2[i] - mean2);
+    }
+
+    let result = sum / n;
+
+    return result;
+}

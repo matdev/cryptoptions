@@ -4,6 +4,7 @@ import {Routes, Route, useLocation} from 'react-router-dom'
 import ReactGA from "react-ga4";
 import CoinsTable from './components/CoinsTable'
 import CoinDetails from './routes/CoinDetails'
+import CoinCorrelations from './routes/CoinCorrelations'
 import Navbar from './components/Navbar'
 import CoinOptions from "./routes/CoinOptions";
 import Footer from './components/Footer';
@@ -59,6 +60,8 @@ function App() {
         <>
             <Navbar/>
             <Routes>
+
+                <Route path='/coin-correlations' element={<CoinCorrelations coins={coins}/>}/>
 
                 <Route path='/' element={<CoinsTable coins={coins}/>}/>
                 <Route path='/coin' element={<CoinDetails/>}>
