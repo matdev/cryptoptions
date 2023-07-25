@@ -74,6 +74,7 @@ const CoinCorrelations = (props) => {
 
     const priceHistories = []; // [[Coin 1 daily prices], [Coin 2 daily prices], ... ]
     const dailyReturnHistories = []; // [[Coin 1 daily returns], [Coin 2 daily returns], ... ]
+    const historicalStdDevs = [];
     const historicalVols = [];
 
     //const historiesLoaded = [false, false, false, false, false];
@@ -118,7 +119,7 @@ const CoinCorrelations = (props) => {
         if (!historiesLoaded[coin_index] && !historiesLoading[coin_index]) {
             doRequestPriceHistory(coin_index);
         } else {
-            console.log("doRequestPriceHistoryIfNecessary() HISTORY ALREADY LOADED FOR " + props.coins[coin_index].id);
+            console.log("doRequestPriceHistoryIfNecessary() HISTORY ALREADY LOADED FOR " + prop_coins[coin_index].id);
         }
     }
 
@@ -167,14 +168,15 @@ const CoinCorrelations = (props) => {
             //let standardDeviation = mathjs.std(dailyReturnHistory);
             let standardDeviation = mathjs.std(pricesHistoryCoin);
 
-            //let historicalVol = standardDeviation * mathjs.sqrt(365) * 100;
-            let historicalVol = standardDeviation;
+            let histoVol = standardDeviation * mathjs.sqrt(365) * 100;
+            let historicalStdDev = standardDeviation;
 
             priceHistories[coin_index] = pricesHistoryCoin;
             dailyReturnHistories[coin_index] = dailyReturnHistory;
-            historicalVols[coin_index] = historicalVol;
+            historicalStdDevs[coin_index] = historicalStdDev;
+            historicalVols[coin_index] = histoVol;
 
-            console.log("CoinCorrelations.doRequest().get().then() coin index = " + coin_index + " historicalVol = " + historicalVol);
+            console.log("CoinCorrelations.doRequest().get().then() coin index = " + coin_index + " histoVol = " + histoVol);
 
             if (isAllHistoriesLoaded()) {
                 console.log("CoinCorrelations.doRequest().get().then() ALL HISTORIES LOADED !! => PROCEED to correlations calc !");
@@ -212,7 +214,7 @@ const CoinCorrelations = (props) => {
 
                 let covariance = MathsUtils.getCovariance(priceHistories[i], coin_averages[i], priceHistories[j], coin_averages[j]);
 
-                let correlation = covariance / (historicalVols[i] * historicalVols[j])
+                let correlation = covariance / (historicalStdDevs[i] * historicalStdDevs[j])
 
                 console.log("CoinCorrelations.calcCorrelations() correlation coin_" + i + " coin_" + j + " = " + correlation);
 
@@ -242,6 +244,8 @@ const CoinCorrelations = (props) => {
         console.log("calcCorrelations() correlationsCoin3 = " + correlationsMatrix[2]);
         console.log("calcCorrelations() correlationsCoin4 = " + correlationsMatrix[3]);
         console.log("calcCorrelations() correlationsCoin5 = " + correlationsMatrix[4]);
+
+        console.log("calcCorrelations() historicalVols = " + historicalVols);
     }
 
     function isAllHistoriesLoaded() {
@@ -259,13 +263,13 @@ const CoinCorrelations = (props) => {
         <div>
             <div className='coin-container'>
                 <div className='content'>
-                    <div className='historical-vol'>
-                        <h3>Coin correlations</h3>
-                    </div>
+                    <h1>Coin correlations</h1>
+                </div>
+                <div className='content'>
                     <table className={'coin_correlations'}>
                         <thead>
                         <tr>
-                            <th className={''}></th>
+                            <th className={'correlation_matrix_corner'}></th>
                             <th className={'coin_correlations_header'}>{StringUtils.convertToUpperCase(prop_coins[0].symbol)}</th>
                             <th className={'coin_correlations_header'}>{StringUtils.convertToUpperCase(prop_coins[1].symbol)}</th>
                             <th className={'coin_correlations_header'}>{StringUtils.convertToUpperCase(prop_coins[2].symbol)}</th>
@@ -276,58 +280,67 @@ const CoinCorrelations = (props) => {
                         <tbody>
                         <tr>
                             {/*ROW 1*/}
-                            <td className={'coin_correlations_header'}>{StringUtils.convertToUpperCase(props.coins[0].symbol)}</td>
+                            <td className={'coin_correlations_header'}>{StringUtils.convertToUpperCase(prop_coins[0].symbol)}</td>
                             <td><p></p></td>
 
                         </tr>
                         <tr>
                             {/*ROW 2*/}
-                            <td className={'coin_correlations_header'}>{StringUtils.convertToUpperCase(props.coins[1].symbol)}</td>
-                            <td><p>{MathsUtils.roundToDecimalPlace(correlationsCoin1[0], 2)}</p></td>
+                            <td className={'coin_correlations_header'}>{StringUtils.convertToUpperCase(prop_coins[1].symbol)}</td>
+                            <td><p className={(Math.sign(correlationsCoin1[0]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin1[0], 2)}</p></td>
                         </tr>
                         <tr>
                             {/*ROW 3*/}
-                            <td className={'coin_correlations_header'}>{StringUtils.convertToUpperCase(props.coins[2].symbol)}</td>
-                            <td><p>{MathsUtils.roundToDecimalPlace(correlationsCoin1[1], 2)}</p></td>
-                            <td><p>{MathsUtils.roundToDecimalPlace(correlationsCoin2[1], 2)}</p></td>
+                            <td className={'coin_correlations_header'}>{StringUtils.convertToUpperCase(prop_coins[2].symbol)}</td>
+                            <td><p className={(Math.sign(correlationsCoin1[1]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin1[1], 2)}</p></td>
+                            <td><p className={(Math.sign(correlationsCoin2[1]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin2[1], 2)}</p></td>
                         </tr>
                         <tr>
                             {/*ROW 4*/}
-                            <td className={'coin_correlations_header'}>{StringUtils.convertToUpperCase(props.coins[3].symbol)}</td>
-                            <td><p>{MathsUtils.roundToDecimalPlace(correlationsCoin1[2], 2)}</p></td>
-                            <td><p>{MathsUtils.roundToDecimalPlace(correlationsCoin2[2], 2)}</p></td>
-                            <td><p>{MathsUtils.roundToDecimalPlace(correlationsCoin3[2], 2)}</p></td>
+                            <td className={'coin_correlations_header'}>{StringUtils.convertToUpperCase(prop_coins[3].symbol)}</td>
+                            <td><p className={(Math.sign(correlationsCoin1[2]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin1[2], 2)}</p></td>
+
+                            <td><p className={(Math.sign(correlationsCoin2[2]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin2[2], 2)}</p></td>
+
+                            <td><p className={(Math.sign(correlationsCoin3[2]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin3[2], 2)}</p></td>
                         </tr>
                         <tr>
                             {/*ROW 5*/}
-                            <td className={'coin_correlations_header'}>{StringUtils.convertToUpperCase(props.coins[4].symbol)}</td>
-                            <td><p>{MathsUtils.roundToDecimalPlace(correlationsCoin1[3], 2)}</p></td>
-                            <td><p>{MathsUtils.roundToDecimalPlace(correlationsCoin2[3], 2)}</p></td>
-                            <td><p>{MathsUtils.roundToDecimalPlace(correlationsCoin3[3], 2)}</p></td>
-                            <td><p>{MathsUtils.roundToDecimalPlace(correlationsCoin4[3], 2)}</p></td>
+                            <td className={'coin_correlations_header'}>{StringUtils.convertToUpperCase(prop_coins[4].symbol)}</td>
+
+                            <td><p className={(Math.sign(correlationsCoin1[3]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin1[3], 2)}</p></td>
+
+                            <td><p className={(Math.sign(correlationsCoin2[3]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin2[3], 2)}</p></td>
+
+                            <td><p className={(Math.sign(correlationsCoin3[3]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin3[3], 2)}</p></td>
+
+                            <td><p className={(Math.sign(correlationsCoin4[3]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin4[3], 2)}</p></td>
                         </tr>
                         </tbody>
                     </table>
 
-                    <div><br/></div>
+                    <div><br/><br/></div>
                     <p style={{fontStyle: "italic"}}> Note: These Pearson correlation coefficients are calculated over
-                        the last 90 days of historical price. </p>
+                        the last 90 days of historical prices. </p>
                 </div>
-                {/*<div className='content'>*/}
-                {/*    <div className='details_info'>*/}
-                {/*        <div className='historical-vol'>*/}
-                {/*            <h3>Historical Volatility : </h3>*/}
-                {/*        </div>*/}
-                {/*        <div className='centered-in-cell'>*/}
-                {/*            <h1>{historicalVolCoin1.toFixed(2)} %</h1>*/}
-                {/*        </div>*/}
-                {/*    </div>*/}
-                {/*    <div className='details_info'>*/}
-                {/*        <div>*/}
-                {/*            Calculated over the last 90 daily returns*/}
-                {/*        </div>*/}
-                {/*    </div>*/}
-                {/*</div>*/}
+                <div className='content'>
+                    {/*<div className='historical-vol'>*/}
+                    {/*    <h3>Historical volatility</h3>*/}
+                    {/*</div>*/}
+                    {/*<div className='details_info'>*/}
+                    {/*    <div className='historical-vol'>*/}
+                    {/*        <h3> {prop_coins[0].symbol} Volatility : </h3>*/}
+                    {/*    </div>*/}
+                    {/*    <div className='centered-in-cell'>*/}
+                    {/*        <h1>{historicalVols[0]?.toFixed(2)} %</h1>*/}
+                    {/*    </div>*/}
+                    {/*</div>*/}
+                    {/*<div className='details_info'>*/}
+                    {/*    <div>*/}
+                    {/*        Calculated over the last 90 daily returns*/}
+                    {/*    </div>*/}
+                    {/*</div>*/}
+                </div>
             </div>
         </div>
     )

@@ -64,6 +64,18 @@ const Navbar = (props) => {
 
                 <ListItem
                     component={NavLink}
+                    to={`/coin-correlations`}
+                    state={''}
+                    className={'drawer-menu-item'}
+                    divider={true}
+                    key={'coin-correlations'}>
+
+                    <ListItemText primary='Coin correlations'/>
+
+                </ListItem>
+
+                <ListItem
+                    component={NavLink}
                     to={`/option-prices/bitcoin`}
                     state={{spotValue: '25000'}}
                     className={'drawer-menu-item'}
