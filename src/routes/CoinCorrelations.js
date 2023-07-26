@@ -5,9 +5,10 @@ import DOMPurify from 'dompurify'
 import './CoinCorrelations.css'
 import CoinOptions from "./CoinOptions";
 import Chart from "chart.js/auto";
-import LineChart from "../components/LineChart";
+import LineChart2Series from "../components/LineChart2Series";
 import {useSelector} from 'react-redux';
 import * as MathsUtils from "../util/MathsUtils";
+import * as Colors from "../util/Colors";
 import * as RadialBasisNN from "../util/NN_RadialBasis";
 import {roundToDecimalPlace} from "../util/MathsUtils";
 import * as StringUtils from "../util/StringUtils";
@@ -27,7 +28,8 @@ const CoinCorrelations = (props) => {
 
     const prop_coins = [];
 
-    if (props.coins[0] === undefined){
+    if ((props.coins == null) || (props.coins.length == 0) || (props.coins[0] === undefined)) {
+
         console.log("props.coins[0] === undefined => USE DEFAULT 5 COINS");
         useDefaultCoins = true;
 
@@ -72,6 +74,9 @@ const CoinCorrelations = (props) => {
         prop_coins[4] = props.coins[4];
     }
 
+    let btcPricesHistoryFromService;
+    let ethPricesHistoryFromService;
+
     const priceHistories = []; // [[Coin 1 daily prices], [Coin 2 daily prices], ... ]
     const dailyReturnHistories = []; // [[Coin 1 daily returns], [Coin 2 daily returns], ... ]
     const historicalStdDevs = [];
@@ -90,10 +95,26 @@ const CoinCorrelations = (props) => {
 
     const [historicalVolCoin1, setHistoricalVolCoin1] = useState(0);
 
-    // URL for retrieving bitcoin daily prices over the last 30 days
-    // const price_history_url_coin_0 = 'https://api.coingecko.com/api/v3/coins/' + props.coins[0].id + '/market_chart?vs_currency=' + userCurrency.code + '&days=90&interval=daily';
-    // const price_history_url_coin_1 = 'https://api.coingecko.com/api/v3/coins/' + props.coins[1] + '/market_chart?vs_currency=' + userCurrency.code + '&days=90&interval=daily';
-
+    const [chartData, setChartData] = useState({
+        title: "Historical prices (" + userCurrency.symbol + ")",
+        labels: [], //testLabels.map((data) => data[0]),
+        datasets: [
+            {
+                label: "price hist INIT",
+                data: [], //testValues.map((data) => data[0]),
+                borderColor: 'rgb(255, 99, 132)',
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                yAxisID: 'y',
+            },
+            {
+                label: 'Dataset 2',
+                data: [],
+                borderColor: Colors.CHART_COLORS.blue,
+                backgroundColor: Colors.CHART_COLORS.blue,
+                yAxisID: 'y1',
+            }
+        ],
+    });
     useEffect(() => {
 
         //console.log("CoinCorrelations useEffect() props.coins = " + JSON.stringify(props.coins, null, 4));
@@ -115,7 +136,7 @@ const CoinCorrelations = (props) => {
 
     }, [userCurrency])
 
-    function doRequestPriceHistoryIfNecessary(coin_index){
+    function doRequestPriceHistoryIfNecessary(coin_index) {
         if (!historiesLoaded[coin_index] && !historiesLoading[coin_index]) {
             doRequestPriceHistory(coin_index);
         } else {
@@ -140,6 +161,12 @@ const CoinCorrelations = (props) => {
 
             //console.log("CoinCorrelations.doRequest().get().then() RECEIVED from price_history_url: " + res.data.prices + " SIZE = " + res.data.prices.length);
             let pricesHistoryFromService = res.data.prices;
+
+            if (prop_coins[coin_index].symbol == "BTC") {
+                btcPricesHistoryFromService = pricesHistoryFromService;
+            } else if (prop_coins[coin_index].symbol == "ETH") {
+                ethPricesHistoryFromService = pricesHistoryFromService;
+            }
 
             let pricesHistoryCoin = [];
             let dailyReturnHistory = [];
@@ -229,7 +256,6 @@ const CoinCorrelations = (props) => {
                 } else if (i == 4) {
                     correlationsMatrix[i][j - 1] = correlation;
                 }
-                    //setCorrelationCoin1_Coin2(correlation);
             }
         }
 
@@ -246,6 +272,32 @@ const CoinCorrelations = (props) => {
         console.log("calcCorrelations() correlationsCoin5 = " + correlationsMatrix[4]);
 
         console.log("calcCorrelations() historicalVols = " + historicalVols);
+
+        // Display chart
+
+        // Chart data
+        setChartData({
+            title: "BTC and ETH Historical Prices (" + userCurrency.symbol + ")",
+            labels: btcPricesHistoryFromService.map(function (data) {
+                return new Date(data[0]).toLocaleDateString();
+            }),
+            datasets: [
+                {
+                    label: "BTC",
+                    data: btcPricesHistoryFromService.map((data) => data[1]),
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    yAxisID: 'y',
+                },
+                {
+                    label: "ETH",
+                    data: ethPricesHistoryFromService.map((data) => data[1]),
+                    borderColor: 'rgb(54, 162, 235)',
+                    backgroundColor: 'rgb(54, 162, 235, 0.5)',
+                    yAxisID: 'y1',
+                }
+            ],
+        });
     }
 
     function isAllHistoriesLoaded() {
@@ -287,43 +339,64 @@ const CoinCorrelations = (props) => {
                         <tr>
                             {/*ROW 2*/}
                             <td className={'coin_correlations_header'}>{StringUtils.convertToUpperCase(prop_coins[1].symbol)}</td>
-                            <td><p className={(Math.sign(correlationsCoin1[0]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin1[0], 2)}</p></td>
+                            <td><p
+                                className={(Math.sign(correlationsCoin1[0]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin1[0], 2)}</p>
+                            </td>
                         </tr>
                         <tr>
                             {/*ROW 3*/}
                             <td className={'coin_correlations_header'}>{StringUtils.convertToUpperCase(prop_coins[2].symbol)}</td>
-                            <td><p className={(Math.sign(correlationsCoin1[1]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin1[1], 2)}</p></td>
-                            <td><p className={(Math.sign(correlationsCoin2[1]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin2[1], 2)}</p></td>
+                            <td><p
+                                className={(Math.sign(correlationsCoin1[1]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin1[1], 2)}</p>
+                            </td>
+                            <td><p
+                                className={(Math.sign(correlationsCoin2[1]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin2[1], 2)}</p>
+                            </td>
                         </tr>
                         <tr>
                             {/*ROW 4*/}
                             <td className={'coin_correlations_header'}>{StringUtils.convertToUpperCase(prop_coins[3].symbol)}</td>
-                            <td><p className={(Math.sign(correlationsCoin1[2]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin1[2], 2)}</p></td>
+                            <td><p
+                                className={(Math.sign(correlationsCoin1[2]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin1[2], 2)}</p>
+                            </td>
 
-                            <td><p className={(Math.sign(correlationsCoin2[2]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin2[2], 2)}</p></td>
+                            <td><p
+                                className={(Math.sign(correlationsCoin2[2]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin2[2], 2)}</p>
+                            </td>
 
-                            <td><p className={(Math.sign(correlationsCoin3[2]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin3[2], 2)}</p></td>
+                            <td><p
+                                className={(Math.sign(correlationsCoin3[2]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin3[2], 2)}</p>
+                            </td>
                         </tr>
                         <tr>
                             {/*ROW 5*/}
                             <td className={'coin_correlations_header'}>{StringUtils.convertToUpperCase(prop_coins[4].symbol)}</td>
 
-                            <td><p className={(Math.sign(correlationsCoin1[3]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin1[3], 2)}</p></td>
+                            <td><p
+                                className={(Math.sign(correlationsCoin1[3]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin1[3], 2)}</p>
+                            </td>
 
-                            <td><p className={(Math.sign(correlationsCoin2[3]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin2[3], 2)}</p></td>
+                            <td><p
+                                className={(Math.sign(correlationsCoin2[3]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin2[3], 2)}</p>
+                            </td>
 
-                            <td><p className={(Math.sign(correlationsCoin3[3]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin3[3], 2)}</p></td>
+                            <td><p
+                                className={(Math.sign(correlationsCoin3[3]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin3[3], 2)}</p>
+                            </td>
 
-                            <td><p className={(Math.sign(correlationsCoin4[3]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin4[3], 2)}</p></td>
+                            <td><p
+                                className={(Math.sign(correlationsCoin4[3]) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(correlationsCoin4[3], 2)}</p>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
 
                     <div><br/><br/></div>
                     <p style={{fontStyle: "italic"}}> Note: These Pearson correlation coefficients are calculated over
-                        the last 90 days of historical prices. </p>
+                        the last 90 days of historical prices in {userCurrency.label} </p>
                 </div>
                 <div className='content'>
+                    <LineChart2Series chartData={chartData}/>
                     {/*<div className='historical-vol'>*/}
                     {/*    <h3>Historical volatility</h3>*/}
                     {/*</div>*/}

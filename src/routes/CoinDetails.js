@@ -275,9 +275,6 @@ const CoinDetails = (props) => {
                         currently tested. Do not use them to make investment decisions. </p>
                 </div>
                 <div className='content'>
-                    <LineChart chartData={chartData}/>
-                </div>
-                <div className='content'>
                     <div className='details_info'>
                         <div className='historical-vol'>
                             <h3>Historical Volatility : </h3>
@@ -301,6 +298,9 @@ const CoinDetails = (props) => {
                             </Link>
                         </div>
                     </div>
+                </div>
+                <div className='content'>
+                    <LineChart chartData={chartData}/>
                 </div>
                 <div className='content'>
                     <div className='historical-vol'>
@@ -365,18 +365,18 @@ const CoinDetails = (props) => {
                     </div>
                 </div>
 
-                <div className='content'>
-                    <div className='about'>
-                        <h3>{coin.name} News</h3>
-                        {items && items.map(item => (
-                            <div key={item.link}>
-                                {/*<h1>{item.title}</h1>*/}
-                                {/*<a href="">{item.link}</a>*/}
-                            </div>
-                        ))}
+                {/*<div className='content'>*/}
+                {/*    <div className='about'>*/}
+                {/*        <h3>{coin.name} News</h3>*/}
+                {/*        {items && items.map(item => (*/}
+                {/*            <div key={item.link}>*/}
+                {/*                /!*<h1>{item.title}</h1>*!/*/}
+                {/*                /!*<a href="">{item.link}</a>*!/*/}
+                {/*            </div>*/}
+                {/*        ))}*/}
 
-                    </div>
-                </div>
+                {/*    </div>*/}
+                {/*</div>*/}
 
                 <div className='content'>
                     <div className='about'>

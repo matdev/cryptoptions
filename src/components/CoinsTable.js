@@ -98,13 +98,13 @@ const CoinsTable = (props) => {
                             <br/>
                             <Link to={`/coin/bitcoin`} element={<CoinDetails/>}>
                                 <p>
-                                    <button className={"button_view_chart"}>Bitcoin forecast</button>
+                                    <button className={"button_view_chart"}>Bitcoin infos</button>
                                 </p>
                             </Link>
 
                             <Link to={`/coin/ethereum`} element={<CoinDetails/>}>
                                 <p>
-                                    <button className={"button_view_chart"}>Ethereum forecast</button>
+                                    <button className={"button_view_chart"}>Ethereum infos</button>
                                 </p>
                             </Link>
                         </div>
