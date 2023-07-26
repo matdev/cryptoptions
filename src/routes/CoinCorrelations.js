@@ -35,33 +35,33 @@ const CoinCorrelations = (props) => {
 
         const coin1 = {
             id: 'bitcoin',
-            symbol: 'BTC'
+            symbol: 'btc'
         };
         prop_coins[0] = coin1;
 
         const coin2 = {
             id: 'ethereum',
-            symbol: 'ETH'
+            symbol: 'eth'
         };
         prop_coins[1] = coin2;
 
         const coin3 = {
             id: 'tether',
-            symbol: 'USDT'
+            symbol: 'usdt'
         };
 
         prop_coins[2] = coin3;
 
         const coin4 = {
             id: 'binancecoin',
-            symbol: 'BNB'
+            symbol: 'bnb'
         };
 
         prop_coins[3] = coin4;
 
         const coin5 = {
             id: 'ripple',
-            symbol: 'XRP'
+            symbol: 'xrp'
         };
 
         prop_coins[4] = coin5;
@@ -145,11 +145,6 @@ const CoinCorrelations = (props) => {
     }
 
     const doRequestPriceHistory = function (coin_index) {
-        // axios.get('/endpoint.json').then(function(response) {
-        //     if (response.data.coordinates) {
-        //         setLocation('takeoff_location', response.data.coordinates, animate);
-        //     }
-        // });
 
         const price_history_url = 'https://api.coingecko.com/api/v3/coins/' + prop_coins[coin_index].id + '/market_chart?vs_currency=' + userCurrency.code + '&days=90&interval=daily';
         historiesLoading[coin_index] = true;
@@ -162,9 +157,9 @@ const CoinCorrelations = (props) => {
             //console.log("CoinCorrelations.doRequest().get().then() RECEIVED from price_history_url: " + res.data.prices + " SIZE = " + res.data.prices.length);
             let pricesHistoryFromService = res.data.prices;
 
-            if (prop_coins[coin_index].symbol == "BTC") {
+            if (prop_coins[coin_index].symbol == "btc") {
                 btcPricesHistoryFromService = pricesHistoryFromService;
-            } else if (prop_coins[coin_index].symbol == "ETH") {
+            } else if (prop_coins[coin_index].symbol == "eth") {
                 ethPricesHistoryFromService = pricesHistoryFromService;
             }
 
@@ -276,28 +271,30 @@ const CoinCorrelations = (props) => {
         // Display chart
 
         // Chart data
-        setChartData({
-            title: "BTC and ETH Historical Prices (" + userCurrency.symbol + ")",
-            labels: btcPricesHistoryFromService.map(function (data) {
-                return new Date(data[0]).toLocaleDateString();
-            }),
-            datasets: [
-                {
-                    label: "BTC",
-                    data: btcPricesHistoryFromService.map((data) => data[1]),
-                    borderColor: 'rgb(255, 99, 132)',
-                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                    yAxisID: 'y',
-                },
-                {
-                    label: "ETH",
-                    data: ethPricesHistoryFromService.map((data) => data[1]),
-                    borderColor: 'rgb(54, 162, 235)',
-                    backgroundColor: 'rgb(54, 162, 235, 0.5)',
-                    yAxisID: 'y1',
-                }
-            ],
-        });
+        if (btcPricesHistoryFromService != undefined) {
+            setChartData({
+                title: "BTC and ETH Historical Prices (" + userCurrency.symbol + ")",
+                labels: btcPricesHistoryFromService.map(function (data) {
+                    return new Date(data[0]).toLocaleDateString();
+                }),
+                datasets: [
+                    {
+                        label: "BTC",
+                        data: btcPricesHistoryFromService.map((data) => data[1]),
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                        yAxisID: 'y',
+                    },
+                    {
+                        label: "ETH",
+                        data: ethPricesHistoryFromService.map((data) => data[1]),
+                        borderColor: 'rgb(54, 162, 235)',
+                        backgroundColor: 'rgb(54, 162, 235, 0.5)',
+                        yAxisID: 'y1',
+                    }
+                ],
+            });
+        }
     }
 
     function isAllHistoriesLoaded() {
@@ -393,7 +390,7 @@ const CoinCorrelations = (props) => {
 
                     <div><br/><br/></div>
                     <p style={{fontStyle: "italic"}}> Note: These Pearson correlation coefficients are calculated over
-                        the last 90 days of historical prices in {userCurrency.label} </p>
+                        the last 90 daily prices in {userCurrency.label} </p>
                 </div>
                 <div className='content'>
                     <LineChart2Series chartData={chartData}/>
