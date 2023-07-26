@@ -1,12 +1,12 @@
 {
   "files": {
     "main.css": "/static/css/main.0ff59e31.css",
-    "main.js": "/static/js/main.13df0094.js",
+    "main.js": "/static/js/main.8211b7eb.js",
     "static/media/axios.cjs": "/static/media/axios.e7d77f0967a69d31d7fc.cjs",
     "index.html": "/index.html"
   },
   "entrypoints": [
     "static/css/main.0ff59e31.css",
-    "static/js/main.13df0094.js"
+    "static/js/main.8211b7eb.js"
   ]
 }
