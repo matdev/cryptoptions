@@ -9,7 +9,6 @@ import LineChart2Series from "../components/LineChart2Series";
 import {useSelector} from 'react-redux';
 import * as MathsUtils from "../util/MathsUtils";
 import * as Colors from "../util/Colors";
-import * as RadialBasisNN from "../util/NN_RadialBasis";
 import {roundToDecimalPlace} from "../util/MathsUtils";
 import * as StringUtils from "../util/StringUtils";
 import ReactGA from "react-ga4";

@@ -8,7 +8,6 @@ import Chart from "chart.js/auto";
 import LineChart from "../components/LineChart";
 import {useSelector} from 'react-redux';
 import * as MathsUtils from "../util/MathsUtils";
-import * as RadialBasisNN from "../util/NN_RadialBasis";
 import {roundToDecimalPlace} from "../util/MathsUtils";
 import ReactGA from "react-ga4";
 const { parse } = require('rss-to-json');
@@ -31,16 +30,6 @@ const CoinDetails = (props) => {
     const [dailyReturnHistory, setDailyReturnHistoryHistory] = useState([]);
 
     const [historicalVol_30d, setHistoricalVol_30d] = useState(0);
-
-    const [priceForecast_24h, setPriceForecast_24h] = useState(location.state?.spotValue);
-
-    const [priceForecast_3d, setPriceForecast_3d] = useState(location.state?.spotValue);
-
-    const [priceForecast_7d, setPriceForecast_7d] = useState(location.state?.spotValue);
-
-    const [priceForecast_14d, setPriceForecast_14d] = useState(location.state?.spotValue);
-
-    const [priceForecast_30d, setPriceForecast_30d] = useState(location.state?.spotValue);
 
     const [chartData, setChartData] = useState({
         title: "Historical prices (" + userCurrency.symbol + ")",
@@ -97,7 +86,7 @@ const CoinDetails = (props) => {
             //console.log("CoinDetails.useEffect() res.data.market_data.current_price : " + res.data.market_data.current_price[userCurrency.code]);
             //console.log("CoinDetails. currency:" + userCurrency.code + " spotValue : " + location.state.spotValue);
 
-            let pageTitle = res.data.name + " Price: " + res.data.symbol.toUpperCase() + " Live Price, forecast and historical chart | CryptOptions"
+            let pageTitle = res.data.name + " Price: " + res.data.symbol.toUpperCase() + " Live Price and historical chart | CryptOptions"
             document.title = pageTitle;
 
             // Log view into Google Analytics
@@ -139,21 +128,6 @@ const CoinDetails = (props) => {
             setHistoricalVol_30d(standardDeviation_30d * mathjs.sqrt(365) * 100);
 
             //console.log("CoinDetails.useEffect() historicalVol_30d : " + historicalVol_30d + " spotValue = " + spotValue);
-
-            // Price forecast
-            // let pricesHistoryInput = RadialBasisNN.sliceTimeSeries(pricesHistory, 5);
-            // let priceForecasts = RadialBasisNN.forecastTimeSeries(pricesHistoryInput, 1);
-
-            let priceForecasts = RadialBasisNN.forecastTimeSeries_v2(pricesHistory, 7);
-
-            setPriceForecast_24h(priceForecasts[0]);
-            setPriceForecast_3d(priceForecasts[2]);
-            setPriceForecast_7d(priceForecasts[6]);
-
-            // setPriceForecast_14d(priceForecasts[13]);
-            // setPriceForecast_30d(priceForecasts[29]);
-
-            //console.log("CoinDetails.useEffect() priceForecasts : " + priceForecasts + " length : " + priceForecasts.length);
 
             // Chart data
             setChartData({
@@ -236,44 +210,6 @@ const CoinDetails = (props) => {
                     </div>
                 </div>
 
-                <div className='content'>
-                    <div className='historical-vol'>
-                        <h3>Price forecasts</h3>
-                    </div>
-                    <table className={'forecasts_table'}>
-                        <thead>
-                        <tr>
-                            <th>next 24 hours</th>
-                            <th>next 3 days</th>
-                            <th>next 7 days</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td><p>{MathsUtils.roundSmart(priceForecast_24h).toLocaleString()} {userCurrency.symbol}</p>
-                            </td>
-                            <td><p>{MathsUtils.roundSmart(priceForecast_3d).toLocaleString()} {userCurrency.symbol}</p>
-                            </td>
-                            <td><p>{MathsUtils.roundSmart(priceForecast_7d).toLocaleString()} {userCurrency.symbol}</p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><p
-                                className={(Math.sign(MathsUtils.getChangeAsPercent(priceForecast_24h, spotValue)) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(MathsUtils.getChangeAsPercent(priceForecast_24h, spotValue), 1)} %</p>
-                            </td>
-                            <td><p
-                                className={(Math.sign(MathsUtils.getChangeAsPercent(priceForecast_3d, spotValue)) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(MathsUtils.getChangeAsPercent(priceForecast_3d, spotValue), 1)} %</p>
-                            </td>
-                            <td><p
-                                className={(Math.sign(MathsUtils.getChangeAsPercent(priceForecast_7d, spotValue)) === -1) ? "change_negative" : "change_positive"}>{MathsUtils.roundToDecimalPlace(MathsUtils.getChangeAsPercent(priceForecast_7d, spotValue), 1)} %</p>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-
-                    <p style={{fontStyle: "italic"}}> Note: These price forecasts are obtained from a model being
-                        currently tested. Do not use them to make investment decisions. </p>
-                </div>
                 <div className='content'>
                     <div className='details_info'>
                         <div className='historical-vol'>

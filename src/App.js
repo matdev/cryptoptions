@@ -10,7 +10,6 @@ import CoinOptions from "./routes/CoinOptions";
 import Footer from './components/Footer';
 import {useSelector} from 'react-redux';
 import LearnOptions from "./routes/LearnOptions";
-import {TEST_forecastTimeSeries, TEST_forecastTimeSeries_v2, TEST_sliceTimeSeries} from "./util/NN_Backtesting";
 
 function App() {
 
@@ -20,7 +19,6 @@ function App() {
     // PricingUtils.TEST_priceCall();
 
     //TEST_sliceTimeSeries();
-    //TEST_forecastTimeSeries_v2();
     /******** END OF TEST CASES ********/
 
     const location = useLocation();
