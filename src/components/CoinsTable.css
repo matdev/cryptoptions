@@ -2,6 +2,7 @@
     --main-color: #FB9B9C;
     --bitcoin-color: #F68B1F;
     --logo_blue: #61dcfe;
+    --border_radius: 6px;
 }
 
 .container {
@@ -125,12 +126,55 @@ img {
     padding: 1rem;
 }
 
+
 .header {
-    width: 75%;
+    /*width: 75%;*/
 }
 
 .header_title {
-    padding: 1rem;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.header_text {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.email_input {
+    background: white;
+    width: 350px;
+    height: 50px;
+    font-size: x-large;
+    padding: 0.5rem;
+    border: 1px solid var(--logo_blue);
+    border-right-width: 0;
+    border-radius: var(--border_radius) 0 0 var(--border_radius);
+}
+
+.email_validation_button {
+    width: 150px;
+    background-color: var(--logo_blue);
+    border-radius: 0 var(--border_radius) var(--border_radius) 0;
+    color: black;
+    text-decoration: underline;
+    font-size: larger;
+    font-weight: bold;
+}
+
+.email_validation_form {
+    display: flex;
+    flex-flow: row nowrap;
+    max-width: 500px;
+    margin: auto;
+}
+
+.newsletter_subscription_success {
+    color: var(--logo_blue);
+}
+
+.newsletter_subscription_error {
+    color: var(--main-color);
 }
 
 @media screen and (max-width: 700px) {

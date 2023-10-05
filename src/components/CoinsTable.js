@@ -7,65 +7,97 @@ import * as MathsUtils from "../util/MathsUtils";
 import {Link} from "react-router-dom";
 import DataGrid from "react-data-grid";
 import {useSelector} from "react-redux";
+import MailchimpSubscribe from "react-mailchimp-subscribe"
 
 const CoinsTable = (props) => {
 
-    const userCurrency = useSelector(store => store.userCurrency.value);
+    const mailchimp_url = "https://cryptoptions.us21.list-manage.com/subscribe/post?u=d48a8293e3b5cf0f0002e1dd7&amp;id=585fd685ef&amp;f_id=0098dee6f0";
 
-    // const columns = [
-    //     {key: 'rank', name: '#', width: 35},
-    //     {
-    //         key: 'coin', name: 'Coin', width: 35, renderCell: (params) => {
-    //             console.log(params);
-    //             return (
-    //                 <>
-    //                     <img src={params.value.coin_image} alt='' width={50} height={50}/>
-    //                     {params.value.coin_symbol}
-    //                 </>
-    //             );
-    //         }
-    //     },
-    //     {key: 'price', name: 'Price', width: 35},
-    //     {key: 'change_24h', name: '24 h'},
-    //     {key: 'volume_24h', name: 'Volume / 24 h'},
-    //     {key: 'view_chart', name: '', renderCell: (params) => {
-    //             return (
-    //                 <strong>
-    //                     <Button variant="contained" size="small">
-    //                         View Chart
-    //                     </Button>
-    //                 </strong>
-    //             );
-    //         }},
-    //     {key: 'view_pricer', name: ''}
-    // ];
-    //
-    // const [initialRows, setInitialRows] = useState([]);
-    //
-    // if (props.coins != null) {
-    //
-    //     for (let i = 0; i < props.coins.length; i++) {
-    //
-    //         let coin = props.coins[i];
-    //
-    //         initialRows[i] = {
-    //             rank: coin.market_cap_rank,
-    //             // coin: {coin_image: coin.image, coin_symbol: coin.symbol.toUpperCase()},
-    //             coin: coin.symbol.toUpperCase(),
-    //             price: MathsUtils.roundSmart(coin.current_price).toLocaleString() + ' ' + userCurrency.symbol,
-    //             change_24h: coin.price_change_percentage_24h.toFixed(2) + ' %',
-    //             volume_24h: MathsUtils.roundToMillionsIfPossible(coin.total_volume),
-    //             view_chart: "View Chart"
-    //         }
-    //     }
-    // }
+    const CustomForm = ({status, message, onValidated}) => {
+        let email;
+        const submit = () =>
+            email &&
+            email.value.indexOf("@") > -1 &&
+            onValidated({
+                EMAIL: email.value
+            });
+
+        return (
+            <div>
+
+                <div
+                    className={"email_validation_form"}
+                >
+                    <input
+                        className={"email_input"}
+                        ref={node => (email = node)}
+                        type="email"
+                        placeholder="Enter your email"
+                    />
+                    <button className={"email_validation_button"} onClick={submit}>
+                        Subscribe
+                    </button>
+                </div>
+
+                <br/>
+
+                {status === "sending" && <div className={"newsletter_subscription_success"}>sending...</div>}
+                {status === "error" && (
+                    <div
+                        className={"newsletter_subscription_error"}
+                        dangerouslySetInnerHTML={{__html: message}}
+                    />
+                )}
+                {status === "success" && (
+                    <div
+                        className={"newsletter_subscription_success"}
+                        dangerouslySetInnerHTML={{__html: message}}
+                    />
+                )}
+
+                {status == undefined && (
+                    <div
+                        className={"newsletter_subscription_success"}
+                        dangerouslySetInnerHTML={{__html: "&nbsp;"}}
+                    />
+                )}
+
+                <br/>
+            </div>
+        );
+    };
 
     return (
         <div className='container'>
 
             <div className='header'>
                 <br/>
-                <h2 className='header_title'>Top 5 cryptocurrencies by market cap</h2>
+                <h2 className='header_title'>Welcome to CryptOptions</h2>
+                <h3 className='header_text'>We develop analytics and forecasting methods for cryptocurrencies and their
+                    derivatives. We use these methods to provide you with trade ideas and recommendations.
+                    <br/>
+                    <br/>
+                    The CryptOptions newsletter is a quick way to receive buy and sell recommendations based on our
+                    forecasting algorithm.
+                    <br/>
+                    <br/>
+                    Subscribe now and receive bitcoin price forecasts soon.
+                    <br/>
+                </h3>
+
+                <div className='header_text'>
+                    <MailchimpSubscribe
+                        url={mailchimp_url}
+                        render={({subscribe, status, message}) => (
+                            <CustomForm
+                                status={status}
+                                message={message}
+                                onValidated={formData => subscribe(formData)}
+                            />
+                        )}
+                    />
+                </div>
+                <h2 className='table_title'>Top 5 cryptocurrencies by market cap</h2>
             </div>
 
             <div>

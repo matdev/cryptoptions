@@ -143,7 +143,8 @@ const Navbar = (props) => {
                             <h1 className='app-name'>Crypt<span className='options'>Options</span></h1>
                             <p className='beta_label hide-mobile'>Beta</p>
                         </div>
-                        <p className='app_pitch hide-mobile'>Fair prices of options on cryptocurrencies</p>
+                        <p className='app_pitch hide-mobile'>Insights, forecasts and trade ideas for crypto traders
+                        </p>
                     </Link>
 
                     <div className='mobile-only'>
