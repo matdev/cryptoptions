@@ -73,15 +73,14 @@ const CoinsTable = (props) => {
             <div className='header'>
                 <br/>
                 <h2 className='header_title'>Welcome to CryptOptions</h2>
-                <h3 className='header_text'>We develop analytics and forecasting methods for cryptocurrencies and their
-                    derivatives. We use these methods to provide you with trade ideas and recommendations.
+                <h3 className='header_text'>We develop valuation tools and price forecasting models for cryptocurrencies and their
+                    derivatives. We use these solutions to generate trade ideas and recommendations.
                     <br/>
                     <br/>
-                    The CryptOptions newsletter is a quick way to receive buy and sell recommendations based on our
-                    forecasting algorithm.
+                    The CryptOptions newsletter is a simple way to be notified about expected price changes based on our forecasting model.
                     <br/>
                     <br/>
-                    Subscribe now and receive bitcoin price forecasts soon.
+                    Subscribe now and receive Bitcoin price forecasts soon (beta version)
                     <br/>
                 </h3>
 
