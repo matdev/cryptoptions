@@ -1,25 +1,32 @@
 import React, {useState} from 'react'
 import CoinItem from './CoinItem'
 
-import './CoinsTable.css'
+import './HomePage.css'
 import CoinDetails from "../routes/CoinDetails";
 import * as MathsUtils from "../util/MathsUtils";
 import {Link} from "react-router-dom";
 import DataGrid from "react-data-grid";
 import {useSelector} from "react-redux";
 import MailchimpSubscribe from "react-mailchimp-subscribe"
+import {useTranslation} from "react-i18next";
 
-const CoinsTable = (props) => {
+const HomePage = (props) => {
+
+    const {i18n, t} = useTranslation();
 
     const mailchimp_url = "https://cryptoptions.us21.list-manage.com/subscribe/post?u=d48a8293e3b5cf0f0002e1dd7&amp;id=585fd685ef&amp;f_id=0098dee6f0";
 
+    const SimpleForm = () => <MailchimpSubscribe url={mailchimp_url}/>
+
+// a basic form
     const CustomForm = ({status, message, onValidated}) => {
         let email;
         const submit = () =>
             email &&
             email.value.indexOf("@") > -1 &&
             onValidated({
-                EMAIL: email.value
+                EMAIL: email.value,
+                LANG: i18n.language
             });
 
         return (
@@ -32,16 +39,16 @@ const CoinsTable = (props) => {
                         className={"email_input"}
                         ref={node => (email = node)}
                         type="email"
-                        placeholder="Enter your email"
+                        placeholder={t("enter_your_email")}
                     />
+                    {/*<br />*/}
                     <button className={"email_validation_button"} onClick={submit}>
-                        Subscribe
+                        {t("subscribe")}
                     </button>
                 </div>
-
                 <br/>
 
-                {status === "sending" && <div className={"newsletter_subscription_success"}>sending...</div>}
+                {status === "sending" && <div className={"newsletter_subscription_success"}>{t("mailchimp_sending")}</div>}
                 {status === "error" && (
                     <div
                         className={"newsletter_subscription_error"}
@@ -51,7 +58,7 @@ const CoinsTable = (props) => {
                 {status === "success" && (
                     <div
                         className={"newsletter_subscription_success"}
-                        dangerouslySetInnerHTML={{__html: message}}
+                        dangerouslySetInnerHTML={{__html: t("mailchimp_success")}}
                     />
                 )}
 
@@ -72,15 +79,14 @@ const CoinsTable = (props) => {
 
             <div className='header'>
                 <br/>
-                <h2 className='header_title'>Welcome to CryptOptions</h2>
-                <h3 className='header_text'>We develop valuation tools and price forecasting models for cryptocurrencies and their
-                    derivatives. We use these solutions to generate trade ideas and recommendations.
+                <h2 className='header_title'>{t("welcome")}</h2>
+                <h3 className='header_text'>{t("home_intro_1")}
                     <br/>
                     <br/>
-                    The CryptOptions newsletter is a simple way to be notified about expected price changes based on our forecasting model.
+                    {t("home_intro_2")}
                     <br/>
                     <br/>
-                    Subscribe now and receive Bitcoin price forecasts soon (beta version)
+                    {t("home_intro_3")}
                     <br/>
                 </h3>
 
@@ -95,17 +101,20 @@ const CoinsTable = (props) => {
                             />
                         )}
                     />
+
+                    <h3 className='header_text'>{t("home_intro_4")}</h3>
                 </div>
-                <h2 className='table_title'>Top 5 cryptocurrencies by market cap</h2>
+
+                <h2 className='table_title'>{t("home_table_title")}</h2>
             </div>
 
             <div>
                 <div className='heading'>
                     <p className='hide-mobile'>#</p>
-                    <p className='coin-header-cell'>Coin</p>
-                    <p className='coin-header-cell'>Price</p>
+                    <p className='coin-header-cell'>{t("coin")}</p>
+                    <p className='coin-header-cell'>{t("price")}</p>
                     <p className='coin-header-cell'>24 h</p>
-                    <p className='hide-mobile'>Volume / 24 h</p>
+                    <p className='hide-mobile'>{t("volume_24h")}</p>
                     <p className='placeholder'></p>
                     <p className='placeholder hide-mobile'></p>
                 </div>
@@ -122,20 +131,19 @@ const CoinsTable = (props) => {
                 {(props.coins == undefined) &&
                     <div className={'data-not-available'}>
                         <p>
-                            This is a beta version, data access is limited.
-                            Please retry shortly or click the button below
+                            {t("data_access_limited")}
                         </p>
                         <div className={'data_not_available_buttons'}>
                             <br/>
                             <Link to={`/coin/bitcoin`} element={<CoinDetails/>}>
                                 <p>
-                                    <button className={"button_view_chart"}>Bitcoin infos</button>
+                                    <button className={"button_view_chart"}>{t("bitcoin_infos")}</button>
                                 </p>
                             </Link>
 
                             <Link to={`/coin/ethereum`} element={<CoinDetails/>}>
                                 <p>
-                                    <button className={"button_view_chart"}>Ethereum infos</button>
+                                    <button className={"button_view_chart"}>{t("ethereum_infos")}</button>
                                 </p>
                             </Link>
                         </div>
@@ -146,4 +154,4 @@ const CoinsTable = (props) => {
     )
 }
 
-export default CoinsTable
+export default HomePage

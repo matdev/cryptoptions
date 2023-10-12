@@ -1,7 +1,7 @@
 :root {
     --main-color: #FB9B9C;
     --logo_blue: #61dcfe;
-    --beta-color: #ff6900;
+    --beta_color: #ff6900;
     --main-width: 1140px;
 }
 
@@ -108,8 +108,8 @@
 
 .beta_label {
     font-size: 14px;
-    border: 1px solid var(--beta-color);
-    background-color: var(--beta-color);
+    border: 1px solid var(--beta_color);
+    background-color: var(--beta_color);
     border-radius: 8px;
     padding: .3rem;
     margin-top: 10px;
@@ -129,6 +129,15 @@
 
 .mobile-only {
     display: none;
+}
+
+.language_selector {
+    background-color: wheat;
+    height: 2rem;
+    width: 85px;
+    float: right;
+    margin-right: 15px;
+    font-size: 16px;
 }
 
 @media screen and (max-width: 700px) {

@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 
-import './CoinsTable.css'
+import './HomePage.css'
 import {Link} from 'react-router-dom'
 import CoinDetails from "../routes/CoinDetails";
 import CoinOptions from "../routes/CoinOptions";

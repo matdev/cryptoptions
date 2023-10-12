@@ -13,6 +13,7 @@ import {roundToDecimalPlace} from "../util/MathsUtils";
 import * as StringUtils from "../util/StringUtils";
 import ReactGA from "react-ga4";
 import {convertToUpperCase} from "../util/StringUtils";
+import {useTranslation} from 'react-i18next';
 
 const mathjs = require('mathjs');
 
@@ -20,6 +21,8 @@ const CoinCorrelations = (props) => {
 
     const location = useLocation();
     const params = useParams();
+
+    const {i18n, t} = useTranslation();
 
     const userCurrency = useSelector(store => store.userCurrency.value);
 
@@ -95,7 +98,7 @@ const CoinCorrelations = (props) => {
     const [historicalVolCoin1, setHistoricalVolCoin1] = useState(0);
 
     const [chartData, setChartData] = useState({
-        title: "Historical prices (" + userCurrency.symbol + ")",
+        title: t("BTC_ETH_historical_prices") + "(" + userCurrency.symbol + ")",
         labels: [], //testLabels.map((data) => data[0]),
         datasets: [
             {
@@ -272,7 +275,7 @@ const CoinCorrelations = (props) => {
         // Chart data
         if (btcPricesHistoryFromService != undefined) {
             setChartData({
-                title: "BTC and ETH Historical Prices (" + userCurrency.symbol + ")",
+                title: t("BTC_ETH_historical_prices") + " (" + userCurrency.symbol + ")",
                 labels: btcPricesHistoryFromService.map(function (data) {
                     return new Date(data[0]).toLocaleDateString();
                 }),
@@ -311,7 +314,7 @@ const CoinCorrelations = (props) => {
         <div>
             <div className='coin-container'>
                 <div className='content'>
-                    <h1>Coin correlations</h1>
+                    <h1>{t("coin_correlations")}</h1>
                 </div>
                 <div className='content'>
                     <table className={'coin_correlations'}>
@@ -388,27 +391,10 @@ const CoinCorrelations = (props) => {
                     </table>
 
                     <div><br/><br/></div>
-                    <p style={{fontStyle: "italic"}}> Note: These Pearson correlation coefficients are calculated over
-                        the last 90 daily prices in {userCurrency.label} </p>
+                    <p style={{fontStyle: "italic"}}> {t("pearson_correlation")} {userCurrency.label} </p>
                 </div>
                 <div className='content'>
                     <LineChart2Series chartData={chartData}/>
-                    {/*<div className='historical-vol'>*/}
-                    {/*    <h3>Historical volatility</h3>*/}
-                    {/*</div>*/}
-                    {/*<div className='details_info'>*/}
-                    {/*    <div className='historical-vol'>*/}
-                    {/*        <h3> {prop_coins[0].symbol} Volatility : </h3>*/}
-                    {/*    </div>*/}
-                    {/*    <div className='centered-in-cell'>*/}
-                    {/*        <h1>{historicalVols[0]?.toFixed(2)} %</h1>*/}
-                    {/*    </div>*/}
-                    {/*</div>*/}
-                    {/*<div className='details_info'>*/}
-                    {/*    <div>*/}
-                    {/*        Calculated over the last 90 daily returns*/}
-                    {/*    </div>*/}
-                    {/*</div>*/}
                 </div>
             </div>
         </div>

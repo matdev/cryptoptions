@@ -17,7 +17,17 @@ import ListItemText from '@mui/material/ListItemText';
 import './Navbar.css'
 import BaseCurrencySelect from './BaseCurrencySelect'
 
+import {LANGUAGES} from "../util/StringUtils";
+import {useTranslation} from 'react-i18next';
+
 const Navbar = (props) => {
+
+
+    const {i18n, t} = useTranslation();
+    const onChangeLang = (e) => {
+        const lang_code = e.target.value
+        i18n.changeLanguage(lang_code)
+    }
 
     const [state, setState] = React.useState({
         top: false,
@@ -82,7 +92,7 @@ const Navbar = (props) => {
                     divider={true}
                     key={'bitcoin'}>
 
-                    <ListItemText primary='Options on Bitcoin'/>
+                    <ListItemText primary={t("options_on")}/>
 
                 </ListItem>
 
@@ -126,7 +136,22 @@ const Navbar = (props) => {
         <div className='navbar-parent'>
             <div className='navbar-header hide-mobile'>
                 <div>
+
+
                     <BaseCurrencySelect/>
+                </div>
+
+                {/*<div>*/}
+                {/*    <LanguageSwitcher/>*/}
+                {/*</div>*/}
+                <div>
+                    <select className="language_selector" defaultValue={i18n.language} onChange={onChangeLang}>
+                        {LANGUAGES.map(({code, label}) => (
+                            <option key={code} value={code}>
+                                {label}
+                            </option>
+                        ))}
+                    </select>
                 </div>
             </div>
             <div className='navbar'>
@@ -143,8 +168,9 @@ const Navbar = (props) => {
                             <h1 className='app-name'>Crypt<span className='options'>Options</span></h1>
                             <p className='beta_label hide-mobile'>Beta</p>
                         </div>
-                        <p className='app_pitch hide-mobile'>Insights, forecasts and trade ideas for crypto traders
-                        </p>
+
+                        <p className='app_pitch hide-mobile'>{t("app_pitch")}</p>
+
                     </Link>
 
                     <div className='mobile-only'>
@@ -165,22 +191,22 @@ const Navbar = (props) => {
 
                     <NavLink to='/coin-correlations' className={({isActive}) =>
                         isActive ? 'navbar_link_active' : 'navbar_link'}>
-                        <h4>Coin correlations</h4>
+                        <h4>{t("coin_correlations")}</h4>
                     </NavLink>
 
                     <NavLink to='/option-prices/bitcoin' state={{spotValue: '25000'}} className={({isActive}) =>
                         isActive ? 'navbar_link_active' : 'navbar_link'}>
-                        <h4>Options on Bitcoin</h4>
+                        <h4>{t("options_on")} Bitcoin</h4>
                     </NavLink>
 
                     <NavLink to='/option-prices/ethereum' state={{spotValue: '1800'}} className={({isActive}) =>
                         isActive ? 'navbar_link_active' : 'navbar_link'}>
-                        <h4>Options on Ethereum</h4>
+                        <h4>{t("options_on")}  Ethereum</h4>
                     </NavLink>
 
                     <NavLink to='/learn-options' className={({isActive}) =>
                         isActive ? 'navbar_link_active' : 'navbar_link'}>
-                        <h4>Learn Options</h4>
+                        <h4>{t("learn_options")}</h4>
                     </NavLink>
                 </div>
             </div>

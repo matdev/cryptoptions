@@ -10,14 +10,22 @@ import {useSelector} from 'react-redux';
 import * as MathsUtils from "../util/MathsUtils";
 import {roundToDecimalPlace} from "../util/MathsUtils";
 import ReactGA from "react-ga4";
-const { parse } = require('rss-to-json');
+
+
+const {parse} = require('rss-to-json');
 
 const mathjs = require('mathjs');
 
+import {useTranslation} from "react-i18next";
+
 const CoinDetails = (props) => {
+
+    const {i18n, t} = useTranslation();
 
     const location = useLocation();
     const params = useParams();
+
+    let running_on_localhost = false;
 
     const [rssUrl, setRssUrl] = useState("");
     const [items, setItems] = useState([]);
@@ -50,32 +58,7 @@ const CoinDetails = (props) => {
     // URL for retrieving bitcoin daily prices over the last 30 days
     const price_history_url = 'https://api.coingecko.com/api/v3/coins/' + params.coinId + '/market_chart?vs_currency=' + userCurrency.code + '&days=90&interval=daily';
 
-    // let parser = new Parser();
-    //
-    // (async () => {
-    //
-    //     let feed = await parser.parseURL('https://www.reddit.com/.rss');
-    //     console.log(feed.title);
-    //
-    //     feed.items.forEach(item => {
-    //         console.log(item.title + ':' + item.link)
-    //     });
-    //
-    // })();
-
-    // async await
-    // (async () => {
-    //
-    //     var rss = await parse('https://blog.ethereum.org/feed.xml');
-    //
-    //     console.log(JSON.stringify(rss, null, 3));
-    //
-    // })();
-// Promise
-
-    // parse("https://blog.ethereum.org/feed.xml").then(rss => {
-    //     console.log(JSON.stringify(rss, null, 3))
-    // })
+    running_on_localhost = window.location.href.includes("localhost");
 
     useEffect(() => {
 
@@ -86,7 +69,7 @@ const CoinDetails = (props) => {
             //console.log("CoinDetails.useEffect() res.data.market_data.current_price : " + res.data.market_data.current_price[userCurrency.code]);
             //console.log("CoinDetails. currency:" + userCurrency.code + " spotValue : " + location.state.spotValue);
 
-            let pageTitle = res.data.name + " Price: " + res.data.symbol.toUpperCase() + " Live Price and historical chart | CryptOptions"
+            let pageTitle = res.data.name + " Price: " + res.data.symbol.toUpperCase() + " Live Price, forecast and historical chart | CryptOptions"
             document.title = pageTitle;
 
             // Log view into Google Analytics
@@ -131,13 +114,13 @@ const CoinDetails = (props) => {
 
             // Chart data
             setChartData({
-                title: "Historical Price Chart (" + userCurrency.symbol + ")",
+                title: t("historical_prices") + " (" + userCurrency.symbol + ")",
                 labels: pricesHistoryFromService.map(function (data) {
                     return new Date(data[0]).toLocaleDateString();
                 }),
                 datasets: [
                     {
-                        label: "price history",
+                        label: t("historical_prices"),
                         data: pricesHistoryFromService.map((data) => data[1]),
                         borderColor: 'rgb(255, 99, 132)',
                         backgroundColor: 'rgba(255, 99, 132, 0.5)',
@@ -184,6 +167,23 @@ const CoinDetails = (props) => {
 
     }, [userCurrency])
 
+    function getCoinDescription(){
+
+        if (coin.description == undefined){
+            return "";
+        }
+
+        console.log("getCoinDescription() i18n.language = " + i18n.language);
+
+        let result = coin.description.en;
+
+        if (i18n.language == 'fr' && i18n.language.fr != undefined){
+            result = coin.description.fr;
+        }
+
+        return result;
+    }
+
     return (
         <div>
             <div className='coin-container'>
@@ -198,7 +198,7 @@ const CoinDetails = (props) => {
                         </div>
                         <div className='centered-in-cell'>
                             <div className='rank'>
-                                <span className='rank-btn'>Market cap # {coin.market_cap_rank}</span>
+                                <span className='rank-btn'>{t("market_cap")} # {coin.market_cap_rank}</span>
                             </div>
                         </div>
                     </div>
@@ -213,7 +213,7 @@ const CoinDetails = (props) => {
                 <div className='content'>
                     <div className='details_info'>
                         <div className='historical-vol'>
-                            <h3>Historical Volatility : </h3>
+                            <h3>{t("historical_volatility")} : </h3>
                         </div>
                         <div className='centered-in-cell'>
                             <h1>{historicalVol_30d.toFixed(2)} %</h1>
@@ -221,7 +221,7 @@ const CoinDetails = (props) => {
                     </div>
                     <div className='details_info'>
                         <div>
-                            Calculated over the last 90 daily returns
+                            {t("calculated_over_daily_returns")}
                         </div>
                         <div className='centered-in-cell'>
                             <Link to={`/option-prices/${coin.id}`}
@@ -229,7 +229,7 @@ const CoinDetails = (props) => {
                                   element={<CoinOptions/>}
                                   key={coin.id}>
                                 <p>
-                                    <button className={"button_view_option_pricer"}>Options pricer</button>
+                                    <button className={"button_view_option_pricer"}>{t("options_pricer")}</button>
                                 </p>
                             </Link>
                         </div>
@@ -240,17 +240,17 @@ const CoinDetails = (props) => {
                 </div>
                 <div className='content'>
                     <div className='historical-vol'>
-                        <h3>Historical price changes : </h3>
+                        <h3>{t("historical_price_changes")} : </h3>
                     </div>
                     <table>
                         <thead>
                         <tr>
-                            <th>last 1h</th>
+                            <th>{t("last_1h")}</th>
                             <th>24h</th>
-                            <th>7d</th>
-                            <th>14d</th>
-                            <th>30d</th>
-                            <th>1yr</th>
+                            <th>{t("7d")}</th>
+                            <th>{t("14d")}</th>
+                            <th>{t("30d")}</th>
+                            <th>{t("1yr")}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -276,24 +276,24 @@ const CoinDetails = (props) => {
                     <div className='stats'>
                         <div className='left'>
                             <div className='row'>
-                                <h4>24 Hour Low</h4>
+                                <h4>{t("24_hour_low")}</h4>
                                 {coin.market_data?.low_24h ?
                                     <p>{coin.market_data.low_24h[userCurrency.code].toLocaleString()} {userCurrency.symbol}</p> : null}
                             </div>
                             <div className='row'>
-                                <h4>24 Hour High</h4>
+                                <h4>{t("24_hour_high")}</h4>
                                 {coin.market_data?.high_24h ?
                                     <p>{coin.market_data.high_24h[userCurrency.code].toLocaleString()} {userCurrency.symbol}</p> : null}
                             </div>
                         </div>
                         <div className='right'>
                             <div className='row'>
-                                <h4>Market cap</h4>
+                                <h4>{t("market_cap")}</h4>
                                 {coin.market_data?.market_cap ?
                                     <p>{MathsUtils.roundToMillionsIfPossible(coin.market_data.market_cap[userCurrency.code])} {userCurrency.symbol}</p> : null}
                             </div>
                             <div className='row'>
-                                <h4>Circulating Supply</h4>
+                                <h4>{t("circulating_supply")}</h4>
                                 {coin.market_data ?
                                     <p>{MathsUtils.roundToMillionsIfPossible(coin.market_data.circulating_supply)}</p> : null}
                             </div>
@@ -301,24 +301,11 @@ const CoinDetails = (props) => {
                     </div>
                 </div>
 
-                {/*<div className='content'>*/}
-                {/*    <div className='about'>*/}
-                {/*        <h3>{coin.name} News</h3>*/}
-                {/*        {items && items.map(item => (*/}
-                {/*            <div key={item.link}>*/}
-                {/*                /!*<h1>{item.title}</h1>*!/*/}
-                {/*                /!*<a href="">{item.link}</a>*!/*/}
-                {/*            </div>*/}
-                {/*        ))}*/}
-
-                {/*    </div>*/}
-                {/*</div>*/}
-
                 <div className='content'>
                     <div className='about'>
-                        <h3>About {coin.name}</h3>
+                        <h3>{t("about")} {coin.name}</h3>
                         <p dangerouslySetInnerHTML={{
-                            __html: DOMPurify.sanitize(coin.description ? coin.description.en : ''),
+                            __html: DOMPurify.sanitize(getCoinDescription()),
                         }}>
 
                         </p>

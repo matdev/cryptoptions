@@ -19,10 +19,13 @@ import {OptionType} from "../util/PricingUtils";
 import {COLORS} from "../util/Colors.js";
 import {useSelector} from 'react-redux';
 import ReactGA from "react-ga4";
+import {useTranslation} from "react-i18next";
 
 const mathjs = require('mathjs');
 
 const CoinOptions = () => {
+
+    const {i18n, t} = useTranslation();
 
     const params = useParams();
     const location = useLocation();
@@ -352,7 +355,7 @@ const CoinOptions = () => {
     };
 
     function getExpiryLabel(expiryDate) {
-        return "Expiry : " + expiryDate.toLocaleDateString();
+        return t("expiry") + " : " + expiryDate.toLocaleDateString();
     }
 
     const StyledTab = styled(Tab)({
@@ -366,7 +369,7 @@ const CoinOptions = () => {
         <div>
             <div className='coin-container'>
                 <div className='content'>
-                    <h1>Options on
+                    <h1>{t("options_on")}
                         <span className='purple'> {coin.name}</span>
                     </h1>
                 </div>
@@ -402,20 +405,20 @@ const CoinOptions = () => {
                                        error={!isInputVolValid} inputRef={inputVolRef}
                                        onKeyDown={handleKeyPress} InputLabelProps={{shrink: true}}
                             />
-                            <TextField className='pricer-input-field-longer' id="input-as-of-date" label="As of date"
+                            <TextField className='pricer-input-field-longer' id="input-as-of-date" label={t("as_of_date")}
                                        variant="filled" defaultValue={currentDate.toLocaleDateString()}
                                        onBlur={checkInputValues}
                                        error={!isInputAsOfDateValid} inputRef={inputAsOfDateRef}
                                        onKeyDown={handleKeyPress} InputLabelProps={{shrink: true}}
                             />
-                            <TextField className='pricer-input-field-longer' id="input-rate" label="Risk-free rate (%)"
+                            <TextField className='pricer-input-field-longer' id="input-rate" label={t("risk_free_rate")}
                                        variant="filled" defaultValue={defaultRiskFreeRate} onBlur={checkInputValues}
                                        error={!isInputRateValid} inputRef={inputRateRef}
                                        onKeyDown={handleKeyPress} InputLabelProps={{shrink: true}}
                             />
 
-                            <button className={"button_price"} onClick={onPriceAllButton}>PRICE ALL</button>
-                            <button className={"reset_params"} onClick={onResetButton}>RESET</button>
+                            <button className={"button_price"} onClick={onPriceAllButton}>{t("price_all")}</button>
+                            <button className={"reset_params"} onClick={onResetButton}>{t("reset")}</button>
                         </div>
                     </div>
                 </div>

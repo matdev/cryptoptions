@@ -6,6 +6,7 @@ import {HashRouter} from "react-router-dom";
 import ReactGA from "react-ga4";
 import store from './store.js'
 import {Provider} from 'react-redux'
+import "./i18n";
 
 if (!window.location.href.includes("localhost")) {
     console.log("index.js href = " + window.location.href + " => init GA");

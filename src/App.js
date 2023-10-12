@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react'
 import axios from 'axios'
 import {Routes, Route, useLocation} from 'react-router-dom'
 import ReactGA from "react-ga4";
-import CoinsTable from './components/CoinsTable'
+import HomePage from './components/HomePage'
 import CoinDetails from './routes/CoinDetails'
 import CoinCorrelations from './routes/CoinCorrelations'
 import Navbar from './components/Navbar'
@@ -61,7 +61,7 @@ function App() {
 
                 <Route path='/coin-correlations' element={<CoinCorrelations coins={coins}/>}/>
 
-                <Route path='/' element={<CoinsTable coins={coins}/>}/>
+                <Route path='/' element={<HomePage coins={coins}/>}/>
                 <Route path='/coin' element={<CoinDetails/>}>
                     <Route path=':coinId' element={<CoinDetails />}/>
                 </Route>
