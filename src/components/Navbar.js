@@ -16,6 +16,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import './Navbar.css'
 import BaseCurrencySelect from './BaseCurrencySelect'
+import LanguageSwitcher from './LanguageSwitcher'
 
 import {LANGUAGES} from "../util/StringUtils";
 import {useTranslation} from 'react-i18next';
@@ -23,10 +24,17 @@ import {useTranslation} from 'react-i18next';
 const Navbar = (props) => {
 
 
+    const drawerAnchor = 'left';
+
     const {i18n, t} = useTranslation();
     const onChangeLang = (e) => {
         const lang_code = e.target.value
         i18n.changeLanguage(lang_code)
+    }
+
+    const onChangeLangFromDrawer = (e) => {
+        toggleDrawer(drawerAnchor, false)
+        //onChangeLang(e);
     }
 
     const [state, setState] = React.useState({
@@ -48,17 +56,24 @@ const Navbar = (props) => {
         console.log("onClickedMenuItem() param : " + param)
     };
 
+    function getMenuItemTitle(genericPart, coinName) {
+        let result = genericPart + " " + coinName;
+        return result;
+    }
+
     const drawerMenuList = (anchor) => (
         <Box
             sx={{width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 250}}
             role="presentation"
-            onClick={toggleDrawer(anchor, false)}
-            onKeyDown={toggleDrawer(anchor, false)}
+            // onClick={toggleDrawer(anchor, false)}
+            // onKeyDown={toggleDrawer(anchor, false)}
         >
             <List className='drawer-list'>
 
                 <ListItem
                     key={'close'}
+                    onClick={toggleDrawer(anchor, false)}
+                    onKeyDown={toggleDrawer(anchor, false)}
                     divider={true}>
 
                     <MdClose className=''/>
@@ -78,9 +93,10 @@ const Navbar = (props) => {
                     state={''}
                     className={'drawer-menu-item'}
                     divider={true}
-                    key={'coin-correlations'}>
+                    key={'coin-correlations'}
+                    onClick={toggleDrawer(anchor, false)}>
 
-                    <ListItemText primary='Coin correlations'/>
+                    <ListItemText primary={t("coin_correlations")}/>
 
                 </ListItem>
 
@@ -90,9 +106,10 @@ const Navbar = (props) => {
                     state={{spotValue: '25000'}}
                     className={'drawer-menu-item'}
                     divider={true}
-                    key={'bitcoin'}>
+                    key={'bitcoin'}
+                    onClick={toggleDrawer(anchor, false)}>
 
-                    <ListItemText primary={t("options_on")}/>
+                    <ListItemText primary={getMenuItemTitle(t("options_on"), "Bitcoin")}/>
 
                 </ListItem>
 
@@ -102,9 +119,10 @@ const Navbar = (props) => {
                     state={{spotValue: '1800'}}
                     className={'drawer-menu-item'}
                     divider={true}
-                    key={'ethereum'}>
+                    key={'ethereum'}
+                    onClick={toggleDrawer(anchor, false)}>
 
-                    <ListItemText primary='Options on Ethereum'/>
+                    <ListItemText primary={getMenuItemTitle(t("options_on"), "Ethereum")}/>
 
                 </ListItem>
 
@@ -113,20 +131,31 @@ const Navbar = (props) => {
                     to={`/learn-options`}
                     className={'drawer-menu-item'}
                     divider={true}
-                    key={'learn-options'}>
+                    key={'learn-options'}
+                    onClick={toggleDrawer(anchor, false)}>
 
-                    <ListItemText primary='Learn Options'/>
+                    <ListItemText primary={t("learn_options")}/>
+
+                </ListItem>
+
+                <ListItem
+                    key={'language-selector'}
+                    divider={false}>
+
+                    <div>
+                        <LanguageSwitcher/>
+                    </div>
 
                 </ListItem>
 
                 <ListItem
                     key={'currency-selector'}
                     divider={false}>
-
                     <div>
                         <BaseCurrencySelect/>
                     </div>
                 </ListItem>
+
             </List>
         </Box>
     );
@@ -136,23 +165,21 @@ const Navbar = (props) => {
         <div className='navbar-parent'>
             <div className='navbar-header hide-mobile'>
                 <div>
-
-
                     <BaseCurrencySelect/>
                 </div>
 
-                {/*<div>*/}
-                {/*    <LanguageSwitcher/>*/}
-                {/*</div>*/}
                 <div>
-                    <select className="language_selector" defaultValue={i18n.language} onChange={onChangeLang}>
-                        {LANGUAGES.map(({code, label}) => (
-                            <option key={code} value={code}>
-                                {label}
-                            </option>
-                        ))}
-                    </select>
+                    <LanguageSwitcher/>
                 </div>
+                {/*<div>*/}
+                {/*    <select className="language_selector" defaultValue={i18n.language} onChange={onChangeLang}>*/}
+                {/*        {LANGUAGES.map(({code, label}) => (*/}
+                {/*            <option key={code} value={code}>*/}
+                {/*                {label}*/}
+                {/*            </option>*/}
+                {/*        ))}*/}
+                {/*    </select>*/}
+                {/*</div>*/}
             </div>
             <div className='navbar'>
                 <div className='logo_section'>
@@ -168,7 +195,7 @@ const Navbar = (props) => {
                             <h1 className='app-name'>Crypt<span className='options'>Options</span></h1>
                             <p className='beta_label hide-mobile'>Beta</p>
                         </div>
-
+                        {/*<p className='app_pitch hide-mobile'>Insights, forecasts and trade ideas for crypto traders</p>*/}
                         <p className='app_pitch hide-mobile'>{t("app_pitch")}</p>
 
                     </Link>
@@ -180,11 +207,11 @@ const Navbar = (props) => {
                                 <MdMenu className='drawer-menu-button'/>
                             </IconButton>
                             <Drawer
-                                anchor='left'
+                                anchor={drawerAnchor}
                                 open={state['left']}
                                 onClose={toggleDrawer('left', false)}
                             >
-                                {drawerMenuList('left')}
+                                {drawerMenuList(drawerAnchor)}
                             </Drawer>
                         </React.Fragment>
                     </div>
@@ -201,7 +228,7 @@ const Navbar = (props) => {
 
                     <NavLink to='/option-prices/ethereum' state={{spotValue: '1800'}} className={({isActive}) =>
                         isActive ? 'navbar_link_active' : 'navbar_link'}>
-                        <h4>{t("options_on")}  Ethereum</h4>
+                        <h4>{t("options_on")} Ethereum</h4>
                     </NavLink>
 
                     <NavLink to='/learn-options' className={({isActive}) =>
