@@ -1,4 +1,6 @@
 
+const mathjs = require('mathjs');
+
 export function isNumberBetweenMinMax(val, minValue, maxValue) {
 
     if (isNaN(val)){
@@ -77,6 +79,29 @@ export function getCovariance(timeserie1, mean1, timeserie2, mean2){
     }
 
     let result = sum / n;
+
+    return result;
+}
+
+export function getCorrelationCoefficient(timeserie1, timeserie2){
+
+    let n = timeserie1.length;
+    //TODO: Check n equals timeserie2.length
+
+    let mean_timeserie1 = mathjs.mean(timeserie1);
+    let mean_timeserie2 = mathjs.mean(timeserie2);
+
+    let std_timeserie1 = mathjs.std(timeserie1);
+    let std_timeserie2 = mathjs.std(timeserie2);
+
+    let sum = 0
+    for (let i = 0; i < n; i++) {
+        sum = sum + (timeserie1[i] - mean_timeserie1) * (timeserie2[i] - mean_timeserie2);
+    }
+
+    let covariance = sum / n;
+
+    let result = covariance / (std_timeserie1 * std_timeserie2);
 
     return result;
 }

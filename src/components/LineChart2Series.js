@@ -29,7 +29,7 @@ function LineChart2Series({chartData}) {
                         },
                         y1: {
                             type: 'linear',
-                            display: true,
+                            display: chartData.displayRightAxis,
                             position: 'right',
 
                             // grid line settings
