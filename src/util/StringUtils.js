@@ -7,4 +7,5 @@ export function convertToUpperCase(theString) {
 export const LANGUAGES = [
     { label: "Français", code: "fr" },
     { label: "English", code: "en" },
+    { label: "Español", code: "es" },
 ];

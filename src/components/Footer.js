@@ -25,7 +25,7 @@ const Footer = () => {
                 <b>{t("join_us_on")}<Link to="https://discord.gg/srYeUy9CcR" target='_blank'> {t("discord")} </Link> </b>
             </p>
             <p className={'coingecko_ref'}>
-                {t("coin_prices_provides_by")} <Link to="https://www.coingecko.com" target='_blank'> {t("coingecko")} </Link>
+                {t("coin_prices_provided_by")} <Link to="https://www.coingecko.com" target='_blank'> {t("coingecko")} </Link>
             </p>
             <p className={'version_tag'}>
                 version {process.env.REACT_APP_VERSION} (beta)

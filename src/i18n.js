@@ -4,6 +4,7 @@ import { initReactI18next } from "react-i18next";
 
 import translationEN from "./locales/en/translation.json";
 import translationFR from "./locales/fr/translation.json";
+import translationES from "./locales/es/translation.json";
 
 i18n
     .use(i18nBackend)
@@ -20,6 +21,9 @@ i18n
             },
             fr: {
                 translation: translationFR
+            },
+            es: {
+                translation: translationES
             }
         },
     });
