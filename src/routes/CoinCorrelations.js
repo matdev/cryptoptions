@@ -11,6 +11,7 @@ import * as MathsUtils from "../util/MathsUtils";
 import * as Colors from "../util/Colors";
 import {roundToDecimalPlace} from "../util/MathsUtils";
 import * as StringUtils from "../util/StringUtils";
+import * as ChartsUtils from "../util/ChartsUtils";
 import ReactGA from "react-ga4";
 import {convertToUpperCase} from "../util/StringUtils";
 import {useTranslation} from 'react-i18next';
@@ -104,44 +105,15 @@ const CoinCorrelations = (props) => {
 
     const [chartPrice_BTC_ETH, setChartPrice_BTC_ETH] = useState({
         title: t("BTC_ETH_historical_prices") + "(" + userCurrency.symbol + ")",
-        labels: [], //testLabels.map((data) => data[0]),
+        labels: [],
         datasets: [
-            {
-                label: "price hist INIT",
-                data: [], //testValues.map((data) => data[0]),
-                borderColor: 'rgb(255, 99, 132)',
-                backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                yAxisID: 'y',
-            },
-            {
-                label: 'Dataset 2',
-                data: [],
-                borderColor: Colors.CHART_COLORS.blue,
-                backgroundColor: Colors.CHART_COLORS.blue,
-                yAxisID: 'y1',
-            }
         ],
     });
 
     const [chartCorrelation_BTC, setChartCorrelation_BTC] = useState({
         title: t("BTC_historical_correlations") + "(" + userCurrency.symbol + ")",
         labels: [],
-        displayRightAxis: false,
         datasets: [
-            {
-                label: "correl hist INIT",
-                data: [],
-                borderColor: 'rgb(255, 99, 132)',
-                backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                yAxisID: 'y',
-            }
-            // {
-            //     label: 'Dataset 2',
-            //     data: [],
-            //     borderColor: Colors.CHART_COLORS.blue,
-            //     backgroundColor: Colors.CHART_COLORS.blue,
-            //     yAxisID: 'y1',
-            // }
         ],
     });
 
@@ -288,8 +260,8 @@ const CoinCorrelations = (props) => {
                 //let correlation = covariance / (historicalStdDevs[i] * historicalStdDevs[j])
                 let correlation = covariance / (stdDev_coin_i * stdDev_coin_j)
 
-                console.log("CoinCorrelations.calcCurrentCorrelations() correlation coin_" + i + " coin_" + j + " = " + correlation);
-                console.log("CoinCorrelations.calcCurrentCorrelations()             stdDev_coin_i = " + stdDev_coin_i + " stdDev_coin_j = " + stdDev_coin_j);
+                // console.log("CoinCorrelations.calcCurrentCorrelations() correlation coin_" + i + " coin_" + j + " = " + correlation);
+                // console.log("CoinCorrelations.calcCurrentCorrelations()             stdDev_coin_i = " + stdDev_coin_i + " stdDev_coin_j = " + stdDev_coin_j);
 
                 if (i == BITCOIN_INDEX) {
                     correlationsMatrix[i][j - 1] = correlation;
@@ -327,7 +299,9 @@ const CoinCorrelations = (props) => {
             setChartPrice_BTC_ETH({
                 title: t("BTC_ETH_historical_prices") + " (" + userCurrency.symbol + ")",
                 labels: btcPricesHistoryFromService.map(function (data) {
-                    return new Date(data[0]).toLocaleDateString();
+
+                    let tickAsString = ChartsUtils.getDateAsTickLabel(data[0]);
+                    return tickAsString;
                 }),
                 displayRightAxis: true,
                 datasets: [
@@ -350,16 +324,17 @@ const CoinCorrelations = (props) => {
 
             // Calc rolling correlations
             let rollingCorrel_BTC_ETH = getRollingCorrelations(fullPriceHistories[BITCOIN_INDEX], fullPriceHistories[ETHEREUM_INDEX]);
-            console.log("RollingCorrelations BTC & ETH : " + rollingCorrel_BTC_ETH);
+            //console.log("RollingCorrelations BTC & ETH : " + rollingCorrel_BTC_ETH);
 
             let rollingCorrel_BTC_USDT = getRollingCorrelations(fullPriceHistories[BITCOIN_INDEX], fullPriceHistories[USDT_INDEX]);
-            console.log("RollingCorrelations BTC & USDT : " + rollingCorrel_BTC_USDT);
+            //console.log("RollingCorrelations BTC & USDT : " + rollingCorrel_BTC_USDT);
 
             // Chart correlations history
             setChartCorrelation_BTC({
                 title: t("Correlation BTC & ETH, BTC & USDT") + " (" + userCurrency.symbol + ")",
                 labels: btcPricesHistoryFromService.map(function (data) {
-                    return new Date(data[0]).toLocaleDateString();
+                    let tickAsString = ChartsUtils.getDateAsTickLabel(data[0]);
+                    return tickAsString;
                 }),
                 displayRightAxis: false,
                 datasets: [

@@ -22,22 +22,38 @@ function LineChart2Series({chartData}) {
                         }
                     },
                     scales: {
+                        x: {
+                            ticks: {
+                                // For a category axis, the val is the index so the lookup via getLabelForValue is needed
+                                callback: function(val, index) {
+                                    // Hide every 2nd tick label
+                                    return index % 2 === 0 ? this.getLabelForValue(val) : '';
+                                },
+                                color: 'black',
+                            }
+                        },
                         y: {
                             type: 'linear',
                             display: true,
                             position: 'left',
+                            ticks: {
+                                color: 'black',
+                            }
                         },
                         y1: {
                             type: 'linear',
                             display: chartData.displayRightAxis,
                             position: 'right',
-
+                            ticks: {
+                                color: 'black',
+                            },
                             // grid line settings
                             grid: {
                                 drawOnChartArea: false, // only want the grid lines for one axis to show up
                             },
                         },
-                    }
+                    },
+                    color: 'black'
                 }}
             />
         </div>

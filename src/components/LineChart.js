@@ -1,8 +1,8 @@
 import React from "react";
-import { Line } from "react-chartjs-2";
+import {Line} from "react-chartjs-2";
 import './LineChart.css';
 
-function LineChart({ chartData }) {
+function LineChart({chartData}) {
 
     return (
         <div className="chart-container">
@@ -20,10 +20,23 @@ function LineChart({ chartData }) {
                         legend: {
                             display: false
                         }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: 'black'
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: 'black'
+                            }
+                        }
                     }
                 }}
             />
         </div>
     );
 }
+
 export default LineChart;

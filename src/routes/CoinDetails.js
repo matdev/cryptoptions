@@ -10,7 +10,7 @@ import {useSelector} from 'react-redux';
 import * as MathsUtils from "../util/MathsUtils";
 import {roundToDecimalPlace} from "../util/MathsUtils";
 import ReactGA from "react-ga4";
-
+import * as ChartsUtils from "../util/ChartsUtils";
 
 const {parse} = require('rss-to-json');
 
@@ -41,14 +41,8 @@ const CoinDetails = (props) => {
 
     const [chartData, setChartData] = useState({
         title: "Historical prices (" + userCurrency.symbol + ")",
-        labels: [], //testLabels.map((data) => data[0]),
+        labels: [],
         datasets: [
-            {
-                label: "price hist INIT",
-                data: [], //testValues.map((data) => data[0]),
-                borderColor: 'rgb(255, 99, 132)',
-                backgroundColor: 'rgba(255, 99, 132, 0.5)',
-            },
         ],
     });
 
@@ -116,7 +110,8 @@ const CoinDetails = (props) => {
             setChartData({
                 title: t("historical_prices") + " (" + userCurrency.symbol + ")",
                 labels: pricesHistoryFromService.map(function (data) {
-                    return new Date(data[0]).toLocaleDateString();
+                    let tickAsString = ChartsUtils.getDateAsTickLabel(data[0]);
+                    return tickAsString;
                 }),
                 datasets: [
                     {

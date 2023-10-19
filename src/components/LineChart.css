@@ -1,6 +1,10 @@
 
+:root {
+    --chart-background: #ffd2da;
+}
+
 .chart-container {
-    background-color: white;
+    background-color: var(--chart-background);
     padding: 16px;
 }
 
