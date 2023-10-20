@@ -15,6 +15,7 @@ import * as ChartsUtils from "../util/ChartsUtils";
 import ReactGA from "react-ga4";
 import {convertToUpperCase} from "../util/StringUtils";
 import {useTranslation} from 'react-i18next';
+import DurationSwitcher from "../components/DurationSwitcher";
 
 const mathjs = require('mathjs');
 
@@ -29,7 +30,10 @@ const CoinCorrelations = (props) => {
 
     const full_history_length = 180; // Price history for charts and calculating rolling correlation
 
-    const subset_history_length = 30; // History for current correlation
+    const DEFAULT_TIMEFRAME_DURATION = 30;
+
+    //const [timeframeDuration, setTimeframeDuration] = useState(DEFAULT_TIMEFRAME_DURATION);
+    let timeframeDuration = DEFAULT_TIMEFRAME_DURATION;
 
     let useDefaultCoins = false;
 
@@ -85,10 +89,12 @@ const CoinCorrelations = (props) => {
         prop_coins[4] = props.coins[4];
     }
 
-    let btcPricesHistoryFromService;
-    let ethPricesHistoryFromService;
+    const rawPriceHistory = useState([]);
 
-    const fullPriceHistories = []; // [[Coin 1 daily prices], [Coin 2 daily prices], ... ]
+    //const fullPriceHistories = []; // [[Coin 1 daily prices], [Coin 2 daily prices], ... ]
+    const [fullPriceHistories, setFullPriceHistories] = useState([]);
+    const [fullDateHistories, setFullDateHistories] = useState([]);
+
     const fullDailyReturnHistories = []; // [[Coin 1 daily returns], [Coin 2 daily returns], ... ]
     const historicalStdDevs = [];
     const historicalVols = [];
@@ -106,16 +112,22 @@ const CoinCorrelations = (props) => {
     const [chartPrice_BTC_ETH, setChartPrice_BTC_ETH] = useState({
         title: t("BTC_ETH_historical_prices") + "(" + userCurrency.symbol + ")",
         labels: [],
-        datasets: [
-        ],
+        datasets: [],
     });
 
     const [chartCorrelation_BTC, setChartCorrelation_BTC] = useState({
         title: t("BTC_historical_correlations") + "(" + userCurrency.symbol + ")",
         labels: [],
-        datasets: [
-        ],
+        datasets: [],
     });
+
+    const handleDurationChange = (e) => {
+        //e.preventDefault();
+        const newVal = e.target.value;
+        console.log("handleDurationChange() newVal = " + newVal);
+        timeframeDuration = parseInt(newVal);
+        calcCurrentCorrelations();
+    };
 
     useEffect(() => {
 
@@ -142,7 +154,7 @@ const CoinCorrelations = (props) => {
         if (!historiesLoaded[coin_index] && !historiesLoading[coin_index]) {
             doRequestPriceHistory(coin_index);
         } else {
-            console.log("doRequestPriceHistoryIfNecessary() HISTORY ALREADY LOADED FOR " + prop_coins[coin_index].id);
+            //console.log("doRequestPriceHistoryIfNecessary() HISTORY ALREADY LOADED FOR " + prop_coins[coin_index].id);
         }
     }
 
@@ -156,16 +168,25 @@ const CoinCorrelations = (props) => {
             historiesLoaded[coin_index] = true;
             historiesLoading[coin_index] = false;
 
-            //console.log("CoinCorrelations.doRequest().get().then() RECEIVED from price_history_url: " + res.data.prices + " SIZE = " + res.data.prices.length);
             let pricesHistoryFromService = res.data.prices;
 
             if (prop_coins[coin_index].symbol == "btc") {
-                btcPricesHistoryFromService = pricesHistoryFromService;
+
+                console.log("CoinCorrelations.doRequest().get().then() RECEIVED BITCOIN HISTORY ! : " + prop_coins[coin_index].symbol + " SIZE = " + res.data.prices.length);
+                rawPriceHistory[BITCOIN_INDEX] = pricesHistoryFromService;
+
             } else if (prop_coins[coin_index].symbol == "eth") {
-                ethPricesHistoryFromService = pricesHistoryFromService;
+
+                console.log("CoinCorrelations.doRequest().get().then() RECEIVED ETHEREUM HISTORY ! : " + prop_coins[coin_index].symbol + " SIZE = " + res.data.prices.length);
+                rawPriceHistory[ETHEREUM_INDEX] = pricesHistoryFromService;
+            } else if (prop_coins[coin_index].symbol == "usdt") {
+
+                console.log("CoinCorrelations.doRequest().get().then() RECEIVED ETHEREUM HISTORY ! : " + prop_coins[coin_index].symbol + " SIZE = " + res.data.prices.length);
+                rawPriceHistory[USDT_INDEX] = pricesHistoryFromService;
             }
 
             let pricesHistoryCoin = [];
+            let datesHistoryCoin = [];
             let dailyReturnHistory = [];
 
             let i = 0;
@@ -177,6 +198,7 @@ const CoinCorrelations = (props) => {
                     console.log("CoinCorrelations.doRequest().get().then() i=  " + i + " undefined ");
                 } else {
 
+                    datesHistoryCoin[i] = entry[0];
                     pricesHistoryCoin[i] = entry[1];
 
                     if (i > 0) {
@@ -195,6 +217,7 @@ const CoinCorrelations = (props) => {
             let histoVol = standardDeviation * mathjs.sqrt(365) * 100;
             let historicalStdDev = standardDeviation;
 
+            fullDateHistories[coin_index] = datesHistoryCoin;
             fullPriceHistories[coin_index] = pricesHistoryCoin;
             fullDailyReturnHistories[coin_index] = dailyReturnHistory;
             historicalStdDevs[coin_index] = historicalStdDev;
@@ -203,8 +226,10 @@ const CoinCorrelations = (props) => {
             console.log("CoinCorrelations.doRequest().get().then() coin index = " + coin_index + " histoVol = " + histoVol);
 
             if (isAllHistoriesLoaded()) {
-                console.log("CoinCorrelations.doRequest().get().then() ALL HISTORIES LOADED !! => PROCEED to correlations calc !");
+                console.log("CoinCorrelations.doRequest().get().then() ALL HISTORIES LOADED !! => PROCEED to correlations calc over " + timeframeDuration + " days");
                 calcCurrentCorrelations();
+            } else {
+                console.warn("CoinCorrelations.doRequest().get().then() HISTORIES MISSING !");
             }
         }).catch((error) => {
             console.log(error);
@@ -213,7 +238,7 @@ const CoinCorrelations = (props) => {
         });
     };
 
-    function getEndOfTimeSeries(originalTimeSeries, fromIndex){
+    function getEndOfTimeSeries(originalTimeSeries, fromIndex) {
 
         let result = originalTimeSeries.slice(fromIndex, originalTimeSeries.length);
 
@@ -223,6 +248,8 @@ const CoinCorrelations = (props) => {
 
     function calcCurrentCorrelations() {
 
+        console.warn("calcCurrentCorrelations() timeframeDuration = " + timeframeDuration);
+
         if (fullPriceHistories.length < 2) {
             console.warn("calcCurrentCorrelations() fullPriceHistories NOT FULLY LOADED")
             return;
@@ -230,11 +257,11 @@ const CoinCorrelations = (props) => {
 
         let priceHistories = []; // The histories extracted from fullPriceHistories
 
-        priceHistories[0] = getEndOfTimeSeries(fullPriceHistories[0], fullPriceHistories[0].length - subset_history_length);
-        priceHistories[1] = getEndOfTimeSeries(fullPriceHistories[1], fullPriceHistories[1].length - subset_history_length);
-        priceHistories[2] = getEndOfTimeSeries(fullPriceHistories[2], fullPriceHistories[2].length - subset_history_length);
-        priceHistories[3] = getEndOfTimeSeries(fullPriceHistories[3], fullPriceHistories[3].length - subset_history_length);
-        priceHistories[4] = getEndOfTimeSeries(fullPriceHistories[4], fullPriceHistories[4].length - subset_history_length);
+        priceHistories[0] = getEndOfTimeSeries(fullPriceHistories[0], fullPriceHistories[0].length - timeframeDuration);
+        priceHistories[1] = getEndOfTimeSeries(fullPriceHistories[1], fullPriceHistories[1].length - timeframeDuration);
+        priceHistories[2] = getEndOfTimeSeries(fullPriceHistories[2], fullPriceHistories[2].length - timeframeDuration);
+        priceHistories[3] = getEndOfTimeSeries(fullPriceHistories[3], fullPriceHistories[3].length - timeframeDuration);
+        priceHistories[4] = getEndOfTimeSeries(fullPriceHistories[4], fullPriceHistories[4].length - timeframeDuration);
 
         let coin_averages = [];
         coin_averages[0] = mathjs.mean(priceHistories[0]);
@@ -293,68 +320,66 @@ const CoinCorrelations = (props) => {
 
         // Display chart
 
-        if (btcPricesHistoryFromService != undefined) {
+        // Chart prices history
+        setChartPrice_BTC_ETH({
+            title: t("BTC_ETH_historical_prices") + " (" + userCurrency.symbol + ")",
+            labels: fullDateHistories[BITCOIN_INDEX].map(function (data) {
 
-            // Chart prices history
-            setChartPrice_BTC_ETH({
-                title: t("BTC_ETH_historical_prices") + " (" + userCurrency.symbol + ")",
-                labels: btcPricesHistoryFromService.map(function (data) {
+                let tickAsString = ChartsUtils.getDateAsTickLabel(data);
+                return tickAsString;
+            }),
+            displayRightAxis: true,
+            datasets: [
+                {
+                    label: "BTC",
+                    data: fullPriceHistories[BITCOIN_INDEX],
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    yAxisID: 'y',
+                },
+                {
+                    label: "ETH",
+                    data: fullPriceHistories[ETHEREUM_INDEX],
+                    borderColor: 'rgb(54, 162, 235)',
+                    backgroundColor: 'rgb(54, 162, 235, 0.5)',
+                    yAxisID: 'y1',
+                }
+            ],
+        });
 
-                    let tickAsString = ChartsUtils.getDateAsTickLabel(data[0]);
-                    return tickAsString;
-                }),
-                displayRightAxis: true,
-                datasets: [
-                    {
-                        label: "BTC",
-                        data: btcPricesHistoryFromService.map((data) => data[1]),
-                        borderColor: 'rgb(255, 99, 132)',
-                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                        yAxisID: 'y',
-                    },
-                    {
-                        label: "ETH",
-                        data: ethPricesHistoryFromService.map((data) => data[1]),
-                        borderColor: 'rgb(54, 162, 235)',
-                        backgroundColor: 'rgb(54, 162, 235, 0.5)',
-                        yAxisID: 'y1',
-                    }
-                ],
-            });
+        // Calc rolling correlations
+        let rollingCorrel_BTC_ETH = getRollingCorrelations(fullPriceHistories[BITCOIN_INDEX], fullPriceHistories[ETHEREUM_INDEX]);
+        //console.log("RollingCorrelations BTC & ETH : " + rollingCorrel_BTC_ETH);
 
-            // Calc rolling correlations
-            let rollingCorrel_BTC_ETH = getRollingCorrelations(fullPriceHistories[BITCOIN_INDEX], fullPriceHistories[ETHEREUM_INDEX]);
-            //console.log("RollingCorrelations BTC & ETH : " + rollingCorrel_BTC_ETH);
+        let rollingCorrel_BTC_USDT = getRollingCorrelations(fullPriceHistories[BITCOIN_INDEX], fullPriceHistories[USDT_INDEX]);
+        //console.log("RollingCorrelations BTC & USDT : " + rollingCorrel_BTC_USDT);
 
-            let rollingCorrel_BTC_USDT = getRollingCorrelations(fullPriceHistories[BITCOIN_INDEX], fullPriceHistories[USDT_INDEX]);
-            //console.log("RollingCorrelations BTC & USDT : " + rollingCorrel_BTC_USDT);
-
-            // Chart correlations history
-            setChartCorrelation_BTC({
-                title: t("Correlation BTC & ETH, BTC & USDT") + " (" + userCurrency.symbol + ")",
-                labels: btcPricesHistoryFromService.map(function (data) {
-                    let tickAsString = ChartsUtils.getDateAsTickLabel(data[0]);
-                    return tickAsString;
-                }),
-                displayRightAxis: false,
-                datasets: [
-                    {
-                        label: "Correlation BTC & ETH",
-                        data: rollingCorrel_BTC_ETH,
-                        borderColor: 'rgb(255, 99, 132)',
-                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                        yAxisID: 'y',
-                    },
-                    {
-                        label: "Correlation BTC & USDT",
-                        data: rollingCorrel_BTC_USDT,
-                        borderColor: 'rgb(54, 162, 235)',
-                        backgroundColor: 'rgb(54, 162, 235, 0.5)',
-                        yAxisID: 'y',
-                    }
-                ],
-            });
-        }
+        //if (btcPricesHistoryFromService != undefined && (btcPricesHistoryFromService.length > 0)) {
+        // Chart correlations history
+        setChartCorrelation_BTC({
+            title: t("Correlation BTC & ETH, BTC & USDT") + " (" + userCurrency.symbol + ")",
+            labels: fullDateHistories[BITCOIN_INDEX].map(function (data) {
+                let tickAsString = ChartsUtils.getDateAsTickLabel(data);
+                return tickAsString;
+            }),
+            displayRightAxis: false,
+            datasets: [
+                {
+                    label: "Correlation BTC & ETH",
+                    data: rollingCorrel_BTC_ETH,
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    yAxisID: 'y',
+                },
+                {
+                    label: "Correlation BTC & USDT",
+                    data: rollingCorrel_BTC_USDT,
+                    borderColor: 'rgb(54, 162, 235)',
+                    backgroundColor: 'rgb(54, 162, 235, 0.5)',
+                    yAxisID: 'y',
+                }
+            ],
+        });
     }
 
     /*
@@ -362,9 +387,12 @@ const CoinCorrelations = (props) => {
      */
     function getRollingCorrelations(coin1History, coin2History) {
 
-        let result = [];
+        console.warn("getRollingCorrelations() timeframeDuration = " + timeframeDuration);
 
-        let startIndex = subset_history_length;
+        let result = [];
+        //let result = new Array(coin1History.length);
+
+        let startIndex = timeframeDuration;
 
         let j = 0;
 
@@ -376,20 +404,14 @@ const CoinCorrelations = (props) => {
             let subsetCoin1 = coin1History.slice(from, to);
             let subsetCoin2 = coin2History.slice(from, to);
 
-            if (i == coin1History.length - 1){
-                console.log("getRollingCorrelations() => Calc Current correl ... ");
-            }
-
             let correlationCoeff = MathsUtils.getCorrelationCoefficient(subsetCoin1, subsetCoin2);
-            result[j + startIndex] = correlationCoeff;
+            let resultIndex = j + startIndex;
+            result[resultIndex] = correlationCoeff;
 
             j = j + 1;
-
-            if (i == coin1History.length - 1){
-                console.log("getRollingCorrelations() => Current correl : " + correlationCoeff);
-            }
         }
 
+        console.log("getRollingCorrelations() result : " + result);
         return result;
     }
 
@@ -484,7 +506,10 @@ const CoinCorrelations = (props) => {
                         </tbody>
                     </table>
 
-                    <div><br/><br/></div>
+                    <div>
+                        <DurationSwitcher handleChangeCallback={handleDurationChange}
+                                          defaultDuration={timeframeDuration}/>
+                    </div>
                     <p style={{fontStyle: "italic"}}> {t("pearson_correlation")} {userCurrency.label} </p>
                 </div>
                 <div className='content'>

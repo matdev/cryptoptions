@@ -27,7 +27,7 @@
   "options_on": "Options sur",
   "coin_correlations": "Correlations entre cryptos",
   "learn_options": "FAQ sur les options",
-  "pearson_correlation": "Note: Ces coefficients de correlation de Pearson sont calculés sur les 30 derniers prix de clôture en",
+  "pearson_correlation": "Note: Ces coefficients de correlation de Pearson sont calculés sur les derniers prix de clôture en",
   "BTC_ETH_historical_prices": "Historiques des cours du BTC et ETH",
   "strike": "Strike",
   "expiry": "Echéance",
@@ -51,5 +51,6 @@
   "circulating_supply": "Montant en circulation",
   "about": "A propos de",
   "mailchimp_sending": "Envoi...",
-  "mailchimp_success": "Merci de vous être abonné !"
+  "mailchimp_success": "Merci de vous être abonné !",
+  "days": "jours"
 }

@@ -1,0 +1,9 @@
+.duration_switcher {
+    background-color: wheat;
+    height: 2rem;
+    width: 85px;
+    float: left;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    font-size: 16px;
+}

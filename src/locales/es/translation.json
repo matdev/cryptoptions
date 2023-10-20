@@ -27,7 +27,7 @@
     "options_on": "Opciones en",
     "coin_correlations": "Correlaciones entre criptomonedas",
     "learn_options": "Preguntas frecuentes sobre opciones",
-    "pearson_correlation": "Nota: Estos coeficientes de correlación de Pearson se calculan sobre los últimos 90 precios de cierre en",
+    "pearson_correlation": "Nota: Estos coeficientes de correlación de Pearson se calculan sobre los últimos precios de cierre en",
     "BTC_ETH_historical_prices": "Historial de precios de BTC y ETH",
     "strike": "Strike",
     "expiry": "Vencimiento",
@@ -48,5 +48,6 @@
     "24_hour_low": "24 horas - Mínimo",
     "24_hour_high": "24 horas - Máximo",
     "circulating_supply": "Cantidad en circulación",
-    "about": "Acerca de"
+    "about": "Acerca de",
+    "days": "día"
 }
