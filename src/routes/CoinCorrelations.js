@@ -121,10 +121,10 @@ const CoinCorrelations = (props) => {
         datasets: [],
     });
 
-    const handleDurationChange = (e) => {
+    const handleTimeframeDurationChange = (e) => {
         //e.preventDefault();
         const newVal = e.target.value;
-        console.log("handleDurationChange() newVal = " + newVal);
+        console.log("handleTimeframeDurationChange() newVal = " + newVal);
         timeframeDuration = parseInt(newVal);
         calcCurrentCorrelations();
     };
@@ -238,14 +238,6 @@ const CoinCorrelations = (props) => {
         });
     };
 
-    function getEndOfTimeSeries(originalTimeSeries, fromIndex) {
-
-        let result = originalTimeSeries.slice(fromIndex, originalTimeSeries.length);
-
-        return result;
-
-    }
-
     function calcCurrentCorrelations() {
 
         console.warn("calcCurrentCorrelations() timeframeDuration = " + timeframeDuration);
@@ -257,11 +249,11 @@ const CoinCorrelations = (props) => {
 
         let priceHistories = []; // The histories extracted from fullPriceHistories
 
-        priceHistories[0] = getEndOfTimeSeries(fullPriceHistories[0], fullPriceHistories[0].length - timeframeDuration);
-        priceHistories[1] = getEndOfTimeSeries(fullPriceHistories[1], fullPriceHistories[1].length - timeframeDuration);
-        priceHistories[2] = getEndOfTimeSeries(fullPriceHistories[2], fullPriceHistories[2].length - timeframeDuration);
-        priceHistories[3] = getEndOfTimeSeries(fullPriceHistories[3], fullPriceHistories[3].length - timeframeDuration);
-        priceHistories[4] = getEndOfTimeSeries(fullPriceHistories[4], fullPriceHistories[4].length - timeframeDuration);
+        priceHistories[0] = ChartsUtils.getEndOfTimeSeries(fullPriceHistories[0], fullPriceHistories[0].length - timeframeDuration);
+        priceHistories[1] = ChartsUtils.getEndOfTimeSeries(fullPriceHistories[1], fullPriceHistories[1].length - timeframeDuration);
+        priceHistories[2] = ChartsUtils.getEndOfTimeSeries(fullPriceHistories[2], fullPriceHistories[2].length - timeframeDuration);
+        priceHistories[3] = ChartsUtils.getEndOfTimeSeries(fullPriceHistories[3], fullPriceHistories[3].length - timeframeDuration);
+        priceHistories[4] = ChartsUtils.getEndOfTimeSeries(fullPriceHistories[4], fullPriceHistories[4].length - timeframeDuration);
 
         let coin_averages = [];
         coin_averages[0] = mathjs.mean(priceHistories[0]);
@@ -507,7 +499,7 @@ const CoinCorrelations = (props) => {
                     </table>
 
                     <div>
-                        <DurationSwitcher handleChangeCallback={handleDurationChange}
+                        <DurationSwitcher handleChangeCallback={handleTimeframeDurationChange}
                                           defaultDuration={timeframeDuration}/>
                     </div>
                     <p style={{fontStyle: "italic"}}> {t("pearson_correlation")} {userCurrency.label} </p>

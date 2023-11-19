@@ -102,7 +102,6 @@ const HomePage = (props) => {
                         )}
                     />
 
-                    <h3 className='header_text'>{t("home_intro_4")}</h3>
                 </div>
 
                 <h2 className='table_title'>{t("home_table_title")}</h2>
