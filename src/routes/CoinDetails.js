@@ -4,8 +4,6 @@ import React, {useState, useEffect} from 'react'
 import DOMPurify from 'dompurify'
 import './CoinDetails.css'
 import CoinOptions from "./CoinOptions";
-import Chart from "chart.js/auto";
-import LineChart from "../components/LineChart";
 import LineChart2Series from "../components/LineChart2Series";
 import {useSelector} from 'react-redux';
 import * as MathsUtils from "../util/MathsUtils";
@@ -89,7 +87,7 @@ const CoinDetails = (props) => {
             console.log(error)
         });
 
-    }, [userCurrency])
+    }, [userCurrency, i18n.language])
 
     function doRequestPriceHistoryIfNecessary() {
         if (!historiesLoaded && !historiesLoading) {
@@ -174,7 +172,7 @@ const CoinDetails = (props) => {
             title: t("historical_prices_and_vol"),
             labels: datesHistoryCoin.map(function (data) {
 
-                let tickAsString = ChartsUtils.getDateAsTickLabel(data);
+                let tickAsString = ChartsUtils.getDateAsTickLabel(data, i18n.language);
                 return tickAsString;
             }),
             displayRightAxis: true,
@@ -239,6 +237,8 @@ const CoinDetails = (props) => {
 
         if (i18n.language == 'fr' && i18n.language.fr != undefined) {
             result = coin.description.fr;
+        } else if (i18n.language == 'es' && i18n.language.es != undefined) {
+            result = coin.description.es;
         }
 
         return result;

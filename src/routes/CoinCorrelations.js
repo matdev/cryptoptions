@@ -21,9 +21,6 @@ const mathjs = require('mathjs');
 
 const CoinCorrelations = (props) => {
 
-    const location = useLocation();
-    const params = useParams();
-
     const {i18n, t} = useTranslation();
 
     const userCurrency = useSelector(store => store.userCurrency.value);
@@ -148,7 +145,7 @@ const CoinCorrelations = (props) => {
         current_coin_index = 4;
         doRequestPriceHistoryIfNecessary(current_coin_index);
 
-    }, [userCurrency])
+    }, [userCurrency, i18n.language])
 
     function doRequestPriceHistoryIfNecessary(coin_index) {
         if (!historiesLoaded[coin_index] && !historiesLoading[coin_index]) {
@@ -317,7 +314,7 @@ const CoinCorrelations = (props) => {
             title: t("BTC_ETH_historical_prices") + " (" + userCurrency.symbol + ")",
             labels: fullDateHistories[BITCOIN_INDEX].map(function (data) {
 
-                let tickAsString = ChartsUtils.getDateAsTickLabel(data);
+                let tickAsString = ChartsUtils.getDateAsTickLabel(data, i18n.language);
                 return tickAsString;
             }),
             displayRightAxis: true,
@@ -351,7 +348,7 @@ const CoinCorrelations = (props) => {
         setChartCorrelation_BTC({
             title: t("Correlation BTC & ETH, BTC & USDT") + " (" + userCurrency.symbol + ")",
             labels: fullDateHistories[BITCOIN_INDEX].map(function (data) {
-                let tickAsString = ChartsUtils.getDateAsTickLabel(data);
+                let tickAsString = ChartsUtils.getDateAsTickLabel(data, i18n.language);
                 return tickAsString;
             }),
             displayRightAxis: false,

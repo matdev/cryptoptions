@@ -32,7 +32,8 @@ function LineChart({chartData}) {
                                 color: 'black'
                             }
                         }
-                    }
+                    },
+                    pointStyle: false
                 }}
             />
         </div>

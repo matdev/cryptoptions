@@ -1,6 +1,6 @@
-export function getDateAsTickLabel(rawDate) {
+export function getDateAsTickLabel(rawDate, userLang) {
     let tickAsDate = new Date(rawDate);
-    let month = tickAsDate.toLocaleString('default', {month: 'short'});
+    let month = tickAsDate.toLocaleString(userLang, {month: 'short'});
     let tickAsString = tickAsDate.getDate() + " " + month;
 
     return tickAsString;

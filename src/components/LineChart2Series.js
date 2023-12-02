@@ -53,7 +53,8 @@ function LineChart2Series({chartData}) {
                             },
                         },
                     },
-                    color: 'black'
+                    color: 'black',
+                    pointStyle: false
                 }}
             />
         </div>
