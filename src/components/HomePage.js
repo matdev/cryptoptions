@@ -22,11 +22,20 @@ const HomePage = (props) => {
 
     const userCurrency = useSelector(store => store.userCurrency.value);
 
-    const full_history_length = 5; // Price history for vol calculation
+    const full_history_length = 30; // Price history for vol calculation
 
     const [lastKnownPrices, setLastKnownPrices] = useState([]);
+    const [indexComponentVol, setIndexComponentVol] = useState([]);
+
+    const [indexComponentPriceHistory, setIndexComponentPriceHistory] = useState([]);
 
     const [majorIndexValue, setMajorIndexValue] = useState(0);
+    const [majorIndexValue_1d_percent, setMajorIndexValue_1d_percent] = useState(0);
+    const [majorIndexValue_7d_percent, setMajorIndexValue_7d_percent] = useState(0);
+    const [majorIndexValue_14d_percent, setMajorIndexValue_14d_percent] = useState(0);
+    const [majorIndexValue_30d_percent, setMajorIndexValue_30d_percent] = useState(0);
+
+    const [majorIndexVol, setMajorIndexVol] = useState(0);
 
     const historiesLoaded = [false, false, false];
     const historiesLoading = [false, false, false];
@@ -135,42 +144,107 @@ const HomePage = (props) => {
                 i = i + 1;
             }
 
-            //No vol calc for now
-            // let standardDeviation = mathjs.std(pricesHistoryCoin);
-            // let histoVol = standardDeviation * mathjs.sqrt(365) * 100;
+            // Vol calc for now
+            let standardDeviation = mathjs.std(pricesHistoryCoin);
+            let histoVol = standardDeviation * mathjs.sqrt(365) * 100;
 
             lastKnownPrices[coin_index] = pricesHistoryCoin[pricesHistoryCoin.length - 1];
+            indexComponentVol[coin_index] = histoVol;
 
-            console.log("HomePage.doRequestPriceHistory().get().then() coin_index = " + coin_index + " price = " + lastKnownPrices[coin_index]);
+            indexComponentPriceHistory[coin_index] = pricesHistoryCoin;
+
+            console.log("HomePage.doRequestPriceHistory().get().then() coin_index = " + coin_index + " indexComponentPriceHistory = " + indexComponentPriceHistory[coin_index]);
 
             if (isAllHistoriesLoaded()) {
                 console.log("HomePage.doRequestPriceHistory().get().then() ALL INDEX COMPONENT PRICES LOADED !! => PROCEED to index calculation");
                 calcIndexes();
             } else {
                 console.warn("HomePage.doRequestPriceHistory().get().then() MISSING INDEX COMPONENT PRICES : " + lastKnownPrices);
-                setMajorIndexValue(0);
+                resetCurrentValues();
             }
         }).catch((error) => {
-            setMajorIndexValue(0);
+
+            resetCurrentValues();
+
             console.log(error);
             historiesLoaded[coin_index] = false;
             historiesLoading[coin_index] = false;
         });
     };
 
+    function resetCurrentValues(){
+        setMajorIndexValue(0);
+        setMajorIndexValue_1d_percent(0);
+        setMajorIndexValue_7d_percent(0);
+        setMajorIndexValue_14d_percent(0);
+        setMajorIndexValue_30d_percent(0);
+    }
+
     function calcIndexes() {
 
         console.warn("calcIndexes() lastKnownPrices = " + lastKnownPrices);
 
-        let majorIndexVal = 0;
-
-        console.log("calcIndexes() Calc majorIndexVal : userCurrency = " + userCurrency);
-
-        majorIndexVal = majorIndexVal + lastKnownPrices[BITCOIN_INDEX] * (majorIndexWeight[BITCOIN_INDEX] / 100);
-        majorIndexVal = majorIndexVal + lastKnownPrices[ETHEREUM_INDEX] * (majorIndexWeight[ETHEREUM_INDEX] / 100);
-        majorIndexVal = majorIndexVal + lastKnownPrices[SOLANA_INDEX] * (majorIndexWeight[SOLANA_INDEX] / 100);
-
+        let majorIndexVal = getIndexVal(lastKnownPrices, majorIndexWeight);
         setMajorIndexValue(majorIndexVal);
+
+        console.log("calcIndexes() Calc majorIndexVal : majorIndexVal = " + majorIndexVal);
+
+        let lastKnownPrices_1d = getComponentPrice_asOf(-1);
+        let lastKnownPrices_7d = getComponentPrice_asOf(-7);
+        let lastKnownPrices_14d = getComponentPrice_asOf(-14);
+        let lastKnownPrices_30d = getComponentPrice_asOf(-30);
+
+        //console.warn("calcIndexes() lastKnownPrices_1d = " + lastKnownPrices_1d);
+
+        let majorIndexVal_1d = getIndexVal(lastKnownPrices_1d, majorIndexWeight);
+        let majorIndexVal_7d = getIndexVal(lastKnownPrices_7d, majorIndexWeight);
+        let majorIndexVal_14d = getIndexVal(lastKnownPrices_14d, majorIndexWeight);
+        let majorIndexVal_30d = getIndexVal(lastKnownPrices_30d, majorIndexWeight);
+
+        console.log("calcIndexes() Calc majorIndexVal_1d : majorIndexVal_1d = " + majorIndexVal_1d);
+
+        let majorIndexVal_1d_change = 100 * (majorIndexVal - majorIndexVal_1d) / majorIndexVal;
+        let majorIndexVal_7d_change = 100 * (majorIndexVal - majorIndexVal_7d) / majorIndexVal;
+        let majorIndexVal_14d_change = 100 * (majorIndexVal - majorIndexVal_14d) / majorIndexVal;
+        let majorIndexVal_30d_change = 100 * (majorIndexVal - majorIndexVal_30d) / majorIndexVal;
+
+        setMajorIndexValue_1d_percent(majorIndexVal_1d_change);
+        setMajorIndexValue_7d_percent(majorIndexVal_7d_change);
+        setMajorIndexValue_14d_percent(majorIndexVal_14d_change);
+        setMajorIndexValue_30d_percent(majorIndexVal_30d_change);
+    }
+
+    /*
+     * dayIndex : 0 => today, -1 => yesterday, -2 => D-2
+     */
+    function getComponentPrice_asOf(dayIndex) {
+        let result = [];
+
+        result[BITCOIN_INDEX] = getValueFromArrayEnd(indexComponentPriceHistory[BITCOIN_INDEX], dayIndex);
+        result[ETHEREUM_INDEX] = getValueFromArrayEnd(indexComponentPriceHistory[ETHEREUM_INDEX], dayIndex);
+        result[SOLANA_INDEX] = getValueFromArrayEnd(indexComponentPriceHistory[SOLANA_INDEX], dayIndex);
+        return result;
+    }
+
+    /*
+    * index : 0 => last value, -1 => before last value, ...
+    */
+    function getValueFromArrayEnd(values, index){
+
+        let result = values[values.length - 1 + index];
+
+        return result;
+    }
+
+    function getIndexVal(componentPrices, componentWeight) {
+
+        let indexVal = 0;
+
+        for (let i = 0; i < componentPrices.length; i++) {
+            indexVal = indexVal + componentPrices[i] * (componentWeight[i] / 100);
+        }
+
+        return indexVal;
     }
 
     function isAllHistoriesLoaded() {
@@ -266,30 +340,55 @@ const HomePage = (props) => {
             </div>
 
             <h2 className='table_title'>{t("crypto_index_title")}</h2>
-            <div className='content'>
-                <div className='details_info'>
-                    <div className='coin-heading'>
-                        <div className='rank'>
+            <div className='coin-container'>
+                <div className='content'>
+                    <div className='details_info'>
+                        <div className='coin-heading'>
                             <div className='rank'>
-                                <span className='rank-btn'>{t("crypto_major_index_title")} {userCurrency.symbol}</span>
+                                <div className='rank'>
+                                    <span
+                                        className='rank-btn'>{t("crypto_major_index_title")} {userCurrency.symbol}</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div className='centered-in-cell'>
-                        <div className='coin-price'>
-                            <h1> {getMajorIndexValueAsString()}</h1>
+                        <div className='centered-in-cell'>
+                            <div className='coin-price'>
+                                <h1> {getMajorIndexValueAsString()}</h1>
+                            </div>
+
                         </div>
-
                     </div>
-                </div>
-                <br/>
-                <div className='coin-heading'>
-                    <div className='rank'>
+                    <br/>
+                    <div className='coin-heading'>
+                        <div className='rank'>
 
+                        </div>
                     </div>
-                </div>
-                <div className='centered-in-cell'>
-                    {t("crypto_major_index_desc")} {t("crypto_major_index_desc_2")}
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>24 h</th>
+                            <th>{t("7d")}</th>
+                            <th>{t("14d")}</th>
+                            <th>{t("30d")}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>{majorIndexValue_1d_percent ?
+                                <p className={(Math.sign(majorIndexValue_1d_percent) === -1) ? "change_negative" : "change_positive"}>{majorIndexValue_1d_percent.toFixed(1)} %</p> : null}</td>
+                            <td>{majorIndexValue_7d_percent ?
+                                <p className={(Math.sign(majorIndexValue_7d_percent) === -1) ? "change_negative" : "change_positive"}>{majorIndexValue_7d_percent.toFixed(1)} %</p> : null}</td>
+                            <td>{majorIndexValue_14d_percent ?
+                                <p className={(Math.sign(majorIndexValue_14d_percent) === -1) ? "change_negative" : "change_positive"}>{majorIndexValue_14d_percent.toFixed(1)} %</p> : null}</td>
+                            <td>{majorIndexValue_30d_percent ?
+                                <p className={(Math.sign(majorIndexValue_30d_percent) === -1) ? "change_negative" : "change_positive"}>{majorIndexValue_30d_percent.toFixed(1)} %</p> : null}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div className='centered-in-cell'>
+                        {t("crypto_major_index_desc")} {t("crypto_major_index_desc_2")}
+                    </div>
                 </div>
             </div>
             <br/>
