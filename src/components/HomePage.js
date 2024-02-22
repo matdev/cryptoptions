@@ -172,7 +172,7 @@ const HomePage = (props) => {
         });
     };
 
-    function resetCurrentValues(){
+    function resetCurrentValues() {
         setMajorIndexValue(0);
         setMajorIndexValue_1d_percent(0);
         setMajorIndexValue_7d_percent(0);
@@ -229,7 +229,7 @@ const HomePage = (props) => {
     /*
     * index : 0 => last value, -1 => before last value, ...
     */
-    function getValueFromArrayEnd(values, index){
+    function getValueFromArrayEnd(values, index) {
 
         let result = values[values.length - 1 + index];
 
@@ -400,7 +400,7 @@ const HomePage = (props) => {
                     <p className='coin-header-cell'>{t("price")}</p>
                     <p className='coin-header-cell'>24 h</p>
                     <p className='hide-mobile'>{t("volume_24h")}</p>
-                    <p className='placeholder'></p>
+                    <p className='placeholder hide-mobile'></p>
                     <p className='placeholder hide-mobile'></p>
                 </div>
 
@@ -436,25 +436,27 @@ const HomePage = (props) => {
                 }
             </div>
             <div className='header'>
-                <br/>
-                <h2 className='header_title'></h2>
                 <h3 className='header_text'>
                     {t("home_intro_1")}
                     <br/>
                     <br/>
                     {t("home_intro_2")}
+                    <br/>
+                    <br/>
+                    <iframe src="https://cryptoptionsai.substack.com/embed" width="100%" height="150"
+                            className='newsletter_form' frameBorder="0" scrolling="no"></iframe>
                 </h3>
                 <div className='header_text'>
-                    <MailchimpSubscribe
-                        url={mailchimp_url}
-                        render={({subscribe, status, message}) => (
-                            <CustomForm
-                                status={status}
-                                message={message}
-                                onValidated={formData => subscribe(formData)}
-                            />
-                        )}
-                    />
+                    {/*<MailchimpSubscribe*/}
+                    {/*    url={mailchimp_url}*/}
+                    {/*    render={({subscribe, status, message}) => (*/}
+                    {/*        <CustomForm*/}
+                    {/*            status={status}*/}
+                    {/*            message={message}*/}
+                    {/*            onValidated={formData => subscribe(formData)}*/}
+                    {/*        />*/}
+                    {/*    )}*/}
+                    {/*/>*/}
                     <h3 className='header_text'>
                         {t("home_intro_3")}
                     </h3>

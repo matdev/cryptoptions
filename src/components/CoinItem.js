@@ -39,14 +39,14 @@ const CoinItem = (props) => {
             <Link key={props.coin.id + "-chart"} to={`/coin/${props.coin.id}`} state={{spotValue: spotValue}}
                   element={<CoinDetails/>}>
                 <p>
-                    <button className={"button_view_chart"}>Price infos</button>
+                    <button className={"button_view_chart hide-mobile"}>Price infos</button>
                 </p>
             </Link>
             <Link key={props.coin.id + "-pricer"} to={`/option-prices/${props.coin.id}`}
                   state={{spotValue: spotValue}}
                   element={<CoinOptions/>}>
                 <p>
-                    <button className={"button_view_options"}>Options pricer</button>
+                    <button className={"button_view_options hide-mobile"}>Options pricer</button>
                 </p>
             </Link>
 
