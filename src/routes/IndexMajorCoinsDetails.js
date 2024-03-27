@@ -30,6 +30,8 @@ const IndexMajorCoinsDetails = (props) => {
     let timeframeDuration = DEFAULT_TIMEFRAME_DURATION;
     let useDefaultCoins = false;
 
+    const averageRiskFreeRate = 0.03;
+
     const majorIndexWeight = IndexUtils.getMajorCoinsIndexWeights();
 
     const [indexFullPricesHistory, setIndexFullPricesHistory] = useState([]);
@@ -286,7 +288,7 @@ const IndexMajorCoinsDetails = (props) => {
         let histo_vol = standardDeviation * mathjs.sqrt(365) * 100;
         setHistoricalVol(histo_vol);
 
-        let sharpe_ratio = majorIndexVal_365d_change / histo_vol
+        let sharpe_ratio = majorIndexVal_365d_change / histo_vol - averageRiskFreeRate;
         setSharpeRatio(sharpe_ratio);
 
         console.log("calcIndexes() Calc histo_vol = " + histo_vol + " sharpe_ratio = " + sharpe_ratio);
