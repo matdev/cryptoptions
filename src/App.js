@@ -10,6 +10,7 @@ import CoinOptions from "./routes/CoinOptions";
 import Footer from './components/Footer';
 import {useSelector} from 'react-redux';
 import LearnOptions from "./routes/LearnOptions";
+import IndexMajorCoinsDetails from './routes/IndexMajorCoinsDetails'
 
 function App() {
 
@@ -70,6 +71,8 @@ function App() {
                 </Route>
 
                 <Route path='/learn-options' element={<LearnOptions/>}/>
+
+                <Route path='/major-coins-index' element={<IndexMajorCoinsDetails coins={coins}/>}/>
 
             </Routes>
             <Footer/>

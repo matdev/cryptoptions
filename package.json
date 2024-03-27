@@ -1,6 +1,6 @@
 {
   "name": "CryptOptions",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "private": false,
   "homepage": "https://www.cryptoptions.fr",
   "dependencies": {

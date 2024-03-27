@@ -222,8 +222,17 @@ img {
 }
 
 .newsletter_form {
-    border:1px solid #EEE;
-    background:white;
+    border: 1px solid #EEE;
+    background: white;
+}
+
+.index-major-coin {
+    border: 1px solid #6900ff;
+    box-shadow: 0px 0px 8px #6900ff;
+    background-color: #6900ff;
+    border-radius: 8px;
+    padding: .2rem;
+    text-decoration: underline;
 }
 
 @media screen and (max-width: 700px) {
@@ -252,7 +261,6 @@ img {
     /*    margin: .5rem;*/
     /*    padding: 0.5rem .5rem;*/
     /*}*/
-
     .hide-mobile {
         display: none;
     }

@@ -4,6 +4,7 @@ import CoinItem from './CoinItem'
 import './HomePage.css'
 import CoinDetails from "../routes/CoinDetails";
 import * as MathsUtils from "../util/MathsUtils";
+import * as IndexUtils from "../util/IndexUtils";
 import {Link} from "react-router-dom";
 import DataGrid from "react-data-grid";
 import {useSelector} from "react-redux";
@@ -11,6 +12,8 @@ import MailchimpSubscribe from "react-mailchimp-subscribe"
 import {useTranslation} from "react-i18next";
 import axios from "axios";
 import ReactGA from "react-ga4";
+import fixedWidthString from "fixed-width-string";
+import IndexMajorCoinsDetails from "../routes/IndexMajorCoinsDetails";
 
 const mathjs = require('mathjs');
 
@@ -40,7 +43,8 @@ const HomePage = (props) => {
     const historiesLoaded = [false, false, false];
     const historiesLoading = [false, false, false];
 
-    const majorIndexWeight = [15, 70, 15];
+    //const majorIndexWeight = [15, 70, 15];
+    const majorIndexWeight = IndexUtils.getMajorCoinsIndexWeights();
 
     const prop_coins = [];
 
@@ -184,7 +188,7 @@ const HomePage = (props) => {
 
         console.warn("calcIndexes() lastKnownPrices = " + lastKnownPrices);
 
-        let majorIndexVal = getIndexVal(lastKnownPrices, majorIndexWeight);
+        let majorIndexVal = IndexUtils.getIndexVal(lastKnownPrices, majorIndexWeight);
         setMajorIndexValue(majorIndexVal);
 
         console.log("calcIndexes() Calc majorIndexVal : majorIndexVal = " + majorIndexVal);
@@ -196,10 +200,10 @@ const HomePage = (props) => {
 
         //console.warn("calcIndexes() lastKnownPrices_1d = " + lastKnownPrices_1d);
 
-        let majorIndexVal_1d = getIndexVal(lastKnownPrices_1d, majorIndexWeight);
-        let majorIndexVal_7d = getIndexVal(lastKnownPrices_7d, majorIndexWeight);
-        let majorIndexVal_14d = getIndexVal(lastKnownPrices_14d, majorIndexWeight);
-        let majorIndexVal_30d = getIndexVal(lastKnownPrices_30d, majorIndexWeight);
+        let majorIndexVal_1d = IndexUtils.getIndexVal(lastKnownPrices_1d, majorIndexWeight);
+        let majorIndexVal_7d = IndexUtils.getIndexVal(lastKnownPrices_7d, majorIndexWeight);
+        let majorIndexVal_14d = IndexUtils.getIndexVal(lastKnownPrices_14d, majorIndexWeight);
+        let majorIndexVal_30d = IndexUtils.getIndexVal(lastKnownPrices_30d, majorIndexWeight);
 
         console.log("calcIndexes() Calc majorIndexVal_1d : majorIndexVal_1d = " + majorIndexVal_1d);
 
@@ -236,17 +240,6 @@ const HomePage = (props) => {
         return result;
     }
 
-    function getIndexVal(componentPrices, componentWeight) {
-
-        let indexVal = 0;
-
-        for (let i = 0; i < componentPrices.length; i++) {
-            indexVal = indexVal + componentPrices[i] * (componentWeight[i] / 100);
-        }
-
-        return indexVal;
-    }
-
     function isAllHistoriesLoaded() {
 
         for (let i = 0; i < historiesLoaded.length; i++) {
@@ -261,7 +254,7 @@ const HomePage = (props) => {
     function getMajorIndexValueAsString() {
 
         if (majorIndexValue > 0) {
-            return majorIndexValue.toFixed(2);
+            return majorIndexValue.toFixed(2) + " "+ userCurrency.symbol;
         } else {
             return "Not available";
         }
@@ -346,8 +339,11 @@ const HomePage = (props) => {
                         <div className='coin-heading'>
                             <div className='rank'>
                                 <div className='rank'>
-                                    <span
-                                        className='rank-btn'>{t("crypto_major_index_title")} {userCurrency.symbol}</span>
+
+                                    <Link key={"major-coins-index"} to={`/major-coins-index/`} state={{}}
+                                          element={<IndexMajorCoinsDetails/>}>
+                                        <span className='index-major-coin'>{t("crypto_major_index_title")}</span>
+                                    </Link>
                                 </div>
                             </div>
                         </div>
