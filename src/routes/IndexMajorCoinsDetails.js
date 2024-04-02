@@ -30,7 +30,8 @@ const IndexMajorCoinsDetails = (props) => {
     let timeframeDuration = DEFAULT_TIMEFRAME_DURATION;
     let useDefaultCoins = false;
 
-    const averageRiskFreeRate = 0.03;
+    const US_RISK_FREE_RATE = 0.04;  // Default US risk free rate
+    const EUR_RISK_FREE_RATE = 0.03;
 
     const majorIndexWeight = IndexUtils.getMajorCoinsIndexWeights();
 
@@ -58,35 +59,35 @@ const IndexMajorCoinsDetails = (props) => {
     const ETHEREUM_INDEX = 1;
     const SOLANA_INDEX = 2;
 
-    if ((props.coins == null) || (props.coins.length == 0) || (props.coins[0] === undefined)) {
+    //if ((props.coins == null) || (props.coins.length == 0) || (props.coins[0] === undefined)) {
 
-        console.log("props.coins[0] === undefined => USE DEFAULT 5 COINS");
-        useDefaultCoins = true;
+    // console.log("props.coins[0] === undefined => USE DEFAULT 5 COINS");
+    // useDefaultCoins = true;
 
-        const coin1 = {
-            id: 'bitcoin',
-            symbol: 'btc'
-        };
-        prop_coins[BITCOIN_INDEX] = coin1;
+    const coin1 = {
+        id: 'bitcoin',
+        symbol: 'btc'
+    };
+    prop_coins[BITCOIN_INDEX] = coin1;
 
-        const coin2 = {
-            id: 'ethereum',
-            symbol: 'eth'
-        };
-        prop_coins[ETHEREUM_INDEX] = coin2;
+    const coin2 = {
+        id: 'ethereum',
+        symbol: 'eth'
+    };
+    prop_coins[ETHEREUM_INDEX] = coin2;
 
-        const coin3 = {
-            id: 'solana',
-            symbol: 'sol'
-        };
+    const coin3 = {
+        id: 'solana',
+        symbol: 'sol'
+    };
 
-        prop_coins[SOLANA_INDEX] = coin3;
+    prop_coins[SOLANA_INDEX] = coin3;
 
-    } else {
-        prop_coins[0] = props.coins[0];
-        prop_coins[1] = props.coins[1];
-        prop_coins[2] = props.coins[2];
-    }
+    // } else {
+    //     prop_coins[0] = props.coins[0];
+    //     prop_coins[1] = props.coins[1];
+    //     prop_coins[2] = props.coins[2];
+    // }
 
     const rawPriceHistory = useState([]);
 
@@ -124,13 +125,13 @@ const IndexMajorCoinsDetails = (props) => {
         //console.log("CoinCorrelations useEffect() props.coins = " + JSON.stringify(props.coins, null, 4));
         setLastKnownPrices([0, 0, 0]);
 
-        let current_coin_index = 0;
+        let current_coin_index = BITCOIN_INDEX;
         doRequestPriceHistoryIfNecessary(current_coin_index);
 
-        current_coin_index = 1;
+        current_coin_index = ETHEREUM_INDEX;
         doRequestPriceHistoryIfNecessary(current_coin_index);
 
-        current_coin_index = 2;
+        current_coin_index = SOLANA_INDEX;
         doRequestPriceHistoryIfNecessary(current_coin_index);
 
     }, [userCurrency, i18n.language])
@@ -157,17 +158,21 @@ const IndexMajorCoinsDetails = (props) => {
 
             if (prop_coins[coin_index].symbol == "btc") {
 
-                console.log("CoinCorrelations.doRequest().get().then() RECEIVED BITCOIN HISTORY ! : " + prop_coins[coin_index].symbol + " SIZE = " + res.data.prices.length);
+                console.log("IndexMajorCoinsDetails.doRequest().get().then() RECEIVED BITCOIN HISTORY ! : " + prop_coins[coin_index].symbol + " SIZE = " + res.data.prices.length);
                 rawPriceHistory[BITCOIN_INDEX] = pricesHistoryFromService;
 
             } else if (prop_coins[coin_index].symbol == "eth") {
 
-                console.log("CoinCorrelations.doRequest().get().then() RECEIVED ETHEREUM HISTORY ! : " + prop_coins[coin_index].symbol + " SIZE = " + res.data.prices.length);
+                console.log("IndexMajorCoinsDetails.doRequest().get().then() RECEIVED ETHEREUM HISTORY ! : " + prop_coins[coin_index].symbol + " SIZE = " + res.data.prices.length);
                 rawPriceHistory[ETHEREUM_INDEX] = pricesHistoryFromService;
+
             } else if (prop_coins[coin_index].symbol == "sol") {
 
-                console.log("CoinCorrelations.doRequest().get().then() RECEIVED SOLANA HISTORY ! : " + prop_coins[coin_index].symbol + " SIZE = " + res.data.prices.length);
+                console.log("IndexMajorCoinsDetails.doRequest().get().then() RECEIVED SOLANA HISTORY ! : " + prop_coins[coin_index].symbol + " SIZE = " + res.data.prices.length);
                 rawPriceHistory[SOLANA_INDEX] = pricesHistoryFromService;
+            } else {
+                console.error("IndexMajorCoinsDetails.doRequest().get().then() UNEXPECTED TOKEN HISTORY ! : " + prop_coins[coin_index].symbol);
+                return;
             }
 
             let pricesHistoryCoin = [];
@@ -212,14 +217,14 @@ const IndexMajorCoinsDetails = (props) => {
             historicalStdDevs[coin_index] = historicalStdDev;
             historicalVols[coin_index] = histoVol;
 
-            console.log("CoinCorrelations.doRequest().get().then() coin index = " + coin_index + " histoVol = " + histoVol);
+            //console.log("IndexMajorCoinsDetails.doRequest().get().then() coin index = " + coin_index + " histoVol = " + histoVol);
 
             if (isAllHistoriesLoaded()) {
-                console.log("CoinCorrelations.doRequest().get().then() ALL HISTORIES LOADED !! => PROCEED to index calc " + timeframeDuration + " days");
+                console.log("IndexMajorCoinsDetails.doRequest().get().then() ALL HISTORIES LOADED !! => PROCEED to index calc " + timeframeDuration + " days");
                 //calcCurrentCorrelations();
                 calcIndexes();
             } else {
-                console.warn("CoinCorrelations.doRequest().get().then() HISTORIES MISSING !");
+                console.warn("IndexMajorCoinsDetails.doRequest().get().then() HISTORIES MISSING !");
             }
         }).catch((error) => {
             console.log(error);
@@ -229,8 +234,6 @@ const IndexMajorCoinsDetails = (props) => {
     };
 
     function calcIndexes() {
-
-        console.warn("calcIndexes() lastKnownPrices = " + lastKnownPrices);
 
         let majorIndexVal = IndexUtils.getIndexVal(lastKnownPrices, majorIndexWeight);
         setMajorIndexValue(majorIndexVal);
@@ -288,7 +291,7 @@ const IndexMajorCoinsDetails = (props) => {
         let histo_vol = standardDeviation * mathjs.sqrt(365) * 100;
         setHistoricalVol(histo_vol);
 
-        let sharpe_ratio = majorIndexVal_365d_change / histo_vol - averageRiskFreeRate;
+        let sharpe_ratio = majorIndexVal_365d_change / histo_vol - getRiskFreeRate();
         setSharpeRatio(sharpe_ratio);
 
         console.log("calcIndexes() Calc histo_vol = " + histo_vol + " sharpe_ratio = " + sharpe_ratio);
@@ -321,6 +324,17 @@ const IndexMajorCoinsDetails = (props) => {
         });
     }
 
+    function getRiskFreeRate(){
+
+        let result= US_RISK_FREE_RATE;
+
+        if (userCurrency.code == "eur"){
+            result = EUR_RISK_FREE_RATE;
+        }
+
+        return result;
+    }
+
     function isAllHistoriesLoaded() {
 
         for (let i = 0; i < historiesLoaded.length; i++) {
@@ -335,9 +349,27 @@ const IndexMajorCoinsDetails = (props) => {
     function getMajorIndexValueAsString() {
 
         if (majorIndexValue > 0) {
-            return majorIndexValue.toFixed(2) + " "+ userCurrency.symbol;
+            return majorIndexValue.toFixed(2) + " " + userCurrency.symbol;
         } else {
             return "Not available";
+        }
+    }
+
+    function getVolAsString() {
+
+        if (majorIndexValue > 0) {
+            return historicalVol.toFixed(2) + " %";
+        } else {
+            return "";
+        }
+    }
+
+    function getSharpeRatioAsString() {
+
+        if (majorIndexValue > 0) {
+            return sharpeRatio.toFixed(2);
+        } else {
+            return "";
         }
     }
 
@@ -419,7 +451,7 @@ const IndexMajorCoinsDetails = (props) => {
                             <h3>{t("index_volatility")} : </h3>
                         </div>
                         <div className='centered-in-cell'>
-                            <h1>{historicalVol.toFixed(2)} %</h1>
+                            <h1>{getVolAsString()}</h1>
                         </div>
                     </div>
                     <div>
@@ -430,7 +462,7 @@ const IndexMajorCoinsDetails = (props) => {
                             <h3>{t("sharpe_ratio")} : </h3>
                         </div>
                         <div className='centered-in-cell'>
-                            <h1>{sharpeRatio.toFixed(2)}</h1>
+                            <h1>{getSharpeRatioAsString()}</h1>
                         </div>
                         <div>
                             {t("sharpe_ratio_definition")}
@@ -441,9 +473,15 @@ const IndexMajorCoinsDetails = (props) => {
                 <div className='content'>
                     <LineChart2Series chartData={chartPrice_Index_BTC}/>
                 </div>
-                {/*<div className='content'>*/}
-                {/*    <LineChart2Series chartData={chartPrice_BTC_ETH}/>*/}
-                {/*</div>*/}
+                <div className='content'>
+                    <div className='about'>
+                        <h3>{t("about")} {t("crypto_major_index_title")}</h3>
+                        <p>
+                            {t("crypto_major_index_desc")}
+                            {t("crypto_major_index_desc_2")}
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     )

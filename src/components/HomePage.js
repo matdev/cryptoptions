@@ -254,7 +254,7 @@ const HomePage = (props) => {
     function getMajorIndexValueAsString() {
 
         if (majorIndexValue > 0) {
-            return majorIndexValue.toFixed(2) + " "+ userCurrency.symbol;
+            return majorIndexValue.toFixed(2) + " " + userCurrency.symbol;
         } else {
             return "Not available";
         }
@@ -337,12 +337,20 @@ const HomePage = (props) => {
                 <div className='content'>
                     <div className='details_info'>
                         <div className='coin-heading'>
-                            <div className='rank'>
+                            <div className='centered-in-cell'>
                                 <div className='rank'>
-
                                     <Link key={"major-coins-index"} to={`/major-coins-index/`} state={{}}
                                           element={<IndexMajorCoinsDetails/>}>
                                         <span className='index-major-coin'>{t("crypto_major_index_title")}</span>
+                                    </Link>
+                                </div>
+
+                                <div className='rank'>
+                                    <p></p>
+                                </div>
+                                <div className='rank'>
+                                    <Link to={`/major-coins-index/`} element={<IndexMajorCoinsDetails/>}>
+                                        <button className={"button_view_option_pricer"}>{t("sharpe_ratio")}</button>
                                     </Link>
                                 </div>
                             </div>
@@ -351,7 +359,6 @@ const HomePage = (props) => {
                             <div className='coin-price'>
                                 <h1> {getMajorIndexValueAsString()}</h1>
                             </div>
-
                         </div>
                     </div>
                     <br/>
@@ -363,7 +370,7 @@ const HomePage = (props) => {
                     <table>
                         <thead>
                         <tr>
-                            <th>24 h</th>
+                        <th>24 h</th>
                             <th>{t("7d")}</th>
                             <th>{t("14d")}</th>
                             <th>{t("30d")}</th>
