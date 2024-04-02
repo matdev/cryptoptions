@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/static/css/main.a81a299b.css",
-    "main.js": "/static/js/main.d1719b00.js",
+    "main.js": "/static/js/main.09cf7b65.js",
     "static/media/axios.cjs": "/static/media/axios.e7d77f0967a69d31d7fc.cjs",
     "index.html": "/index.html",
     "static/media/getFetch.cjs": "/static/media/getFetch.40f37ddea2378391108f.cjs"
   },
   "entrypoints": [
     "static/css/main.a81a299b.css",
-    "static/js/main.d1719b00.js"
+    "static/js/main.09cf7b65.js"
   ]
 }
