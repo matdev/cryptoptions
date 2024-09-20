@@ -1,9 +1,10 @@
 {
-  "app_pitch": "Analyses et prévisions de prix pour investir en cryptomonnaies",
+  "app_pitch": "Indices et outils d'analyse du marché des cryptomonnaies",
   "welcome": "Bienvenue sur CryptOptions",
   "home_intro_1": "Nous développons des outils d'évaluation et des modèles de prédictions pour les cryptomonnaies et leurs dérivés.",
   "home_intro_2": "Abonnez-vous dès maintenant pour recevoir des prévisions exclusives du prix du Bitcoin dans la newsletter CryptOptions.",
-  "home_intro_3": "N'oubliez pas que ceci ne constitue pas des conseils d'investissements. Soyez prudent, vérifiez les informations et effectuez vos propres recherches.",
+  "home_intro_3": "Ceci ne constitue pas des conseils d'investissements. Soyez prudent, vérifiez les informations et effectuez vos propres recherches.",
+  "home_intro_4": "Indices et outils d'analyse du marché des cryptomonnaies",
   "enter_your_email": "Entrez votre email",
   "subscribe": "S'abonner",
   "home_table_title": "Cours des cryptomonnaies, top 10 par capitalisation",
