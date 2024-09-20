@@ -11,6 +11,7 @@ import {roundToDecimalPlace} from "../util/MathsUtils";
 import ReactGA from "react-ga4";
 import * as ChartsUtils from "../util/ChartsUtils";
 import DurationSwitcher from "../components/DurationSwitcher";
+import {useZustandStore, getDailyPriceHistoriesForCurrency} from "../storeZustand";
 
 const {parse} = require('rss-to-json');
 
@@ -27,7 +28,7 @@ const CoinDetails = (props) => {
 
     let running_on_localhost = false;
 
-    const full_history_length = 180; // Price history for charts and calculating rolling volatility
+    const full_history_length = 365; // Price history for charts and calculating rolling volatility
 
     let historiesLoaded = false;
     let historiesLoading = false;
@@ -46,6 +47,9 @@ const CoinDetails = (props) => {
 
     const [historicalVol, setHistoricalVol] = useState(0);
 
+    // Zustand store
+    const zustandStore = useZustandStore();
+
     const [chartData, setChartData] = useState({
         title: "Historical prices (" + userCurrency.symbol + ")",
         labels: [],
@@ -53,7 +57,6 @@ const CoinDetails = (props) => {
     });
 
     const url = `https://api.coingecko.com/api/v3/coins/${params.coinId}`
-    //console.log("CoinDetails() url = " + url);
 
     running_on_localhost = window.location.href.includes("localhost");
 
@@ -67,27 +70,41 @@ const CoinDetails = (props) => {
 
     useEffect(() => {
 
-        axios.get(url).then((res) => {
-            setCoin(res.data)
-            setSpotValue(res.data.market_data.current_price[userCurrency.code]);
+        const coinFromStore = zustandStore.symbolToCoinMap.get(params.coinId);
 
-            //console.log("CoinDetails.useEffect() res.data.market_data.current_price : " + res.data.market_data.current_price[userCurrency.code]);
-            //console.log("CoinDetails. currency:" + userCurrency.code + " spotValue : " + location.state.spotValue);
-
-            let pageTitle = res.data.name + " Price: " + res.data.symbol.toUpperCase() + " Live Price, forecast and historical chart | CryptOptions"
-            document.title = pageTitle;
-
-            // Log view into Google Analytics
-            //console.log("useEffect() pathname = " + location.pathname + " pageTitle = " + pageTitle);
-            ReactGA.send({hitType: "pageview", page: location.pathname, title: pageTitle});
-
+        if (coinFromStore != undefined) {
+            console.log("useEffect() COIN ALREADY IN STORE :  " + coinFromStore.name + " current price = " + coinFromStore.market_data.current_price[userCurrency.code]);
+            handleCoinData(coinFromStore);
             doRequestPriceHistoryIfNecessary();
+        } else {
+            console.log("useEffect() UNKNOWN COIN IN STORE params.coinId = " + params.coinId + " => FETCHING DATA FROM coingecko.com ...");
+            axios.get(url).then((res) => {
 
-        }).catch((error) => {
-            console.log(error)
-        });
+                zustandStore.updateSymbolToCoinMap(params.coinId, res.data);
+
+                handleCoinData(res.data);
+
+                doRequestPriceHistoryIfNecessary();
+
+            }).catch((error) => {
+                console.log(error)
+
+                // Even though there was an error, price history might be in the store => try using it
+                doRequestPriceHistoryIfNecessary();
+            });
+        }
 
     }, [userCurrency, i18n.language])
+
+    function handleCoinData(coinData){
+        setCoin(coinData)
+        setSpotValue(coinData.market_data.current_price[userCurrency.code]);
+        let pageTitle = coinData.name + " Price: " + coinData.symbol.toUpperCase() + " Live Price, forecast and historical chart | CryptOptions"
+        document.title = pageTitle;
+        // Log view into Google Analytics
+        //console.log("useEffect() pathname = " + location.pathname + " pageTitle = " + pageTitle);
+        ReactGA.send({hitType: "pageview", page: location.pathname, title: pageTitle});
+    }
 
     function doRequestPriceHistoryIfNecessary() {
         if (!historiesLoaded && !historiesLoading) {
@@ -99,63 +116,87 @@ const CoinDetails = (props) => {
 
     const doRequestPriceHistory = function () {
 
-        const price_history_url = 'https://api.coingecko.com/api/v3/coins/' + params.coinId + '/market_chart?vs_currency=' + userCurrency.code + '&days=' + full_history_length + '&interval=daily';
-        historiesLoading = true;
+        console.log("doRequestPriceHistory() params.coinId = " + params.coinId);
 
-        axios.get(price_history_url).then((res) => {
+        const historyForCurrency = getDailyPriceHistoriesForCurrency(userCurrency.code);
+
+        const priceHist = historyForCurrency.get(params.coinId);
+
+        if ((priceHist != undefined) && (priceHist != NaN)) {
+
+            console.log("doRequestPriceHistory() RAW HISTORY ALREADY STORED IN ZUSTAND STORE");// + priceHist);
 
             historiesLoaded = true;
             historiesLoading = false;
 
-            let pricesHistoryFromService = res.data.prices;
+            processRawHistory(priceHist);
 
-            let pricesHistoryCoin = [];
-            let datesHistoryCoin = [];
-            let dailyReturnHistory = [];
+        } else {
 
-            let i = 0;
-            for (const entry of pricesHistoryFromService) {
+            console.log("doRequestPriceHistory() UNKNOWN COIN HISTORY IN STORE params.coinId = " + params.coinId + " => FETCHING DATA FROM coingecko.com ...");
 
-                //console.log("CoinDetails.useEffect() entry: " + entry);
+            const price_history_url = 'https://api.coingecko.com/api/v3/coins/' + params.coinId + '/market_chart?vs_currency=' + userCurrency.code + '&days=' + full_history_length + '&interval=daily';
+            historiesLoading = true;
 
-                if (entry[1] === undefined) {
-                    console.log("CoinCorrelations.doRequest().get().then() i=  " + i + " undefined ");
-                } else {
+            axios.get(price_history_url).then((res) => {
 
-                    datesHistoryCoin[i] = entry[0];
-                    pricesHistoryCoin[i] = entry[1];
+                historiesLoaded = true;
+                historiesLoading = false;
 
-                    if (i > 0) {
-                        dailyReturnHistory[i - 1] = mathjs.log(pricesHistoryCoin[i] / pricesHistoryCoin[i - 1]);
-                    }
-                    // console.log("CoinDetails.doRequest().get().then() labelsHistory[i]: " + labelsHistory[i] + " pricesHistory[i] = " + pricesHistory[i]
-                    //     + " dailyReturnHistory[i] = " + dailyReturnHistory[i]);
+                let pricesHistoryFromService = res.data.prices;
+
+                processRawHistory(pricesHistoryFromService);
+
+            }).catch((error) => {
+                console.log(error);
+                historiesLoaded = false;
+                historiesLoading = false;
+            });
+
+        }
+    };
+
+    function processRawHistory(pricesHistoryFromService) {
+
+        let pricesHistoryCoin = [];
+        let datesHistoryCoin = [];
+        let dailyReturnHistory = [];
+
+        let i = 0;
+        for (const entry of pricesHistoryFromService) {
+
+            //console.log("CoinDetails.useEffect() entry: " + entry);
+
+            if (entry[1] === undefined) {
+                console.log("CoinCorrelations.processRawHistory =  " + i + " undefined ");
+            } else {
+
+                datesHistoryCoin[i] = entry[0];
+                pricesHistoryCoin[i] = entry[1];
+
+                if (i > 0) {
+                    dailyReturnHistory[i - 1] = mathjs.log(pricesHistoryCoin[i] / pricesHistoryCoin[i - 1]);
                 }
-
-                i = i + 1;
+                // console.log("CoinDetails.processRawHistory() datesHistoryCoin[i]: " + datesHistoryCoin[i]
+                //     + " pricesHistoryCoin[i] = " + pricesHistoryCoin[i]
+                //     + " dailyReturnHistory[i] = " + dailyReturnHistory[i - 1]);
             }
 
+            i = i + 1;
+        }
 
-            setFullDatesHistory(datesHistoryCoin);
-            setFullPricesHistory(pricesHistoryCoin);
-            setFullDailyReturnHistory(dailyReturnHistory);
-            // historicalStdDevs[coin_index] = historicalStdDev;
-            // historicalVols[coin_index] = histoVol;
+        setFullDatesHistory(datesHistoryCoin);
+        setFullPricesHistory(pricesHistoryCoin);
+        setFullDailyReturnHistory(dailyReturnHistory);
 
-            calcCurrentValues(dailyReturnHistory, datesHistoryCoin, pricesHistoryCoin);
-
-        }).catch((error) => {
-            console.log(error);
-            historiesLoaded = false;
-            historiesLoading = false;
-        });
-    };
+        calcCurrentValues(dailyReturnHistory, datesHistoryCoin, pricesHistoryCoin);
+    }
 
     function calcCurrentValues(dailyReturnHistory, datesHistoryCoin, pricesHistoryCoin) {
 
         let dailyReturnsSubset = ChartsUtils.getEndOfTimeSeries(dailyReturnHistory, dailyReturnHistory.length - timeframeDuration);
 
-        console.log("CoinDetails.calcCurrentValues() dailyReturnsSubset = " + dailyReturnsSubset);
+        //console.log("CoinDetails.calcCurrentValues() pricesHistoryCoin = " + pricesHistoryCoin);
 
         let standardDeviation = mathjs.std(dailyReturnsSubset);
 
@@ -165,7 +206,7 @@ const CoinDetails = (props) => {
         setHistoricalVol(histoVol);
 
         let rollingVolHistory = getRollingVolatility(dailyReturnHistory);
-        console.log("getRollingVolatility = " + rollingVolHistory);
+        //console.log("CoinDetails.calcCurrentValues() = " + rollingVolHistory);
 
         // Chart data
         setChartData({
@@ -197,7 +238,7 @@ const CoinDetails = (props) => {
 
     function getRollingVolatility(dailyReturnsHistory) {
 
-        console.warn("getRollingVolatility() timeframeDuration = " + timeframeDuration);
+        console.info("getRollingVolatility() timeframeDuration = " + timeframeDuration);
 
         let result = [];
 
@@ -221,7 +262,7 @@ const CoinDetails = (props) => {
             j = j + 1;
         }
 
-        console.log("getRollingCorrelations() result : " + result);
+        //console.log("getRollingCorrelations() result : " + result);
         return result;
     }
 
@@ -231,7 +272,7 @@ const CoinDetails = (props) => {
             return "";
         }
 
-        console.log("getCoinDescription() i18n.language = " + i18n.language);
+        //console.log("getCoinDescription() i18n.language = " + i18n.language);
 
         let result = coin.description.en;
 

@@ -56,7 +56,7 @@
   "mailchimp_sending": "Sending...",
   "mailchimp_success": "Thank you for subscribing !",
   "days": "days",
-  "crypto_index_title": "CryptOptions index",
+  "crypto_index_title": "Crypto index",
   "crypto_major_index_title": "Major coins index",
   "crypto_major_index_desc": "ⓘ We've designed the Major coins index to provide investors with a metric revealing current trend of major coins, namely Bitcoin, Ethereum and Solana. ",
   "crypto_major_index_desc_2": "This index has exposure to Bitcoin, but other components of the index are stakable coins. A portfolio based on the index components would yield returns from staking, provide the coin are staked.",

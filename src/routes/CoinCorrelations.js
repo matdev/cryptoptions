@@ -19,13 +19,16 @@ import DurationSwitcher from "../components/DurationSwitcher";
 
 const mathjs = require('mathjs');
 
+// Use storeZustand to get price histories
+import {useZustandStore, getDailyPriceHistoriesForCurrency} from "../storeZustand";
+
 const CoinCorrelations = (props) => {
 
     const {i18n, t} = useTranslation();
 
     const userCurrency = useSelector(store => store.userCurrency.value);
 
-    const full_history_length = 180; // Price history for charts and calculating rolling correlation
+    const full_history_length = 365; // Price history for charts and calculating rolling correlation
 
     const DEFAULT_TIMEFRAME_DURATION = 30;
 
@@ -35,6 +38,9 @@ const CoinCorrelations = (props) => {
     let useDefaultCoins = false;
 
     const prop_coins = [];
+
+    // Zustand store
+    const zustandStore = useZustandStore();
 
     const BITCOIN_INDEX = 0;
     const ETHEREUM_INDEX = 1;
@@ -157,83 +163,104 @@ const CoinCorrelations = (props) => {
 
     const doRequestPriceHistory = function (coin_index) {
 
-        const price_history_url = 'https://api.coingecko.com/api/v3/coins/' + prop_coins[coin_index].id + '/market_chart?vs_currency=' + userCurrency.code + '&days=' + full_history_length + '&interval=daily';
-        historiesLoading[coin_index] = true;
+        const historiesForCurrency = getDailyPriceHistoriesForCurrency(userCurrency.code);
 
-        axios.get(price_history_url).then((res) => {
+        const priceHistoFromService = historiesForCurrency.get(prop_coins[coin_index].id);
+
+        if ((priceHistoFromService != undefined) && (priceHistoFromService != NaN)) {
+
+            console.log("doRequestPriceHistory() RAW HISTORY ALREADY IN STORE for " + prop_coins[coin_index].id);// + priceHistoFromService);
 
             historiesLoaded[coin_index] = true;
             historiesLoading[coin_index] = false;
 
-            let pricesHistoryFromService = res.data.prices;
+            handlePriceHistoryFromService(coin_index, priceHistoFromService);
 
-            if (prop_coins[coin_index].symbol == "btc") {
+        } else {
+            const price_history_url = 'https://api.coingecko.com/api/v3/coins/' + prop_coins[coin_index].id + '/market_chart?vs_currency=' + userCurrency.code + '&days=' + full_history_length + '&interval=daily';
+            historiesLoading[coin_index] = true;
 
-                console.log("CoinCorrelations.doRequest().get().then() RECEIVED BITCOIN HISTORY ! : " + prop_coins[coin_index].symbol + " SIZE = " + res.data.prices.length);
-                rawPriceHistory[BITCOIN_INDEX] = pricesHistoryFromService;
+            axios.get(price_history_url).then((res) => {
 
-            } else if (prop_coins[coin_index].symbol == "eth") {
+                historiesLoaded[coin_index] = true;
+                historiesLoading[coin_index] = false;
 
-                console.log("CoinCorrelations.doRequest().get().then() RECEIVED ETHEREUM HISTORY ! : " + prop_coins[coin_index].symbol + " SIZE = " + res.data.prices.length);
-                rawPriceHistory[ETHEREUM_INDEX] = pricesHistoryFromService;
-            } else if (prop_coins[coin_index].symbol == "usdt") {
+                let pricesHistoryFromService = res.data.prices;
 
-                console.log("CoinCorrelations.doRequest().get().then() RECEIVED ETHEREUM HISTORY ! : " + prop_coins[coin_index].symbol + " SIZE = " + res.data.prices.length);
-                rawPriceHistory[USDT_INDEX] = pricesHistoryFromService;
-            }
+                console.log("CoinCorrelations.doRequestPriceHistory().get().then() RECEIVED HISTORY for " + prop_coins[coin_index].symbol + " SIZE = " + pricesHistoryFromService.length);
 
-            let pricesHistoryCoin = [];
-            let datesHistoryCoin = [];
-            let dailyReturnHistory = [];
+                handlePriceHistoryFromService(coin_index, pricesHistoryFromService);
 
-            let i = 0;
-            for (const entry of pricesHistoryFromService) {
+            }).catch((error) => {
+                console.log(error);
+                historiesLoaded[coin_index] = false;
+                historiesLoading[coin_index] = false;
+            });
 
-                //console.log("CoinDetails.useEffect() entry: " + entry);
-
-                if (entry[1] === undefined) {
-                    console.log("CoinCorrelations.doRequest().get().then() i=  " + i + " undefined ");
-                } else {
-
-                    datesHistoryCoin[i] = entry[0];
-                    pricesHistoryCoin[i] = entry[1];
-
-                    if (i > 0) {
-                        dailyReturnHistory[i - 1] = mathjs.log(pricesHistoryCoin[i] / pricesHistoryCoin[i - 1]);
-                    }
-                    // console.log("CoinCorrelations.doRequest().get().then() labelsHistory[i]: " + labelsHistory[i] + " pricesHistory[i] = " + pricesHistory[i]
-                    //     + " dailyReturnHistory[i] = " + dailyReturnHistory[i]);
-                }
-
-                i = i + 1;
-            }
-
-            //let standardDeviation = mathjs.std(dailyReturnHistory);
-            let standardDeviation = mathjs.std(pricesHistoryCoin);
-
-            let histoVol = standardDeviation * mathjs.sqrt(365) * 100;
-            let historicalStdDev = standardDeviation;
-
-            fullDateHistories[coin_index] = datesHistoryCoin;
-            fullPriceHistories[coin_index] = pricesHistoryCoin;
-            fullDailyReturnHistories[coin_index] = dailyReturnHistory;
-            historicalStdDevs[coin_index] = historicalStdDev;
-            historicalVols[coin_index] = histoVol;
-
-            console.log("CoinCorrelations.doRequest().get().then() coin index = " + coin_index + " histoVol = " + histoVol);
-
-            if (isAllHistoriesLoaded()) {
-                console.log("CoinCorrelations.doRequest().get().then() ALL HISTORIES LOADED !! => PROCEED to correlations calc over " + timeframeDuration + " days");
-                calcCurrentCorrelations();
-            } else {
-                console.warn("CoinCorrelations.doRequest().get().then() HISTORIES MISSING !");
-            }
-        }).catch((error) => {
-            console.log(error);
-            historiesLoaded[coin_index] = false;
-            historiesLoading[coin_index] = false;
-        });
+        }
     };
+
+    function handlePriceHistoryFromService(coin_index, pricesHistoryFromService){
+
+        if (prop_coins[coin_index].symbol == "btc") {
+
+            rawPriceHistory[BITCOIN_INDEX] = pricesHistoryFromService;
+
+        } else if (prop_coins[coin_index].symbol == "eth") {
+
+            rawPriceHistory[ETHEREUM_INDEX] = pricesHistoryFromService;
+        } else if (prop_coins[coin_index].symbol == "usdt") {
+
+            rawPriceHistory[USDT_INDEX] = pricesHistoryFromService;
+        }
+
+        let pricesHistoryCoin = [];
+        let datesHistoryCoin = [];
+        let dailyReturnHistory = [];
+
+        let i = 0;
+        for (const entry of pricesHistoryFromService) {
+
+            //console.log("CoinDetails.useEffect() entry: " + entry);
+
+            if (entry[1] === undefined) {
+                console.log("CoinCorrelations.handlePriceHistoryFromService() i=  " + i + " undefined ");
+            } else {
+
+                datesHistoryCoin[i] = entry[0];
+                pricesHistoryCoin[i] = entry[1];
+
+                if (i > 0) {
+                    dailyReturnHistory[i - 1] = mathjs.log(pricesHistoryCoin[i] / pricesHistoryCoin[i - 1]);
+                }
+                // console.log("CoinCorrelations.doRequest().get().then() labelsHistory[i]: " + labelsHistory[i] + " pricesHistory[i] = " + pricesHistory[i]
+                //     + " dailyReturnHistory[i] = " + dailyReturnHistory[i]);
+            }
+
+            i = i + 1;
+        }
+
+        //let standardDeviation = mathjs.std(dailyReturnHistory);
+        let standardDeviation = mathjs.std(pricesHistoryCoin);
+
+        let histoVol = standardDeviation * mathjs.sqrt(365) * 100;
+        let historicalStdDev = standardDeviation;
+
+        fullDateHistories[coin_index] = datesHistoryCoin;
+        fullPriceHistories[coin_index] = pricesHistoryCoin;
+        fullDailyReturnHistories[coin_index] = dailyReturnHistory;
+        historicalStdDevs[coin_index] = historicalStdDev;
+        historicalVols[coin_index] = histoVol;
+
+        console.log("CoinCorrelations.handlePriceHistoryFromService() coin index = " + coin_index + " histoVol = " + histoVol);
+
+        if (isAllHistoriesLoaded()) {
+            console.log("CoinCorrelations.dhandlePriceHistoryFromService() ALL HISTORIES LOADED !! => PROCEED to correlations calc over " + timeframeDuration + " days");
+            calcCurrentCorrelations();
+        } else {
+            console.log("CoinCorrelations.handlePriceHistoryFromService().then() HISTORIES MISSING !");
+        }
+    }
 
     function calcCurrentCorrelations() {
 
@@ -376,8 +403,6 @@ const CoinCorrelations = (props) => {
      */
     function getRollingCorrelations(coin1History, coin2History) {
 
-        console.warn("getRollingCorrelations() timeframeDuration = " + timeframeDuration);
-
         let result = [];
         //let result = new Array(coin1History.length);
 
@@ -400,7 +425,6 @@ const CoinCorrelations = (props) => {
             j = j + 1;
         }
 
-        console.log("getRollingCorrelations() result : " + result);
         return result;
     }
 

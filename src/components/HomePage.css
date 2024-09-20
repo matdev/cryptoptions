@@ -146,9 +146,10 @@ img {
 }
 
 
-/*.header {*/
-/*    width: 75%;*/
-/*}*/
+.coin_name {
+    margin: .5 0;
+    font-weight: bold;
+}
 
 .header_title {
     text-align: center;

@@ -54,5 +54,17 @@
   "about": "A propos de",
   "mailchimp_sending": "Envoi...",
   "mailchimp_success": "Merci de vous être abonné !",
-  "days": "jours"
+  "days": "jours",
+  "crypto_index_title": "Crypto indice",
+  "crypto_major_index_title": "Indice Major coins",
+  "crypto_major_index_desc": "ⓘ L'indice Major coins est un indicateur de la tendance du marché des cryptomonnaies incluant Bitcoin, Ethereum et Solana.",
+  "crypto_major_index_desc_2": "Les composants Ethereum et Solana de l'indice sont stakables. Un portefeuille répliquant cet indice génèrera donc un rendement additionnel en stakant les Ethereums et Solanas detenus.",
+  "index_changes": "Variation de l'indice",
+  "index_volatility": "Volatilité de l'indice",
+  "sharpe_ratio": "Sharpe ratio",
+  "sharpe_ratio_definition": "Le Sharpe ratio mesure la performance d'un investissement par rapport au rendement sans risque, après pondération par le risque associé. Un Sharpe Ratio de 1.5 indique que l'investissement génère 1.5 unités de rendement additionnel par unité de risque pris, par rapport à un investissement sans risque",
+  "calculated_over_last_year": "Calculé sur 1 an de rendement journalier",
+  "substack": "Substack",
+  "reach_us_on": "Contactez-nous",
+  "major_coins_index_vs_bitcoin": "Indice Major coins Vs Bitcoin"
 }

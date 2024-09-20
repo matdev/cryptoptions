@@ -20,6 +20,9 @@ import * as IndexUtils from "../util/IndexUtils";
 
 const mathjs = require('mathjs');
 
+// Use storeZustand to get price histories
+import {useZustandStore, getDailyPriceHistoriesForCurrency} from "../storeZustand";
+
 const IndexMajorCoinsDetails = (props) => {
 
     const {i18n, t} = useTranslation();
@@ -32,6 +35,9 @@ const IndexMajorCoinsDetails = (props) => {
 
     const US_RISK_FREE_RATE = 0.04;  // Default US risk free rate
     const EUR_RISK_FREE_RATE = 0.03;
+
+    // Zustand store
+    const zustandStore = useZustandStore();
 
     const majorIndexWeight = IndexUtils.getMajorCoinsIndexWeights();
 
@@ -83,12 +89,6 @@ const IndexMajorCoinsDetails = (props) => {
 
     prop_coins[SOLANA_INDEX] = coin3;
 
-    // } else {
-    //     prop_coins[0] = props.coins[0];
-    //     prop_coins[1] = props.coins[1];
-    //     prop_coins[2] = props.coins[2];
-    // }
-
     const rawPriceHistory = useState([]);
 
     //const fullPriceHistories = []; // [[Coin 1 daily prices], [Coin 2 daily prices], ... ]
@@ -125,14 +125,11 @@ const IndexMajorCoinsDetails = (props) => {
         //console.log("CoinCorrelations useEffect() props.coins = " + JSON.stringify(props.coins, null, 4));
         setLastKnownPrices([0, 0, 0]);
 
-        let current_coin_index = BITCOIN_INDEX;
-        doRequestPriceHistoryIfNecessary(current_coin_index);
+        doRequestPriceHistoryIfNecessary(BITCOIN_INDEX);
 
-        current_coin_index = ETHEREUM_INDEX;
-        doRequestPriceHistoryIfNecessary(current_coin_index);
+        doRequestPriceHistoryIfNecessary(ETHEREUM_INDEX);
 
-        current_coin_index = SOLANA_INDEX;
-        doRequestPriceHistoryIfNecessary(current_coin_index);
+        doRequestPriceHistoryIfNecessary(SOLANA_INDEX);
 
     }, [userCurrency, i18n.language])
 
@@ -146,92 +143,114 @@ const IndexMajorCoinsDetails = (props) => {
 
     const doRequestPriceHistory = function (coin_index) {
 
-        const price_history_url = 'https://api.coingecko.com/api/v3/coins/' + prop_coins[coin_index].id + '/market_chart?vs_currency=' + userCurrency.code + '&days=' + full_history_length + '&interval=daily';
-        historiesLoading[coin_index] = true;
+        const historiesForCurrency = getDailyPriceHistoriesForCurrency(userCurrency.code);
 
-        axios.get(price_history_url).then((res) => {
+        const priceHistoFromService = historiesForCurrency.get(prop_coins[coin_index].id);
+
+        if ((priceHistoFromService != undefined) && (priceHistoFromService != NaN)) {
+
+            console.log("doRequestPriceHistory() RAW HISTORY ALREADY IN STORE for " + prop_coins[coin_index].id);// + priceHistoFromService);
 
             historiesLoaded[coin_index] = true;
             historiesLoading[coin_index] = false;
 
-            let pricesHistoryFromService = res.data.prices;
+            handlePriceHistoryFromService(coin_index, priceHistoFromService);
 
-            if (prop_coins[coin_index].symbol == "btc") {
+        } else {
+            const price_history_url = 'https://api.coingecko.com/api/v3/coins/' + prop_coins[coin_index].id + '/market_chart?vs_currency=' + userCurrency.code + '&days=' + full_history_length + '&interval=daily';
+            historiesLoading[coin_index] = true;
 
-                console.log("IndexMajorCoinsDetails.doRequest().get().then() RECEIVED BITCOIN HISTORY ! : " + prop_coins[coin_index].symbol + " SIZE = " + res.data.prices.length);
-                rawPriceHistory[BITCOIN_INDEX] = pricesHistoryFromService;
+            axios.get(price_history_url).then((res) => {
 
-            } else if (prop_coins[coin_index].symbol == "eth") {
+                historiesLoaded[coin_index] = true;
+                historiesLoading[coin_index] = false;
 
-                console.log("IndexMajorCoinsDetails.doRequest().get().then() RECEIVED ETHEREUM HISTORY ! : " + prop_coins[coin_index].symbol + " SIZE = " + res.data.prices.length);
-                rawPriceHistory[ETHEREUM_INDEX] = pricesHistoryFromService;
+                let pricesHistoryFromService = res.data.prices;
 
-            } else if (prop_coins[coin_index].symbol == "sol") {
+                handlePriceHistoryFromService(coin_index, pricesHistoryFromService)
 
-                console.log("IndexMajorCoinsDetails.doRequest().get().then() RECEIVED SOLANA HISTORY ! : " + prop_coins[coin_index].symbol + " SIZE = " + res.data.prices.length);
-                rawPriceHistory[SOLANA_INDEX] = pricesHistoryFromService;
-            } else {
-                console.error("IndexMajorCoinsDetails.doRequest().get().then() UNEXPECTED TOKEN HISTORY ! : " + prop_coins[coin_index].symbol);
-                return;
-            }
+            }).catch((error) => {
+                console.log(error);
+                historiesLoaded[coin_index] = false;
+                historiesLoading[coin_index] = false;
+            });
+        }
 
-            let pricesHistoryCoin = [];
-            let datesHistoryCoin = [];
-            let dailyReturnHistory = [];
-
-            let i = 0;
-            for (const entry of pricesHistoryFromService) {
-
-                //console.log("CoinDetails.useEffect() entry: " + entry);
-
-                if (entry[1] === undefined) {
-                    console.log("CoinCorrelations.doRequest().get().then() i=  " + i + " undefined ");
-                } else {
-
-                    datesHistoryCoin[i] = entry[0];
-                    pricesHistoryCoin[i] = entry[1];
-
-                    if (i > 0) {
-                        dailyReturnHistory[i - 1] = mathjs.log(pricesHistoryCoin[i] / pricesHistoryCoin[i - 1]);
-                    }
-                    // console.log("CoinCorrelations.doRequest().get().then() labelsHistory[i]: " + labelsHistory[i] + " pricesHistory[i] = " + pricesHistory[i]
-                    //     + " dailyReturnHistory[i] = " + dailyReturnHistory[i]);
-                }
-
-                i = i + 1;
-            }
-
-            let standardDeviation = mathjs.std(pricesHistoryCoin);
-            let histoVol = standardDeviation * mathjs.sqrt(365) * 100;
-
-            lastKnownPrices[coin_index] = pricesHistoryCoin[pricesHistoryCoin.length - 1];
-            indexComponentVol[coin_index] = histoVol;
-
-            indexComponentPriceHistory[coin_index] = pricesHistoryCoin;
-
-            let historicalStdDev = standardDeviation;
-
-            fullDateHistories[coin_index] = datesHistoryCoin;
-            fullPriceHistories[coin_index] = pricesHistoryCoin;
-            fullDailyReturnHistories[coin_index] = dailyReturnHistory;
-            historicalStdDevs[coin_index] = historicalStdDev;
-            historicalVols[coin_index] = histoVol;
-
-            //console.log("IndexMajorCoinsDetails.doRequest().get().then() coin index = " + coin_index + " histoVol = " + histoVol);
-
-            if (isAllHistoriesLoaded()) {
-                console.log("IndexMajorCoinsDetails.doRequest().get().then() ALL HISTORIES LOADED !! => PROCEED to index calc " + timeframeDuration + " days");
-                //calcCurrentCorrelations();
-                calcIndexes();
-            } else {
-                console.warn("IndexMajorCoinsDetails.doRequest().get().then() HISTORIES MISSING !");
-            }
-        }).catch((error) => {
-            console.log(error);
-            historiesLoaded[coin_index] = false;
-            historiesLoading[coin_index] = false;
-        });
     };
+
+    function handlePriceHistoryFromService(coin_index, pricesHistoryFromService){
+
+        if (prop_coins[coin_index].symbol == "btc") {
+
+            console.log("IndexMajorCoinsDetails.handlePriceHistoryFromService() RECEIVED BITCOIN HISTORY ! : " + prop_coins[coin_index].symbol + " SIZE = " + pricesHistoryFromService.length);
+            rawPriceHistory[BITCOIN_INDEX] = pricesHistoryFromService;
+
+        } else if (prop_coins[coin_index].symbol == "eth") {
+
+            console.log("IndexMajorCoinsDetails.handlePriceHistoryFromService() RECEIVED ETHEREUM HISTORY ! : " + prop_coins[coin_index].symbol + " SIZE = " + pricesHistoryFromService.length);
+            rawPriceHistory[ETHEREUM_INDEX] = pricesHistoryFromService;
+
+        } else if (prop_coins[coin_index].symbol == "sol") {
+
+            console.log("IndexMajorCoinsDetails.handlePriceHistoryFromService() RECEIVED SOLANA HISTORY ! : " + prop_coins[coin_index].symbol + " SIZE = " + pricesHistoryFromService.length);
+            rawPriceHistory[SOLANA_INDEX] = pricesHistoryFromService;
+        } else {
+            console.error("IndexMajorCoinsDetails.handlePriceHistoryFromService() UNEXPECTED TOKEN HISTORY ! : " + prop_coins[coin_index].symbol);
+            return;
+        }
+
+        let pricesHistoryCoin = [];
+        let datesHistoryCoin = [];
+        let dailyReturnHistory = [];
+
+        let i = 0;
+        for (const entry of pricesHistoryFromService) {
+
+            //console.log("CoinDetails.useEffect() entry: " + entry);
+
+            if (entry[1] === undefined) {
+                console.log("CoinCorrelations.doRequest().get().then() i=  " + i + " undefined ");
+            } else {
+
+                datesHistoryCoin[i] = entry[0];
+                pricesHistoryCoin[i] = entry[1];
+
+                if (i > 0) {
+                    dailyReturnHistory[i - 1] = mathjs.log(pricesHistoryCoin[i] / pricesHistoryCoin[i - 1]);
+                }
+                // console.log("CoinCorrelations.doRequest().get().then() labelsHistory[i]: " + labelsHistory[i] + " pricesHistory[i] = " + pricesHistory[i]
+                //     + " dailyReturnHistory[i] = " + dailyReturnHistory[i]);
+            }
+
+            i = i + 1;
+        }
+
+        let standardDeviation = mathjs.std(pricesHistoryCoin);
+        let histoVol = standardDeviation * mathjs.sqrt(365) * 100;
+
+        lastKnownPrices[coin_index] = pricesHistoryCoin[pricesHistoryCoin.length - 1];
+        indexComponentVol[coin_index] = histoVol;
+
+        indexComponentPriceHistory[coin_index] = pricesHistoryCoin;
+
+        let historicalStdDev = standardDeviation;
+
+        fullDateHistories[coin_index] = datesHistoryCoin;
+        fullPriceHistories[coin_index] = pricesHistoryCoin;
+        fullDailyReturnHistories[coin_index] = dailyReturnHistory;
+        historicalStdDevs[coin_index] = historicalStdDev;
+        historicalVols[coin_index] = histoVol;
+
+        //console.log("IndexMajorCoinsDetails.doRequest().get().then() coin index = " + coin_index + " histoVol = " + histoVol);
+
+        if (isAllHistoriesLoaded()) {
+            console.log("IndexMajorCoinsDetails.doRequest().get().then() ALL HISTORIES LOADED !! => PROCEED to index calc " + timeframeDuration + " days");
+            //calcCurrentCorrelations();
+            calcIndexes();
+        } else {
+            console.log("IndexMajorCoinsDetails.doRequest().get().then() HISTORIES MISSING !");
+        }
+    }
 
     function calcIndexes() {
 
@@ -402,7 +421,7 @@ const IndexMajorCoinsDetails = (props) => {
                 <div className='content'>
                     <div className='details_info'>
                         <div className='coin-heading'>
-                            <h2>Major coins index</h2>
+                            <h2>{t("crypto_major_index_title")}</h2>
                         </div>
                         <div className='centered-in-cell'>
                             <div className='coin-price'>

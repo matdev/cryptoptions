@@ -14,6 +14,7 @@ import axios from "axios";
 import ReactGA from "react-ga4";
 import fixedWidthString from "fixed-width-string";
 import IndexMajorCoinsDetails from "../routes/IndexMajorCoinsDetails";
+import {useZustandStore, updateDailyHistory} from "../storeZustand";
 
 const mathjs = require('mathjs');
 
@@ -25,7 +26,11 @@ const HomePage = (props) => {
 
     const userCurrency = useSelector(store => store.userCurrency.value);
 
-    const full_history_length = 30; // Price history for vol calculation
+    // Zustand store
+    const zustandStore = useZustandStore();
+
+    //const full_history_length = 30; // Price history for vol calculation
+    const full_history_length = 365; // Price history for vol calculation
 
     const [lastKnownPrices, setLastKnownPrices] = useState([]);
     const [indexComponentVol, setIndexComponentVol] = useState([]);
@@ -37,6 +42,7 @@ const HomePage = (props) => {
     const [majorIndexValue_7d_percent, setMajorIndexValue_7d_percent] = useState(0);
     const [majorIndexValue_14d_percent, setMajorIndexValue_14d_percent] = useState(0);
     const [majorIndexValue_30d_percent, setMajorIndexValue_30d_percent] = useState(0);
+    const [majorIndexValue_365d_percent, setMajorIndexValue_365d_percent] = useState(0);
 
     const [majorIndexVol, setMajorIndexVol] = useState(0);
 
@@ -73,24 +79,20 @@ const HomePage = (props) => {
 
     const rawPriceHistory = useState([]);
 
-    console.log("majorIndexValue = " + majorIndexValue);
-
     useEffect(() => {
 
         setLastKnownPrices([0, 0, 0]);
 
-        let current_coin_index = 0;
-        doRequestPriceHistoryIfNecessary(current_coin_index);
+        doRequestPriceHistoryIfNecessary(BITCOIN_INDEX);
 
-        current_coin_index = 1;
-        doRequestPriceHistoryIfNecessary(current_coin_index);
+        doRequestPriceHistoryIfNecessary(ETHEREUM_INDEX);
 
-        current_coin_index = 2;
-        doRequestPriceHistoryIfNecessary(current_coin_index);
+        doRequestPriceHistoryIfNecessary(SOLANA_INDEX);
 
     }, [userCurrency, i18n.language])
 
     function doRequestPriceHistoryIfNecessary(coin_index) {
+
         if (!historiesLoaded[coin_index] && !historiesLoading[coin_index]) {
             doRequestPriceHistory(coin_index);
         } else {
@@ -126,6 +128,10 @@ const HomePage = (props) => {
                 rawPriceHistory[SOLANA_INDEX] = pricesHistoryFromService;
             }
 
+            // zustand store
+            //zustandStore.updateDailyPriceHistory_EUR(prop_coins[coin_index].id, pricesHistoryFromService);
+            updateDailyHistory(userCurrency.code, prop_coins[coin_index].id, pricesHistoryFromService);
+
             let pricesHistoryCoin = [];
             let datesHistoryCoin = [];
             let dailyReturnHistory = [];
@@ -153,24 +159,25 @@ const HomePage = (props) => {
             let histoVol = standardDeviation * mathjs.sqrt(365) * 100;
 
             lastKnownPrices[coin_index] = pricesHistoryCoin[pricesHistoryCoin.length - 1];
+
             indexComponentVol[coin_index] = histoVol;
 
             indexComponentPriceHistory[coin_index] = pricesHistoryCoin;
 
-            console.log("HomePage.doRequestPriceHistory().get().then() coin_index = " + coin_index + " indexComponentPriceHistory = " + indexComponentPriceHistory[coin_index]);
+            //console.log("HomePage.doRequestPriceHistory().get().then() coin_index = " + coin_index + " indexComponentPriceHistory = " + indexComponentPriceHistory[coin_index]);
 
             if (isAllHistoriesLoaded()) {
-                console.log("HomePage.doRequestPriceHistory().get().then() ALL INDEX COMPONENT PRICES LOADED !! => PROCEED to index calculation");
+                //console.log("HomePage.doRequestPriceHistory().get().then() ALL INDEX COMPONENT PRICES LOADED !! => PROCEED to index calculation");
                 calcIndexes();
             } else {
-                console.warn("HomePage.doRequestPriceHistory().get().then() MISSING INDEX COMPONENT PRICES : " + lastKnownPrices);
+                //console.warn("HomePage.doRequestPriceHistory().get().then() MISSING INDEX COMPONENT PRICES : " + lastKnownPrices);
                 resetCurrentValues();
             }
         }).catch((error) => {
 
             resetCurrentValues();
 
-            console.log(error);
+            console.error(error);
             historiesLoaded[coin_index] = false;
             historiesLoading[coin_index] = false;
         });
@@ -182,40 +189,39 @@ const HomePage = (props) => {
         setMajorIndexValue_7d_percent(0);
         setMajorIndexValue_14d_percent(0);
         setMajorIndexValue_30d_percent(0);
+        setMajorIndexValue_365d_percent(0);
     }
 
     function calcIndexes() {
 
-        console.warn("calcIndexes() lastKnownPrices = " + lastKnownPrices);
-
         let majorIndexVal = IndexUtils.getIndexVal(lastKnownPrices, majorIndexWeight);
         setMajorIndexValue(majorIndexVal);
-
-        console.log("calcIndexes() Calc majorIndexVal : majorIndexVal = " + majorIndexVal);
 
         let lastKnownPrices_1d = getComponentPrice_asOf(-1);
         let lastKnownPrices_7d = getComponentPrice_asOf(-7);
         let lastKnownPrices_14d = getComponentPrice_asOf(-14);
         let lastKnownPrices_30d = getComponentPrice_asOf(-30);
-
-        //console.warn("calcIndexes() lastKnownPrices_1d = " + lastKnownPrices_1d);
+        let lastKnownPrices_365d = getComponentPrice_asOf(-365);
 
         let majorIndexVal_1d = IndexUtils.getIndexVal(lastKnownPrices_1d, majorIndexWeight);
         let majorIndexVal_7d = IndexUtils.getIndexVal(lastKnownPrices_7d, majorIndexWeight);
         let majorIndexVal_14d = IndexUtils.getIndexVal(lastKnownPrices_14d, majorIndexWeight);
         let majorIndexVal_30d = IndexUtils.getIndexVal(lastKnownPrices_30d, majorIndexWeight);
+        let majorIndexVal_365d = IndexUtils.getIndexVal(lastKnownPrices_365d, majorIndexWeight);
 
-        console.log("calcIndexes() Calc majorIndexVal_1d : majorIndexVal_1d = " + majorIndexVal_1d);
+        //console.log("calcIndexes() Calc majorIndexVal_365d : majorIndexVal_365d = " + majorIndexVal_365d);
 
         let majorIndexVal_1d_change = 100 * (majorIndexVal - majorIndexVal_1d) / majorIndexVal;
         let majorIndexVal_7d_change = 100 * (majorIndexVal - majorIndexVal_7d) / majorIndexVal;
         let majorIndexVal_14d_change = 100 * (majorIndexVal - majorIndexVal_14d) / majorIndexVal;
         let majorIndexVal_30d_change = 100 * (majorIndexVal - majorIndexVal_30d) / majorIndexVal;
+        let majorIndexVal_365d_change = 100 * (majorIndexVal - majorIndexVal_365d) / majorIndexVal;
 
         setMajorIndexValue_1d_percent(majorIndexVal_1d_change);
         setMajorIndexValue_7d_percent(majorIndexVal_7d_change);
         setMajorIndexValue_14d_percent(majorIndexVal_14d_change);
         setMajorIndexValue_30d_percent(majorIndexVal_30d_change);
+        setMajorIndexValue_365d_percent(majorIndexVal_365d_change);
     }
 
     /*
@@ -327,8 +333,6 @@ const HomePage = (props) => {
                     {t("home_intro_4")}
                 </h3>
                 <h3 className='header_text'>
-
-
                 </h3>
             </div>
 
@@ -338,7 +342,7 @@ const HomePage = (props) => {
                     <div className='details_info'>
                         <div className='coin-heading'>
                             <div className='centered-in-cell'>
-                                <div className='rank'>
+                                <div className='coin_name'>
                                     <Link key={"major-coins-index"} to={`/major-coins-index/`} state={{}}
                                           element={<IndexMajorCoinsDetails/>}>
                                         <span className='index-major-coin'>{t("crypto_major_index_title")}</span>
@@ -370,10 +374,11 @@ const HomePage = (props) => {
                     <table>
                         <thead>
                         <tr>
-                        <th>24 h</th>
+                            <th>24 h</th>
                             <th>{t("7d")}</th>
                             <th>{t("14d")}</th>
                             <th>{t("30d")}</th>
+                            <th>{t("1y")}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -386,6 +391,8 @@ const HomePage = (props) => {
                                 <p className={(Math.sign(majorIndexValue_14d_percent) === -1) ? "change_negative" : "change_positive"}>{majorIndexValue_14d_percent.toFixed(1)} %</p> : null}</td>
                             <td>{majorIndexValue_30d_percent ?
                                 <p className={(Math.sign(majorIndexValue_30d_percent) === -1) ? "change_negative" : "change_positive"}>{majorIndexValue_30d_percent.toFixed(1)} %</p> : null}</td>
+                            <td>{majorIndexValue_365d_percent ?
+                                <p className={(Math.sign(majorIndexValue_365d_percent) === -1) ? "change_negative" : "change_positive"}>{majorIndexValue_365d_percent.toFixed(1)} %</p> : null}</td>
                         </tr>
                         </tbody>
                     </table>
